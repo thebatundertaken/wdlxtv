@@ -35,18 +35,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.accessibility.AccessibilityEventCompat;
 
 import com.osdmod.customviews.HorizontalPager;
 import com.osdmod.customviews.NumberPicker;
-import com.osdmod.customviews.OnChangedListener;
+import com.osdmod.customviews.NumberPickerChangeListener;
 import com.osdmod.remote.AutomatedTelnetClient;
 import com.osdmod.remote.R;
 import com.osdmod.remote.ShakeListener;
 import com.osdmod.remote.TimeConvertion;
-
-import org.teleal.cling.model.message.header.EXTHeader;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -360,7 +357,7 @@ public class DummyControllerActivity extends AppCompatActivity {
     private Long lastshake = 0L;
     private long mLCurTime;
     private long mLTotTime;
-    private final OnChangedListener nChangeListener = (picker, oldVal, newVal) -> {
+    private final NumberPickerChangeListener nChangeListener = (picker, oldVal, newVal) -> {
         View v = picker.getRootView();
         String[] t = new TimeConvertion().secToStringArray(mLTotTime);
         int h = Integer.parseInt(t[0]);
@@ -931,7 +928,7 @@ public class DummyControllerActivity extends AppCompatActivity {
     }
 
     public void openTimeDialog() {
-        final View addView = LayoutInflater.from(this).inflate(R.layout.time_dialog, null);
+        final View addView = LayoutInflater.from(this).inflate(R.layout.dialog_jump_to_time, null);
         NumberPicker nHor = addView.findViewById(R.id.num_hor);
         NumberPicker nMin = addView.findViewById(R.id.num_min);
         NumberPicker nSec = addView.findViewById(R.id.num_sec);

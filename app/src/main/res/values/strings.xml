@@ -123,7 +123,7 @@ This keyboard is still on beta mode, requires a good WiFi signal."</string>
     <string name="b_pref_track_t">Trackball / Dir. Buttons</string>
     <string name="b_pref_track_s">Use Trackball / Dir. Buttons</string>
     <string name="b_pref_butt_t">Buttons</string>
-    <string name="b_pref_butt_s">Use Back and Search buttons</string>
+    <string name="b_pref_butt_s">Use phone Back and Search buttons as controller buttons</string>
     <string name="b_pref_volbut_t">Volume Buttons</string>
     <string name="b_pref_volbut_s">Use the Volume Buttons</string>
     <string name="b_pref_info_tit">Info</string>

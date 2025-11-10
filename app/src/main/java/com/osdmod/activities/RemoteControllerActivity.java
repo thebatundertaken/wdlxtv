@@ -48,7 +48,7 @@ import androidx.core.content.res.ResourcesCompat;
 
 import com.osdmod.customviews.HorizontalPager;
 import com.osdmod.customviews.NumberPicker;
-import com.osdmod.customviews.OnChangedListener;
+import com.osdmod.customviews.NumberPickerChangeListener;
 import com.osdmod.model.WdDevice;
 import com.osdmod.prefs.WDPrefs;
 import com.osdmod.remote.AutomatedTelnetClient;
@@ -203,52 +203,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private long lastshake = 0L;
     private long mLCurTime;
     private long mLTotTime;
-    private final OnChangedListener nChangeListener = (picker, oldVal, newVal) -> {
-        View v = picker.getRootView();
-        String[] totalTime = tc.secToStringArray(mLTotTime);
-        int h = Integer.parseInt(totalTime[0]);
-        int m = Integer.parseInt(totalTime[1]);
-        int s = Integer.parseInt(totalTime[2]);
-        NumberPicker nHor = v.findViewById(R.id.num_hor);
-        NumberPicker nMin = v.findViewById(R.id.num_min);
-        NumberPicker nSec = v.findViewById(R.id.num_sec);
-        int pickerId = picker.getId();
-
-        if (pickerId == R.id.num_hor) {
-            int act = nMin.getCurrent();
-            int niu = 59;
-            if (nHor.getCurrent() >= h) {
-                niu = m;
-            }
-            nMin.setRange(0, niu);
-            nMin.setCurrent(Math.min(act, niu));
-            int act2 = nSec.getCurrent();
-            int niu2 = 59;
-            if (nHor.getCurrent() >= h && nMin.getCurrent() >= m) {
-                niu2 = s;
-            }
-            nSec.setRange(0, niu2);
-            if (act2 > niu2) {
-                nSec.setCurrent(niu2);
-                return;
-            }
-
-            nSec.setCurrent(act2);
-        }
-        if (pickerId == R.id.num_min) {
-            int act3 = nSec.getCurrent();
-            int niu3 = 59;
-            if (nHor.getCurrent() >= h && nMin.getCurrent() >= m) {
-                niu3 = s;
-            }
-            nSec.setRange(0, niu3);
-            if (act3 > niu3) {
-                nSec.setCurrent(niu3);
-            } else {
-                nSec.setCurrent(act3);
-            }
-        }
-    };
     private final SeekBar.OnSeekBarChangeListener onSeek = new SeekBar.OnSeekBarChangeListener() {
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             int seekBarId = seekBar.getId();
@@ -300,16 +254,13 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
         int buttonId = v.getId();
         if (buttonsToCmd.containsKey(buttonId)) {
-            if (!conf_buttons && (buttonId == R.id.btn_back || buttonId == R.id.btn_search)) {
-                return;
-            }
             sendCmdToDevice(buttonsToCmd.get(buttonId));
             return;
         }
 
         switch (buttonId) {
             case R.id.txt_time_current:
-                openTimeDialog();
+                openJump2ToTimeDialog();
                 return;
 
             case R.id.btn_cvol:
@@ -466,9 +417,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
             WdMediaServiceCallback mediaDeviceCallback = new WdMediaServiceCallback() {
                 @Override
                 public void onCurrentTrackMetaData() {
-                    wdMediaService.syncPlaybackPosition();
-                    wdMediaService.syncPlaybackStatus();
-                    wdMediaService.syncPlayMode();
+                    wdMediaService.initialSync();
                 }
 
                 @Override
@@ -491,8 +440,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
                 @Override
                 public void onPlaybackPositionChanged(String trackDuration, String relTime) {
                     mLTotTime = tc.stringToSec(trackDuration);
-                    mLCurTime = tc.stringToSec(relTime);
-                    setTimesTxtsUI(relTime, trackDuration);
+                    mLCurTime = Math.min(tc.stringToSec(relTime), mLTotTime);
+                    setTimesTxtsUI(tc.secToString(mLCurTime), trackDuration);
                     setTimeSeekUI(mLCurTime, mLTotTime);
                 }
 
@@ -521,9 +470,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
                 @Override
                 public void onServiceSubscripted() {
                     wdMediaService = new WdMediaService(serviceConnection, mediaDeviceCallback);
-                    wdMediaService.syncPlaybackPosition();
-                    wdMediaService.syncPlayMode();
-                    wdMediaService.syncVolumen();
                 }
             };
 
@@ -784,7 +730,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
                 return true;
 
             case R.id.remotecontroller_activity_menu_jumpto:
-                openTimeDialog();
+                openJump2ToTimeDialog();
                 return true;
 
             case R.id.remotecontroller_activity_menu_keyboard:
@@ -1179,33 +1125,11 @@ public class RemoteControllerActivity extends AppCompatActivity {
         setPanel(pref.isGesturePanelDefault());
     }
 
-    private void openTimeDialog() {
-        final View addView = getLayoutInflater().inflate(R.layout.time_dialog, null);
+    private void openJump2ToTimeDialog() {
+        final View addView = getLayoutInflater().inflate(R.layout.dialog_jump_to_time, null);
         NumberPicker nHor = addView.findViewById(R.id.num_hor);
         NumberPicker nMin = addView.findViewById(R.id.num_min);
         NumberPicker nSec = addView.findViewById(R.id.num_sec);
-        AlertDialog alert = new AlertDialog.Builder(this).setTitle(
-                        getString(R.string.rem_txt_jumpto)).setView(addView)
-                .setPositiveButton(getString(R.string.rem_txt_ok),
-                        (dialog, whichButton) -> {
-                            int h = nHor.getCurrent();
-                            int m = nMin.getCurrent();
-                            int s = nSec.getCurrent();
-                            String[] time = {"00", "00", "00"};
-                            time[0] = (h < 10 ? "0" : "") + h;
-                            time[1] = (m < 10 ? "0" : "") + m;
-                            time[2] = (s < 10 ? "0" : "") + s;
-                            String jumpToPosition = time[0] + ":" + time[1] + ":" + time[2];
-                            mLCurTime = tc.stringToSec(
-                                    jumpToPosition);
-                            wdMediaService.setPlaybackPosition(jumpToPosition);
-                            setTimeSeekUI(mLCurTime, mLTotTime);
-                            setTimesTxtsUI(jumpToPosition,
-                                    tc.secToString(mLTotTime));
-                        }).setNegativeButton(getString(R.string.rem_txt_cancel),
-                        (dialog, whichButton) -> {
-                        }).create();
-        alert.setIcon(R.drawable.ic_menu_time);
         String[] totalTime = tc.secToStringArray(mLTotTime);
         int ht = Integer.parseInt(totalTime[0]);
         int mt = Integer.parseInt(totalTime[1]);
@@ -1227,6 +1151,71 @@ public class RemoteControllerActivity extends AppCompatActivity {
         nHor.setCurrent(hc);
         nMin.setCurrent(mc);
         nSec.setCurrent(sc);
+
+        AlertDialog alert = new AlertDialog.Builder(this).setTitle(
+                        getString(R.string.rem_txt_jumpto)).setView(addView)
+                .setPositiveButton(getString(R.string.rem_txt_ok),
+                        (dialog, whichButton) -> {
+                            int h = nHor.getCurrent();
+                            int m = nMin.getCurrent();
+                            int s = nSec.getCurrent();
+                            String[] time = {"00", "00", "00"};
+                            time[0] = (h < 10 ? "0" : "") + h;
+                            time[1] = (m < 10 ? "0" : "") + m;
+                            time[2] = (s < 10 ? "0" : "") + s;
+                            String jumpToPosition = time[0] + ":" + time[1] + ":" + time[2];
+                            mLCurTime = tc.stringToSec(jumpToPosition);
+                            wdMediaService.setPlaybackPosition(jumpToPosition);
+                            setTimeSeekUI(mLCurTime, mLTotTime);
+                            setTimesTxtsUI(jumpToPosition,
+                                    tc.secToString(mLTotTime));
+                        }).setNegativeButton(getString(R.string.rem_txt_cancel),
+                        (dialog, whichButton) -> {
+                        }).create();
+        alert.setIcon(R.drawable.ic_menu_time);
+
+        NumberPickerChangeListener nChangeListener = (picker, oldVal, newVal) -> {
+            int h = Integer.parseInt(totalTime[0]);
+            int m = Integer.parseInt(totalTime[1]);
+            int s = Integer.parseInt(totalTime[2]);
+            int pickerId = picker.getId();
+
+            if (pickerId == R.id.num_hor) {
+                int act = nMin.getCurrent();
+                int niu = 59;
+                if (nHor.getCurrent() >= h) {
+                    niu = m;
+                }
+                nMin.setRange(0, niu);
+                nMin.setCurrent(Math.min(act, niu));
+                int act2 = nSec.getCurrent();
+                int niu2 = 59;
+                if (nHor.getCurrent() >= h && nMin.getCurrent() >= m) {
+                    niu2 = s;
+                }
+                nSec.setRange(0, niu2);
+                if (act2 > niu2) {
+                    nSec.setCurrent(niu2);
+                    return;
+                }
+
+                nSec.setCurrent(act2);
+            }
+            if (pickerId == R.id.num_min) {
+                int act3 = nSec.getCurrent();
+                int niu3 = 59;
+                if (nHor.getCurrent() >= h && nMin.getCurrent() >= m) {
+                    niu3 = s;
+                }
+                nSec.setRange(0, niu3);
+                if (act3 > niu3) {
+                    nSec.setCurrent(niu3);
+                } else {
+                    nSec.setCurrent(act3);
+                }
+            }
+        };
+
         nHor.setOnChangeListener(nChangeListener);
         nMin.setOnChangeListener(nChangeListener);
         alert.show();
@@ -1262,8 +1251,13 @@ public class RemoteControllerActivity extends AppCompatActivity {
         );
 
         if (commands.containsKey(keyCode)) {
-            if (!conf_buttons && (keyCode == KeyEvent.KEYCODE_SEARCH || keyCode == KeyEvent.KEYCODE_BACK)) {
-                return super.onKeyDown(keyCode, event);
+            if (!conf_buttons) {
+                if(keyCode == KeyEvent.KEYCODE_SEARCH) {
+                    return false;
+                }
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    return super.onKeyDown(keyCode, event);
+                }
             }
 
             if (!conf_trackball) {

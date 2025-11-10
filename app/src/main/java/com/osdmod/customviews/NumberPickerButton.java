@@ -4,10 +4,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.widget.ImageButton;
+
+import androidx.appcompat.widget.AppCompatImageButton;
+
 import com.osdmod.remote.R;
 
-public class NumberPickerButton extends ImageButton {
+public class NumberPickerButton extends AppCompatImageButton {
     private NumberPicker mNumberPicker;
 
     public NumberPickerButton(Context context, AttributeSet attrs, int defStyle) {
@@ -23,7 +25,7 @@ public class NumberPickerButton extends ImageButton {
     }
 
     public void setNumberPicker(NumberPicker picker) {
-        this.mNumberPicker = picker;
+        mNumberPicker = picker;
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -37,14 +39,15 @@ public class NumberPickerButton extends ImageButton {
     }
 
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == 23 || keyCode == 66) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
             cancelLongpress();
         }
+
         return super.onKeyUp(keyCode, event);
     }
 
     private void cancelLongpressIfRequired(MotionEvent event) {
-        if (event.getAction() == 3 || event.getAction() == 1) {
+        if (event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP) {
             cancelLongpress();
         }
     }

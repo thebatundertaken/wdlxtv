@@ -27,7 +27,7 @@ public class NumberPicker extends LinearLayout
     private int mEnd;
     private int mPrevious;
     private int mStart;
-    private OnChangedListener mListener;
+    private NumberPickerChangeListener mListener;
 
     public NumberPicker(Context context) {
         this(context, null);
@@ -66,12 +66,10 @@ public class NumberPicker extends LinearLayout
         if (!isEnabled()) {
             setEnabled(false);
         }
-        /*TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.numberpicker);
-        this.mStart = a.getInt(0, 0);
-        this.mEnd = a.getInt(1, 200);
-        this.mWrap = a.getBoolean(4, DEFAULT_WRAP);
-        this.mCurrent = a.getInt(2, 0);*/
-        mCurrent = Math.max(mStart, Math.min(mCurrent, mEnd));
+
+        mStart = 0;
+        mEnd = 200;
+        mCurrent = 0;
         mText.setText(String.valueOf(mCurrent));
     }
 
@@ -82,26 +80,26 @@ public class NumberPicker extends LinearLayout
         mText.setEnabled(enabled);
     }
 
-    public void setOnChangeListener(OnChangedListener listener) {
+    public void setOnChangeListener(NumberPickerChangeListener listener) {
         this.mListener = listener;
     }
 
     public void setRange(int start, int end) {
         mStart = start;
-        mEnd = end;
         mCurrent = start;
+        mEnd = end;
         updateView();
     }
 
     public void onClick(View v) {
-        validateInput(this.mText);
-        if (!this.mText.hasFocus()) {
-            this.mText.requestFocus();
+        validateInput(mText);
+        if (!mText.hasFocus()) {
+            mText.requestFocus();
         }
         if (R.id.increment == v.getId()) {
-            changeCurrent(this.mCurrent + 1);
+            changeCurrent(mCurrent + 1);
         } else if (R.id.decrement == v.getId()) {
-            changeCurrent(this.mCurrent - 1);
+            changeCurrent(mCurrent - 1);
         }
     }
 
@@ -182,5 +180,4 @@ public class NumberPicker extends LinearLayout
         mCurrent = current;
         updateView();
     }
-
 }

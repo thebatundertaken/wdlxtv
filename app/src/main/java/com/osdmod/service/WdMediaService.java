@@ -66,7 +66,15 @@ public class WdMediaService {
                 .findService(new UDAServiceType(AV_TRANSPORT_SERVICE));
         avTransportControl.getActions();
 
-        executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
+        executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
+        initialSync();
+    }
+
+    public void initialSync() {
+        syncPlaybackPosition();
+        syncPlayMode();
+        syncVolumen();
+        syncPlaybackStatus();
     }
 
     public int getVolumen() {

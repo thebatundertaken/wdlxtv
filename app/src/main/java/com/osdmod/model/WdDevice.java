@@ -25,7 +25,7 @@ public class WdDevice implements Comparable<WdDevice>, Serializable {
     private static final int[] galleryModelIcons = {R.drawable.icon_streaming, R.drawable.icon_hub, R.drawable.icon_live, R.drawable.icon_live, R.drawable.icon_gen1, R.drawable.icon_gen1};
     private static final int[] modelSmallIcons = {R.drawable.micon_streaming, R.drawable.micon_hub, R.drawable.micon_live, R.drawable.micon_live, R.drawable.micon_gen1, R.drawable.micon_gen1};
 
-    private String modelName;
+    private final String modelName;
     private String friendlyName;
     private String ip;
     private String uuid;
@@ -166,10 +166,6 @@ public class WdDevice implements Comparable<WdDevice>, Serializable {
 
     public String getModelName() {
         return modelName;
-    }
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
     }
 
     public boolean iswDlxTVFirmware() {
