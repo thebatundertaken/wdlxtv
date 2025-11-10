@@ -145,7 +145,6 @@ public class HomeActivity extends AppCompatActivity {
         listOfSavedDevices.clear();
 
         List<WdDevice> favoriteDevices = wdDeviceRepository.retrieveAll();
-        //TODO SCF check if device online/connected
         listOfSavedDevices.addAll(favoriteDevices);
     }
 
@@ -523,12 +522,14 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     protected void onStart() {
+        super.onStart();
+
         if (firstRun) {
             firstRun = false;
             new UpnpServiceRunTask().execute();
             new LoadFavouritesTask().execute();
+            new RunDevicesDiscoveryTask().execute();
         }
-        super.onStart();
     }
 
     protected void onStop() {
@@ -705,7 +706,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(Void result) {
-            updateLists();
+            runOnUiThread(HomeActivity.this::updateLists);
         }
     }
 
@@ -723,7 +724,22 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(Void result) {
-            updateLists();
+            runOnUiThread(HomeActivity.this::updateLists);
+        }
+    }
+
+    private class RunDevicesDiscoveryTask extends AsyncTask<Void, Void, Void> {
+
+        protected Void doInBackground(Void... filename) {
+            int retries = 0;
+            while (upnpService == null && retries++ < 3) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignored) {
+                }
+            }
+            runDevicesDiscovery(false, false);
+            return null;
         }
     }
 
@@ -754,7 +770,7 @@ public class HomeActivity extends AppCompatActivity {
                 retrieved.setConnected(true);
                 listOfSavedDevices.set(pos, retrieved);
             }
-            updateLists();
+            runOnUiThread(HomeActivity.this::updateLists);
         }
     }
 
@@ -777,7 +793,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(Void result) {
-            updateLists();
+            runOnUiThread(HomeActivity.this::updateLists);
         }
     }
 }
