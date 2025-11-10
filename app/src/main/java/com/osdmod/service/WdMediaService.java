@@ -11,8 +11,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.StringReader;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public class WdMediaService {
     public static final String PLAY_MODE_REPEAT_ONE = "REPEAT_ONE";
@@ -39,6 +39,7 @@ public class WdMediaService {
     private static final int VOLUMEN_INCREMENT = 10;
     private static final int VOLUMEN_MAX = 100;
     private static final int VOLUMEN_MIN = 0;
+    private static final int MAX_TOTAL_RETRIES = 5;
     private final UpnpServiceConnection serviceConnection;
     /**
      * @noinspection rawtypes
@@ -49,9 +50,10 @@ public class WdMediaService {
      */
     private final Service avTransportControl;
     private final WdMediaServiceCallback mediaDeviceCallback;
-    private final ThreadPoolExecutor executor;
+    private final ExecutorService executor;
     private int volumen = 100;
     private String playMode = PLAY_MODE_NORMAL;
+    private int retries = 0;
 
     public WdMediaService(UpnpServiceConnection serviceConnection,
                           WdMediaServiceCallback mediaDeviceCallback) {
@@ -66,7 +68,8 @@ public class WdMediaService {
                 .findService(new UDAServiceType(AV_TRANSPORT_SERVICE));
         avTransportControl.getActions();
 
-        executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
+        executor = Executors.newFixedThreadPool(2);
+        //executor = Executors.newSingleThreadExecutor();
         initialSync();
     }
 
@@ -105,12 +108,16 @@ public class WdMediaService {
 
         performInvocation(new ActionCallback(invocation) {
             public void success(ActionInvocation invocation) {
+                retries = 0;
                 volumen = finalNewValue;
             }
 
             public void failure(ActionInvocation invocation, UpnpResponse operation,
                                 String defaultMsg) {
-                Log.e(TAG, defaultMsg);
+                Log.d(TAG, defaultMsg);
+                if(retries++ < MAX_TOTAL_RETRIES) {
+                    setVolumen(finalNewValue);
+                }
             }
         });
 
@@ -124,6 +131,7 @@ public class WdMediaService {
         serviceConnection.getUpnpService().getControlPoint()
                 .execute(new ActionCallback(invocation) {
                     public void success(ActionInvocation invocation) {
+                        retries = 0;
                         String title = getMediaTitleFromMetadata(
                                 invocation.getOutput("CurrentURIMetaData").getValue().toString());
                         mediaDeviceCallback.onMediaTitleReceived(title);
@@ -131,6 +139,10 @@ public class WdMediaService {
 
                     public void failure(ActionInvocation invocation, UpnpResponse operation,
                                         String defaultMsg) {
+                        Log.d(TAG, defaultMsg);
+                        if(retries++ < MAX_TOTAL_RETRIES) {
+                            syncMediaInfo();
+                        }
                     }
                 });
     }
@@ -148,6 +160,7 @@ public class WdMediaService {
 
         performInvocation(new ActionCallback(invocation) {
             public void success(ActionInvocation invocation) {
+                retries = 0;
                 volumen = Integer.parseInt(
                         invocation.getOutput("CurrentVolume").getValue().toString());
 
@@ -156,7 +169,10 @@ public class WdMediaService {
 
             public void failure(ActionInvocation invocation, UpnpResponse operation,
                                 String defaultMsg) {
-                Log.e(TAG, defaultMsg);
+                Log.d(TAG, defaultMsg);
+                if(retries++ < MAX_TOTAL_RETRIES) {
+                    syncVolumen();
+                }
             }
         });
     }
@@ -198,11 +214,15 @@ public class WdMediaService {
         invocation.setInput("NewPlayMode", playMode);
         performInvocation(new ActionCallback(invocation) {
             public void success(ActionInvocation invocation) {
+                retries = 0;
             }
 
             public void failure(ActionInvocation invocation, UpnpResponse operation,
                                 String defaultMsg) {
-                Log.e(TAG, defaultMsg);
+                Log.d(TAG, defaultMsg);
+                if(retries++ < MAX_TOTAL_RETRIES) {
+                    setPlayMode(newMode);
+                }
             }
         });
     }
@@ -221,10 +241,15 @@ public class WdMediaService {
         serviceConnection.getUpnpService().getControlPoint()
                 .execute(new ActionCallback(setTargetInvocation) {
                     public void success(ActionInvocation invocation) {
+                        retries = 0;
                     }
 
                     public void failure(ActionInvocation invocation, UpnpResponse operation,
                                         String defaultMsg) {
+                        Log.d(TAG, defaultMsg);
+                        if(retries++ < MAX_TOTAL_RETRIES) {
+                            setPlaybackPosition(position);
+                        }
                     }
                 });
 
@@ -238,6 +263,7 @@ public class WdMediaService {
 
         performInvocation(new ActionCallback(invocation) {
             public void success(ActionInvocation invocation) {
+                retries = 0;
                 if (invocation.getOutput("TrackDuration")
                         .getValue() == null || invocation.getOutput("RelTime")
                         .getValue() == null) {
@@ -247,13 +273,21 @@ public class WdMediaService {
                 String trackDuration = invocation.getOutput("TrackDuration").getValue()
                         .toString();
                 String relTime = invocation.getOutput("RelTime").getValue().toString();
-
+                try {
+                    String title = getMediaTitleFromMetadata(
+                            invocation.getOutput("TrackMetaData").getValue().toString());
+                    mediaDeviceCallback.onMediaTitleReceived(title);
+                }
+                catch (IllegalArgumentException ignored){}
                 mediaDeviceCallback.onPlaybackPositionChanged(trackDuration, relTime);
             }
 
             public void failure(ActionInvocation invocation, UpnpResponse operation,
                                 String defaultMsg) {
-                Log.e(TAG, defaultMsg);
+                Log.d(TAG, defaultMsg);
+                if(retries++ < MAX_TOTAL_RETRIES) {
+                    syncPlaybackPosition();
+                }
             }
         });
     }
@@ -266,13 +300,17 @@ public class WdMediaService {
 
         performInvocation(new ActionCallback(invocation) {
             public void success(ActionInvocation invocation) {
+                retries = 0;
                 playMode = invocation.getOutput("PlayMode").getValue().toString();
                 mediaDeviceCallback.onPlaymodeChanged(playMode);
             }
 
             public void failure(ActionInvocation invocation, UpnpResponse operation,
                                 String defaultMsg) {
-                Log.e(TAG, defaultMsg);
+                Log.d(TAG, defaultMsg);
+                if(retries++ < MAX_TOTAL_RETRIES) {
+                    syncPlayMode();
+                }
             }
         });
     }
@@ -284,6 +322,7 @@ public class WdMediaService {
         setTargetInvocation.setInput("InstanceID", "0");
         performInvocation(new ActionCallback(setTargetInvocation) {
             public void success(ActionInvocation invocation) {
+                retries = 0;
                 String playbackStatus = invocation.getOutput("CurrentTransportState").getValue()
                         .toString();
                 mediaDeviceCallback.onPlaybackStatusChanged(playbackStatus);
@@ -291,7 +330,10 @@ public class WdMediaService {
 
             public void failure(ActionInvocation invocation, UpnpResponse operation,
                                 String defaultMsg) {
-                Log.e(TAG, defaultMsg);
+                Log.d(TAG, defaultMsg);
+                if(retries++ < MAX_TOTAL_RETRIES) {
+                    syncPlaybackStatus();
+                }
             }
         });
     }
@@ -331,9 +373,25 @@ public class WdMediaService {
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
+            factory.setValidating(false);
             XmlPullParser xpp = factory.newPullParser();
             xpp.setInput(new StringReader(XML.replaceAll("&", "&amp;")));
-            for (int eventType = xpp.getEventType(); eventType != 1; eventType = xpp.next()) {
+            int eventType = xpp.getEventType();
+            while (eventType != 1) {
+                try {
+                    eventType = xpp.next();
+                    if (eventType != 2) {
+                        continue;
+                    }
+
+                    if (xpp.getAttributeCount() == 0 && xpp.getName().equals("title")) {
+                        return xpp.nextText();
+                    }
+                } catch (Exception e) {
+                    Log.w(TAG, e);
+                }
+            }
+            /*for (int eventType = xpp.getEventType(); eventType != 1; eventType = xpp.next()) {
                 if (eventType != 2) {
                     continue;
                 }
@@ -341,7 +399,7 @@ public class WdMediaService {
                 if (xpp.getAttributeCount() == 0 && xpp.getName().equals("title")) {
                     return xpp.nextText();
                 }
-            }
+            }*/
         } catch (Exception e) {
             Log.w(TAG, e);
         }

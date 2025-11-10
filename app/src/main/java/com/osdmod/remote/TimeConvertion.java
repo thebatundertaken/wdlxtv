@@ -1,7 +1,5 @@
 package com.osdmod.remote;
 
-import org.teleal.cling.model.message.header.EXTHeader;
-
 public class TimeConvertion {
     public long stringToSec(String sTime) {
         String[] parsedTime = sTime.split(":");
@@ -11,15 +9,16 @@ public class TimeConvertion {
         try {
             if (parsedTime[0].length() > 2) {
                 h = Integer.parseInt(parsedTime[0].substring(0, 2).replace(".", ""));
-            } else if (parsedTime[0].length() <= 2) {
+            } else {
                 h = Integer.parseInt(parsedTime[0].replace(".", ""));
             }
-        } catch (ArrayIndexOutOfBoundsException | NumberFormatException | StringIndexOutOfBoundsException e) {
+        } catch (ArrayIndexOutOfBoundsException | NumberFormatException |
+                 StringIndexOutOfBoundsException e) {
         }
         try {
             if (parsedTime[1].length() > 2) {
                 m = Integer.parseInt(parsedTime[1].substring(0, 3).replace(".", ""));
-            } else if (parsedTime[1].length() <= 2) {
+            } else {
                 m = Integer.parseInt(parsedTime[1].replace(".", ""));
             }
         } catch (NumberFormatException | StringIndexOutOfBoundsException e2) {
@@ -30,7 +29,7 @@ public class TimeConvertion {
         try {
             if (parsedTime[2].length() > 2) {
                 s = Integer.parseInt(parsedTime[2].substring(0, 2).replace(".", ""));
-            } else if (parsedTime[2].length() <= 2) {
+            } else {
                 s = Integer.parseInt(parsedTime[2].replace(".", ""));
             }
         } catch (NumberFormatException | StringIndexOutOfBoundsException e4) {
@@ -39,7 +38,7 @@ public class TimeConvertion {
             m = h;
             h = 0;
         }
-        return ((long) (h * 3600)) + ((long) (m * 60)) + ((long) s);
+        return (h * 3600L) + (m * 60L) + ((long) s);
     }
 
     public String secToString(long secs) {
@@ -47,10 +46,10 @@ public class TimeConvertion {
         int minutes = (int) ((secs / 60) % 60);
         int hours = (int) ((secs / 3600) % 24);
         String[] time = {"00", "00", "00"};
-        time[0] = String.valueOf(hours < 10 ? "0" : "") + hours;
-        time[1] = String.valueOf(minutes < 10 ? "0" : "") + minutes;
-        time[2] = String.valueOf(seconds < 10 ? "0" : "") + seconds;
-        return new String(String.valueOf(time[0]) + ":" + time[1] + ":" + time[2]);
+        time[0] = (hours < 10 ? "0" : "") + hours;
+        time[1] = (minutes < 10 ? "0" : "") + minutes;
+        time[2] = (seconds < 10 ? "0" : "") + seconds;
+        return time[0] + ":" + time[1] + ":" + time[2];
     }
 
     public String[] secToStringArray(long secs) {
@@ -58,9 +57,9 @@ public class TimeConvertion {
         int minutes = (int) ((secs / 60) % 60);
         int hours = (int) ((secs / 3600) % 24);
         String[] time = {"00", "00", "00"};
-        time[0] = String.valueOf(hours < 10 ? "0" : "") + hours;
-        time[1] = String.valueOf(minutes < 10 ? "0" : "") + minutes;
-        time[2] = String.valueOf(seconds < 10 ? "0" : "") + seconds;
+        time[0] = (hours < 10 ? "0" : "") + hours;
+        time[1] = (minutes < 10 ? "0" : "") + minutes;
+        time[2] = (seconds < 10 ? "0" : "") + seconds;
         return time;
     }
 }

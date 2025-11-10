@@ -128,14 +128,13 @@ public class RemoteControllerActivity extends AppCompatActivity {
             R.id.btn_home, R.id.btn_eject, R.id.btn_search, R.id.btn_power, R.id.btn_pgb, R.id.btn_config,
             R.id.btn_pgn, R.id.btn_audio, R.id.btn_subs, R.id.btn_mute, R.id.btn_a, R.id.btn_b, R.id.btn_c,
             R.id.btn_d, R.id.btn_up, R.id.btn_left, R.id.btn_ok, R.id.btn_right, R.id.btn_down, R.id.btn_back, R.id.btn_option};
+    private final Handler backgroundTaskHandler = new Handler();
     private Map<Integer, String> buttonsToCmd;
     private String[][] serviceList = ((String[][]) Array.newInstance(String.class,
             new int[]{50, 5}));
     private boolean dialogOpened = false;
     private long lastost = 0;
     private ProgressDialog mProgress;
-    private Handler mediaPlaybackHandler;
-    private Handler colorToggleHandler;
     private WdDevice wdDevice;
     private final ResultIntSetter checker = result -> {
         switch (result) {
@@ -165,6 +164,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
                 break;
         }
     };
+    private boolean isColorTogglerRunning = false;
+    private boolean ismediaPlaybackStatusCheckerRunning = false;
     private WdMediaService wdMediaService;
     private SendTxtWDlxTV sendTxtWDlxTV;
     private boolean isToggleBlueColor = false;
@@ -1252,7 +1253,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
         if (commands.containsKey(keyCode)) {
             if (!conf_buttons) {
-                if(keyCode == KeyEvent.KEYCODE_SEARCH) {
+                if (keyCode == KeyEvent.KEYCODE_SEARCH) {
                     return false;
                 }
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -1301,38 +1302,31 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
     private void startMediaPlaybackCheckerTask() {
         synchronized (mediaPlaybackStatusChecker) {
-            if (mediaPlaybackHandler == null) {
-                mediaPlaybackHandler = new Handler();
-                mediaPlaybackStatusChecker.run();
-            }
+            ismediaPlaybackStatusCheckerRunning = true;
+            mediaPlaybackStatusLastCheck = -1;
+            mediaPlaybackStatusChecker.run();
         }
     }
 
     private void stopMediaPlaybackCheckerTask() {
         synchronized (mediaPlaybackStatusChecker) {
-            if (mediaPlaybackHandler != null) {
-                mediaPlaybackHandler.removeCallbacks(mediaPlaybackStatusChecker);
-                mediaPlaybackHandler = null;
-            }
+            ismediaPlaybackStatusCheckerRunning = false;
+            backgroundTaskHandler.removeCallbacks(mediaPlaybackStatusChecker);
         }
     }
 
     private void startColorTogglerTask() {
         synchronized (colorToggler) {
-            if (colorToggleHandler == null) {
-                colorToggleHandler = new Handler();
-                colorToggler.run();
-            }
+            isColorTogglerRunning = true;
+            colorToggler.run();
         }
     }
 
     private void stopColorTogglerTask() {
         synchronized (colorToggler) {
-            if (colorToggleHandler != null) {
-                colorToggleHandler.removeCallbacks(colorToggler);
-                colorToggleHandler = null;
-                toggleTimeTextviewColor(true);
-            }
+            isColorTogglerRunning = false;
+            backgroundTaskHandler.removeCallbacks(colorToggler);
+            toggleTimeTextviewColor(true);
         }
     }
 
@@ -1359,9 +1353,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
             case WdMediaService.PLAYBACK_TRANSITIONING:
                 stopColorTogglerTask();
                 startMediaPlaybackCheckerTask();
-                if (wdMediaService != null) {
-                    wdMediaService.syncMediaInfo();
-                }
                 break;
 
             case WdMediaService.PLAYBACK_STOPPED:
@@ -1378,7 +1369,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
             case WdMediaService.PLAYBACK_PAUSED_PLAYBACK:
                 stopMediaPlaybackCheckerTask();
                 if (wdMediaService != null) {
-                    wdMediaService.syncMediaInfo();
                     wdMediaService.syncPlaybackPosition();
                 }
                 startColorTogglerTask();
@@ -1398,12 +1388,9 @@ public class RemoteControllerActivity extends AppCompatActivity {
         if (mProgress != null) {
             mProgress.dismiss();
         }
-        if (mediaPlaybackHandler != null) {
-            mediaPlaybackHandler.removeCallbacks(mediaPlaybackStatusChecker);
-        }
-        if (colorToggleHandler != null) {
-            colorToggleHandler.removeCallbacks(colorToggler);
-        }
+        backgroundTaskHandler.removeCallbacks(mediaPlaybackStatusChecker);
+        backgroundTaskHandler.removeCallbacks(colorToggler);
+
         if (shakeListener != null) {
             shakeListener.close();
         }
@@ -1701,13 +1688,13 @@ public class RemoteControllerActivity extends AppCompatActivity {
             }
         }
 
-        mediaPlaybackHandler.postDelayed(this.mediaPlaybackStatusChecker, 1000);
+        backgroundTaskHandler.postDelayed(this.mediaPlaybackStatusChecker, 1000);
     };
 
 
     private final Runnable colorToggler = () -> {
         toggleTimeTextviewColor(false);
-        colorToggleHandler.postDelayed(this.colorToggler, 500);
+        backgroundTaskHandler.postDelayed(this.colorToggler, 500);
     };
 
 }
