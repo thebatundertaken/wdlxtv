@@ -23,37 +23,6 @@
     <attr name="actionSpinnerItemStyle" format="reference" />
     <attr name="windowActionBar" format="boolean" />
     <attr name="windowActionModeOverlay" format="boolean" />
-    <attr name="abNavigationMode">
-        <enum name="normal" value="0" />
-        <enum name="listMode" value="1" />
-        <enum name="tabMode" value="2" />
-    </attr>
-    <attr name="abDisplayOptions">
-        <flag name="useLogo" value="0x00000001" />
-        <flag name="showHome" value="0x00000002" />
-        <flag name="homeAsUp" value="0x00000004" />
-        <flag name="showTitle" value="0x00000008" />
-        <flag name="showCustom" value="0x00000010" />
-    </attr>
-    <attr name="abTitle" format="string" />
-    <attr name="abSubtitle" format="string" />
-    <attr name="abTitleTextStyle" format="reference" />
-    <attr name="abSubtitleTextStyle" format="reference" />
-    <attr name="abIcon" format="reference" />
-    <attr name="abLogo" format="reference" />
-    <attr name="abDivider" format="reference|color" />
-    <attr name="abBackground" format="reference|color" />
-    <attr name="abBackgroundStacked" format="reference|color" />
-    <attr name="abCustomNavigationLayout" format="reference" />
-    <attr name="abHeight" format="reference|dimension" />
-    <attr name="abHomeLayout" format="reference" />
-    <attr name="abProgressBarStyle" format="reference" />
-    <attr name="abIndeterminateProgressStyle" format="reference" />
-    <attr name="abProgressBarPadding" format="dimension" />
-    <attr name="abItemPadding" format="dimension" />
-    <attr name="startRange" format="integer" />
-    <attr name="endRange" format="integer" />
     <!--<attr name="defaultValue" format="integer" />-->
     <!--<attr name="maxValue" format="integer" />-->
-    <attr name="wrap" format="boolean" />
 </resources>
