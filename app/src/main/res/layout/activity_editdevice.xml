@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2.0dip"
+        android:background="@color/layout_divider" />
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16.0dip">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="2.0dip"
+                    android:shadowColor="@color/layout_shadow"
+                    android:shadowDx="1.0"
+                    android:shadowDy="1.0"
+                    android:shadowRadius="0.8"
+                    android:text="@string/edia_txt_model"
+                    android:textColor="@color/blue2"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/img_hmodel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_menu_help" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <Gallery
+                    android:id="@+id/gl_devices"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5.0dip"
+                    android:gravity="center_horizontal"
+                    android:spacing="30.0dip"
+                    android:unselectedAlpha="0.2">
+
+                    <requestFocus />
+                </Gallery>
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5.0dip"
+                android:padding="2.0dip"
+                android:shadowColor="@color/layout_shadow"
+                android:shadowDx="1.0"
+                android:shadowDy="1.0"
+                android:shadowRadius="0.8"
+                android:text="@string/edia_txt_name"
+                android:textColor="@color/blue2"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <EditText
+                    android:id="@+id/etxt_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.0"
+                    android:hint="@string/edia_txt_namehint"
+                    android:textColorHint="@color/gray2"
+                    android:singleLine="true" />
+
+                <ImageView
+                    android:id="@+id/img_hname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_menu_help" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txt_ip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5.0dip"
+                android:padding="2.0dip"
+                android:shadowColor="@color/layout_shadow"
+                android:shadowDx="1.0"
+                android:shadowDy="1.0"
+                android:shadowRadius="0.8"
+                android:text="@string/edia_txt_ip"
+                android:hint="@string/edia_txt_iphint"
+                android:textColor="@color/blue2"
+                android:textColorHint="@color/gray2"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <EditText
+                    android:id="@+id/etxt_ip"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.0"
+                    android:inputType="text"
+                    android:autofillHints="none"
+                    android:singleLine="true" />
+
+                <ImageView
+                    android:id="@+id/img_hip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_menu_help" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txt_uuid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5.0dip"
+                android:padding="2.0dip"
+                android:shadowColor="@color/layout_shadow"
+                android:shadowDx="1.0"
+                android:shadowDy="1.0"
+                android:shadowRadius="0.8"
+                android:text="@string/edia_txt_uuid"
+                android:textColor="@color/blue2"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:id="@+id/ly_uuid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:gravity="center_vertical">
+
+                <EditText
+                    android:id="@+id/etxt_uuid"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.0"
+                    android:autofillHints="none"
+                    android:inputType="none"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+                <ImageView
+                    android:id="@+id/img_huuid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_menu_help" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lay_wdlxtv"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="5.0dip"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/chk_wdlxtv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:shadowColor="@color/layout_shadow"
+                        android:shadowDx="1.0"
+                        android:shadowDy="1.0"
+                        android:shadowRadius="0.8"
+                        android:text="@string/edia_txt_wdlxtv"
+                        android:textColor="@color/blue2"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:id="@+id/img_hwdlxtv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_menu_help" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ly_lxusepass"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/txt_user"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="50.0"
+                            android:padding="2.0dip"
+                            android:shadowColor="@color/layout_shadow"
+                            android:shadowDx="1.0"
+                            android:shadowDy="1.0"
+                            android:shadowRadius="0.8"
+                            android:text="@string/edia_txt_user"
+                            android:textColor="@color/blue2"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/txt_pass"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="50.0"
+                            android:padding="2.0dip"
+                            android:shadowColor="@color/layout_shadow"
+                            android:shadowDx="1.0"
+                            android:shadowDy="1.0"
+                            android:shadowRadius="0.8"
+                            android:text="@string/edia_txt_pass"
+                            android:textColor="@color/blue2"
+                            android:textSize="20sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/etxt_user"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="50.0"
+                            android:autofillHints="username"
+                            android:inputType="none"
+                            android:scrollHorizontally="true" />
+
+                        <EditText
+                            android:id="@+id/etxt_pass"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="50.0"
+                            android:autofillHints="password"
+                            android:inputType="textPassword"
+                            android:scrollHorizontally="true" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

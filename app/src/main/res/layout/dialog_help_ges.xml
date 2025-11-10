@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ScrollView android:id="@+id/scrollView1" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <LinearLayout android:orientation="vertical" android:id="@+id/linearLayout2" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <LinearLayout android:orientation="vertical" android:id="@+id/linearLayout4" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <LinearLayout android:id="@+id/linearLayout3" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <ImageView android:id="@+id/imageView1" android:layout_width="fill_parent" android:layout_height="wrap_content" android:src="@drawable/swipe" android:layout_weight="50.0" />
+                    <View android:background="@drawable/ver" android:paddingLeft="5.0dip" android:paddingRight="5.0dip" android:layout_width="3.0px" android:layout_height="fill_parent" android:layout_marginLeft="5.0dip" android:layout_marginRight="5.0dip" />
+                    <ImageView android:id="@+id/imageView2" android:layout_width="fill_parent" android:layout_height="wrap_content" android:src="@drawable/dswipe" android:layout_weight="50.0" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <TextView android:textColor="#ff6899ff" android:gravity="center" android:layout_gravity="center" android:id="@+id/textView1" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/gespan_txt_swip" android:layout_weight="50.0" />
+                    <ImageView android:id="@+id/ImageView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_menu_forward" />
+                    <TextView android:gravity="center" android:layout_gravity="center" android:id="@+id/TextView01" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/gespan_txt_mvdir" android:layout_weight="50.0" />
+                </LinearLayout>
+            </LinearLayout>
+            <View android:background="#ff6899ff" android:layout_width="fill_parent" android:layout_height="2.0dip" android:layout_marginBottom="10.0dip" />
+            <LinearLayout android:orientation="vertical" android:id="@+id/LinearLayout02" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <LinearLayout android:id="@+id/LinearLayout03" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <ImageView android:id="@+id/ImageView03" android:layout_width="fill_parent" android:layout_height="wrap_content" android:src="@drawable/tap" android:layout_weight="50.0" />
+                    <View android:background="@drawable/ver" android:paddingLeft="5.0dip" android:paddingRight="5.0dip" android:layout_width="3.0px" android:layout_height="fill_parent" android:layout_marginLeft="5.0dip" android:layout_marginRight="5.0dip" />
+                    <ImageView android:id="@+id/ImageView04" android:layout_width="fill_parent" android:layout_height="wrap_content" android:src="@drawable/dtap" android:layout_weight="50.0" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/LinearLayout04" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <TextView android:textColor="#ff6899ff" android:gravity="center" android:layout_gravity="center" android:id="@+id/TextView02" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/gespan_txt_tap" android:layout_weight="50.0" />
+                    <ImageView android:id="@+id/ImageView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_menu_forward" />
+                    <TextView android:gravity="center" android:layout_gravity="center" android:id="@+id/TextView03" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/gespan_txt_ok" android:layout_weight="50.0" />
+                </LinearLayout>
+            </LinearLayout>
+            <View android:background="#ff6899ff" android:layout_width="fill_parent" android:layout_height="2.0dip" android:layout_marginBottom="10.0dip" />
+            <LinearLayout android:orientation="vertical" android:id="@+id/LinearLayout06" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <LinearLayout android:id="@+id/LinearLayout05" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <ImageView android:id="@+id/ImageView06" android:layout_width="fill_parent" android:layout_height="wrap_content" android:src="@drawable/doubletap" android:layout_weight="50.0" />
+                    <View android:background="@drawable/ver" android:paddingLeft="5.0dip" android:paddingRight="5.0dip" android:layout_width="3.0px" android:layout_height="fill_parent" android:layout_marginLeft="5.0dip" android:layout_marginRight="5.0dip" />
+                    <ImageView android:id="@+id/ImageView07" android:layout_width="fill_parent" android:layout_height="wrap_content" android:src="@drawable/ddoubletap" android:layout_weight="50.0" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/LinearLayout07" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <TextView android:textColor="#ff6899ff" android:gravity="center" android:layout_gravity="center" android:id="@+id/TextView04" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/gespan_txt_dtap" android:layout_weight="50.0" />
+                    <ImageView android:id="@+id/ImageView05" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_menu_forward" />
+                    <TextView android:gravity="center" android:layout_gravity="center" android:id="@+id/TextView05" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/gespan_txt_back" android:layout_weight="50.0" />
+                </LinearLayout>
+            </LinearLayout>
+            <View android:background="#ff6899ff" android:layout_width="fill_parent" android:layout_height="2.0dip" android:layout_marginBottom="10.0dip" />
+            <LinearLayout android:orientation="vertical" android:id="@+id/LinearLayout09" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <LinearLayout android:id="@+id/LinearLayout10" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <ImageView android:id="@+id/ImageView09" android:layout_width="fill_parent" android:layout_height="wrap_content" android:src="@drawable/taphold" android:layout_weight="50.0" />
+                    <View android:background="@drawable/ver" android:paddingLeft="5.0dip" android:paddingRight="5.0dip" android:layout_width="3.0px" android:layout_height="fill_parent" android:layout_marginLeft="5.0dip" android:layout_marginRight="5.0dip" />
+                    <ImageView android:id="@+id/ImageView10" android:layout_width="fill_parent" android:layout_height="wrap_content" android:src="@drawable/dtaphold" android:layout_weight="50.0" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/LinearLayout08" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                    <TextView android:textColor="#ff6899ff" android:gravity="center" android:layout_gravity="center" android:id="@+id/TextView06" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/gespan_txt_thold" android:layout_weight="50.0" />
+                    <ImageView android:id="@+id/ImageView08" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_menu_forward" />
+                    <TextView android:gravity="center" android:layout_gravity="center" android:id="@+id/TextView07" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/gespan_txt_option" android:layout_weight="50.0" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

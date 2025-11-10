@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_weight="1.0"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="3.0px"
+        android:layout_below="@id/lay_one_row_three"
+        android:background="@drawable/hor" />
+
+    <LinearLayout
+        android:id="@+id/row_two_ly_one_swfour"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/view_one_two"
+        android:orientation="horizontal"
+        android:paddingTop="3.0dip"
+        android:paddingBottom="3.0dip">
+
+        <ImageButton
+            android:id="@+id/btn_s_1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/service_empty" />
+
+        <View
+            android:layout_width="3.0px"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="3.0dip"
+            android:layout_marginRight="3.0dip"
+            android:background="@drawable/ver"
+            android:paddingLeft="3.0dip"
+            android:paddingRight="3.0dip" />
+
+        <ImageButton
+            android:id="@+id/btn_s_2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/service_empty" />
+
+        <View
+            android:layout_width="3.0px"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="3.0dip"
+            android:layout_marginRight="3.0dip"
+            android:background="@drawable/ver"
+            android:paddingLeft="3.0dip"
+            android:paddingRight="3.0dip" />
+
+        <ImageButton
+            android:id="@+id/btn_s_3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/service_empty" />
+    </LinearLayout>
+</LinearLayout>

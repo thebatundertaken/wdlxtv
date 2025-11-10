@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="abs__item_focused">#ff6899ff</color>
+    <color name="transparent">#00000000</color>
+    <color name="blue">#ff000fff</color>
+    <color name="blue2">#ff0099CC</color>
+    <color name="white">#ffffffff</color>
+    <color name="white2">#ff757575</color>
+    <color name="white3">#A2A2A2</color>
+    <color name="black">#ff000000</color>
+    <color name="gray">#ff757575</color>
+    <color name="gray2">#ff666666</color>
+    <color name="gray3">#8a8c8b</color>
+    <color name="accent">#ff008577</color>
+    <color name="accent2">#ff33b5e5</color>
+    <color name="remotecontroller_background">#ff333333</color>
+    <color name="mycolor2">#ff6ec5e5</color>
+    <!--<color name="layout_background">#323232</color>-->
+    <color name="layout_background">#2b2a33</color>
+    <color name="layout_background2">#212224</color>
+    <color name="layout_background3">#2d2c31</color>
+    <color name="layout_background4">#39383c</color>
+    <color name="layout_shadow">#000000</color>
+    <color name="layout_list_text">#6899ff</color>
+    <color name="layout_divider">#414048</color>
+    <color name="actionbar_separator">#77ffffff</color>
+    <color name="actionbar_title">#ffffffff</color>
+    <color name="actionbar_background_start">#ff686266</color>
+    <color name="actionbar_background_end">#ff3c3c3c</color>
+    <color name="actionbar_background_item_pressed_start">#ffff7f00</color>
+    <color name="actionbar_background_item_pressed_end">#ffee7600</color>
+    <color name="progress_bar_overlay_background">#90757575</color>
+    <color name="progress_bar_text">#80cbc4</color>
+</resources>

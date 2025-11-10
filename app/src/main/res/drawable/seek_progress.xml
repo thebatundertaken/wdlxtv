@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/background" android:drawable="@drawable/scrubber_track_holo_light" />
+    <item android:id="@android:id/secondaryProgress">
+        <clip android:gravity="left" android:drawable="@drawable/scrubber_secondary_holo" android:clipOrientation="horizontal"
+          xmlns:android="http://schemas.android.com/apk/res/android" />
+    </item>
+    <item android:id="@android:id/progress">
+        <clip android:gravity="left" android:drawable="@drawable/scrubber_primary_holo" android:clipOrientation="horizontal"
+          xmlns:android="http://schemas.android.com/apk/res/android" />
+    </item>
+</layer-list>

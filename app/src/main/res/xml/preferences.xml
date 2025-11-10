@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/b_pref_conf_tit">
+        <CheckBoxPreference
+            android:id="@+id/chk_screen"
+            android:defaultValue="false"
+            android:key="conf_screen"
+            android:summary="@string/b_pref_scron_s"
+            android:title="@string/b_pref_scron_t" />
+        <EditTextPreference
+            android:id="@+id/chk_discoverytime"
+            android:defaultValue="5"
+            android:key="conf_discoverytime"
+            android:inputType="numberDecimal"
+            android:digits="0123456789"
+            android:summary="@string/b_pref_discovery_s"
+            android:title="@string/b_pref_discovery_t" />
+        <CheckBoxPreference
+            android:id="@+id/chk_deftouchpanel"
+            android:defaultValue="false"
+            android:key="conf_deftouchpanel"
+            android:summary="@string/b_pref_gesp_s"
+            android:title="@string/b_pref_gesp_t" />
+        <CheckBoxPreference
+            android:id="@+id/chk_vibrate"
+            android:defaultValue="true"
+            android:key="conf_vibrate"
+            android:summary="@string/b_pref_vibr_s"
+            android:title="@string/b_pref_vibr_t" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/b_pref_contr_tit">
+        <CheckBoxPreference
+            android:id="@+id/chk_shake"
+            android:defaultValue="false"
+            android:key="conf_shakecontrol"
+            android:summary="@string/b_pref_shake_s"
+            android:title="@string/b_pref_shake_t" />
+        <CheckBoxPreference
+            android:id="@+id/chk_trackball"
+            android:defaultValue="true"
+            android:key="conf_trackball"
+            android:summary="@string/b_pref_track_s"
+            android:title="@string/b_pref_track_t" />
+        <CheckBoxPreference
+            android:id="@+id/chk_buttons"
+            android:defaultValue="false"
+            android:key="conf_buttons"
+            android:summary="@string/b_pref_butt_s"
+            android:title="@string/b_pref_butt_t" />
+        <CheckBoxPreference
+            android:id="@+id/chk_volumebuttons"
+            android:defaultValue="true"
+            android:key="conf_volumebuttons"
+            android:summary="@string/b_pref_volbut_s"
+            android:title="@string/b_pref_volbut_t" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/b_pref_info_tit">
+        <Preference
+            android:key="btn_help"
+            android:title="@string/b_pref_hlp_t" />
+        <Preference
+            android:key="btn_about"
+            android:title="@string/b_pref_abo_t" />
+        <Preference
+            android:key="btn_chglog"
+            android:title="@string/b_pref_chglog_t" />
+    </PreferenceCategory>
+</PreferenceScreen>

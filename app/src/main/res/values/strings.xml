@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WD TV Remote controller</string>
+    <string name="d_chlog_tit">Changelog</string>
+    <string name="d_chlog_txt">"&lt;u>WDlxTV MediaPlayers Remote&lt;/u>&lt;br>&lt;br>&lt;u>&lt;b>0.5.8 (10-05-2012)&lt;/b>&lt;/u>&lt;br>- Fixed bug caused by the latest WD TV® Live Hub™ and WD TV® Live Streaming™ update. Thanks to everyone who reported it!&lt;br>- Disabled services list on WD TV® Live Hub™ and WD TV® Live Streaming™ with the latest firmware. Working on a fix... ;-)&lt;br>&lt;br>&lt;u>&lt;b>0.5.7 (23-02-2012)&lt;/b>&lt;/u>&lt;br>- Recovered WD TV® media players images.&lt;br>- Added user interface help menu.&lt;br>- Improved some user interface elements.&lt;br>&lt;br>&lt;u>&lt;b>0.5.6 (22-02-2012)&lt;/b>&lt;/u>&lt;br>- Modified the app name to \"WDlxTV MediaPlayers Remote\" due to a Copyright claim.&lt;br>- Modified device names due to a Copyright claim.&lt;br>- Modified legal notice due to a Copyright claim.&lt;br>- Deleted images due to a Copyright claim.&lt;br>&lt;br>&lt;u>&lt;b>0.5.5 (17-02-2012)&lt;/b>&lt;/u>&lt;br>- Fixed compatibility problem with WDTV Live Streaming.&lt;br>&lt;br>&lt;u>&lt;b>0.5.4 (17-02-2012)&lt;/b>&lt;/u>&lt;br>- Fixed issue causing FC's on some devices.&lt;br>- Small UI improvements.&lt;br>&lt;br>&lt;u>&lt;b>0.5.3 (16-02-2012)&lt;/b>&lt;/u>&lt;br>- Fixed time convertion bug again. Now is totally fixed, I promise. XD&lt;br>&lt;br>&lt;u>&lt;b>0.5.2 (16-02-2012)&lt;/b>&lt;/u>&lt;br>- Added connection help.&lt;br>&lt;br>&lt;u>&lt;b>0.5.1 (16-02-2012)&lt;/b>&lt;/u>&lt;br>- Fixed time convertion bug.&lt;br>&lt;br>&lt;u>&lt;b>0.5.0 (15-02-2012)&lt;/b>&lt;/u>&lt;br>- Full new version, reworked from the ground up.&lt;br>- New user interface with \"Ice Cream Sandwich\" style.&lt;br>- Tablet support (Android 3.0+) and new landscape mode for all the devices.&lt;br>- Improved compatiblity with Android 4.0 Ice Cream Sandwich.&lt;br>- New uPnP controls: Seek bar, volume control, play mode, and status info.&lt;br>- WDTV devices auto discovery and device manage.&lt;br>- New supported devices: WDTV Live Streaming.&lt;br>- New internet services control for WDTV Live Hub and WDTV Live Streaming.&lt;br>- New more stable connection.&lt;br>- Domain/hostname address support.&lt;br>- Partial support for official firmware on WDTV Live and Live Plus (version 1.04.20+).&lt;br>- Full keyboard support for WDTV Live Hub and Live Streaming. Still on beta for others.&lt;br>- New voice input. (Requires Google speech recognition).&lt;br>- Disconnect detection.&lt;br>- Improved gesture panel.&lt;br>- Added test mode.&lt;br>- Added menu bar.&lt;br>- Bugfixes.&lt;br>- New step by step guide. Check Help menu.&lt;br>- This version requires Android 2.1 or higher.&lt;br>&lt;br>&lt;u>&lt;b>0.3.2 (20-03-2011)&lt;/b>&lt;/u>&lt;br>- Fixed issue on Android 1.5 devices.&lt;br>&lt;br>&lt;u>&lt;b>0.3.1 (16-03-2011)&lt;/b>&lt;/u>&lt;br>- Fixed brightness issue on Samsung Galaxy S. (Thanks AlexTee)&lt;br>&lt;br>&lt;u>&lt;b>0.3.0 (14-03-2011)&lt;/b>&lt;/u>&lt;br>- Ad-free donate version now available on the Adroid Market (Please support us downloading it).&lt;br>- New lock mode to use only the hardware buttons.&lt;br>- New buttons to enter on the keyboard and on lock mode. (Long press)&lt;br>- New keyboard shortcut on the menu.&lt;br>- New brightness selection.&lt;br>- New option to open the gesture panel by default.&lt;br>- New help menu on the main screen.&lt;br>- New icon and help menu about the IP address.&lt;br>- Improved the user interface structure.&lt;br>- Improved compatibility with big screen resolution. (Tablets)&lt;br>- Improved the keyboard accuracy. (Still on BETA)&lt;br>- Improved the compatibility with Android 3.0 Honeycomb.&lt;br>- Improved the application stability.&lt;br>- Fixed translation.&lt;br>- Fixed bug that doesn't show error screen with bad IP address.&lt;br>- Fixed bug that doesn't allow tap on text links.&lt;br>- Fixed bugs that causes FC's on low end devices.&lt;br>&lt;br>&lt;u>&lt;b>0.2.0 (23-12-2010)&lt;/b>&lt;/u>&lt;br>- On screen Keyboard (BETA).&lt;br>- Config. menu.&lt;br>- Shake control. (Shake to Play/Pause).&lt;br>- Auto connect.&lt;br>- Check if the WiFi network is active before connect.&lt;br>- The screen can be always on.&lt;br>- App2SD (Only for Android 2.2+).&lt;br>- WDTV Live Hub additional functions.&lt;br>- New buttons for WDTV Live Hub.&lt;br>- Down bar size increased.&lt;br>- Application icon quality improved.&lt;br>- This changelog menu.&lt;br>- Donate button to help on the application development.&lt;br>- The connection process can be canceled.&lt;br>- Fixed Bugs/FC's.&lt;br>- Volume control improved (Only WDTV Live).&lt;br>- Mediaplayer connection improved.&lt;br>- The connection doesn't stop on minimize.&lt;br>- Translation mistakes fixed.&lt;br>- Improved compatibility with Android 2.3 (Gingerbread).&lt;br>**** MERRY CHRISTMAS **** FELIZ NAVIDAD **** ZORIONAK ****&lt;br>&lt;br>&lt;u>&lt;b>0.1.0 (02-11-2010)&lt;/b>&lt;/u>&lt;br>- Initial release."</string>
+    <string name="d_help">"&lt;u>&lt;b>- WD TV® Live Streaming™&lt;/b> or &lt;b>WD TV® Live Hub™&lt;/b>&lt;/u>&lt;br>&lt;b>1-&lt;/b> Connect the mediaplayer to your network.&lt;br>&lt;b>2-&lt;/b> Check if it's updated to the latest firmware. Setup-> System-> Check latest firmware&lt;br>&lt;b>3-&lt;/b> Done! The app should be working for you.&lt;br>&lt;br>&lt;a href=http://wdtv-osdmod.blogspot.com/p/wdtv-mediaplayers-remote-android.html#hlpen>+INFO &amp; TROUBLESHOOTING&lt;/a>&lt;br>&lt;br>&lt;br>&lt;br>&lt;u>&lt;b>WD TV® Live™&lt;/b> or &lt;b>WD TV® Live Plus™&lt;/b>&lt;/u>&lt;br>&lt;u>&lt;b>OFFICIAL&lt;/b> FIRMWARE&lt;/u>&lt;br>&lt;b>1-&lt;/b> Connect the mediaplayer to your network.&lt;br>&lt;b>2-&lt;/b> Check if it's updated to the latest firmware. Settings-> System settings-> Update device&lt;br>&lt;b>3-&lt;/b> Done! The app should be working for you. But if you want full support just install WDlxTV firmware. -->&lt;br>&lt;br>&lt;u>&lt;b>WDlxTV&lt;/b> FIRMWARE&lt;/u>&lt;br>&lt;b>1-&lt;/b> Download WDlxTV firmware.&lt;br>&lt;b>2-&lt;/b> Install the firmware.&lt;br>&lt;b>2-&lt;/b> Connect the mediaplayer to your network.&lt;br>&lt;b>3-&lt;/b> Done! The app should be working for you. &lt;br>&lt;br>&lt;a href=http://wdtv-osdmod.blogspot.com/p/wdtv-mediaplayers-remote-android.html#hlpen>+INFO &amp; TROUBLESHOOTING&lt;/a>&lt;br>&lt;br>&lt;br>&lt;br>&lt;u>&lt;b>WD TV® Gen2&lt;/b>&lt;/u>&lt;br>&lt;b>1-&lt;/b> Download WDlxTV firmware.&lt;br>&lt;b>2-&lt;/b> Install the firmware.&lt;br>&lt;b>2-&lt;/b> Connect the med0.5.0 (13-02-2012)iaplayer to your network.&lt;br>&lt;b>3-&lt;/b> Put enLiven-G2.app.bin on the pendrive attached to your mediaplayer.&lt;br>&lt;b>4-&lt;/b> Reboot and it's done! The app should be working for you.&lt;br>&lt;br>&lt;a href=http://wdtv-osdmod.blogspot.com/p/wdtv-mediaplayers-remote-android.html#hlpen>+INFO &amp; TROUBLESHOOTING&lt;/a>&lt;br>&lt;br>&lt;br>&lt;br>&lt;u>&lt;b>WD TV® GEN1&lt;/b>&lt;/u>&lt;br>&lt;b>1-&lt;/b> Download WDlxTV firmware.&lt;br>&lt;b>2-&lt;/b> Install the firmware.&lt;br>&lt;b>2-&lt;/b> Connect the mediaplayer to your network.&lt;br>&lt;b>3-&lt;/b> Put webserver addons on the pendrive attached to your mediaplayer. &lt;br>&lt;b>4-&lt;/b> Reboot and it's done! The app should be working for you.&lt;br>&lt;br>&lt;a href=http://wdtv-osdmod.blogspot.com/p/wdtv-mediaplayers-remote-android.html#hlpen>+INFO &amp; TROUBLESHOOTING&lt;/a>"</string>
+    <string name="m_txt_search">Search</string>
+    <string name="m_txt_crenew">Manual add WD device</string>
+    <string name="m_txt_prefs">Settings</string>
+    <string name="m_txt_nowifi">No WiFi connection</string>
+    <string name="m_txt_edit">Edit</string>
+    <string name="m_txt_connect">Connect</string>
+    <string name="m_txt_fconnect">Force connection</string>
+    <string name="m_txt_delete">Delete</string>
+    <string name="m_txt_addfav">Add to favorites</string>
+    <string name="m_txt_ok">Ok</string>
+    <string name="m_txt_cancel">Cancel</string>
+    <string name="m_txt_save">Save</string>
+    <string name="m_txt_info">Info</string>
+    <string name="m_txt_devinf">Device info</string>
+    <string name="m_txt_help">Help</string>
+    <string name="m_txt_nofav">No favorite devices</string>
+    <string name="m_txt_loadingfav">Loading favorite devices...</string>
+    <string name="m_txt_nocon">No connected devices found</string>
+    <string name="m_txt_retrysch">Discover WD devices</string>
+    <string name="m_txt_testapp">How to operate</string>
+    <string name="m_txt_searching">Searching for WD devices...</string>
+    <string name="m_txt_wdtvfound">WDTV found: Reading info...</string>
+    <string name="m_mnu_close">Exit</string>
+    <string name="rem_txt_keyboard">Keyboard</string>
+    <string name="rem_txt_send">Send</string>
+    <string name="rem_txt_jumpto">Jump to...</string>
+    <string name="rem_txt_webin">Web interface</string>
+    <string name="rem_txt_prefs">Settings</string>
+    <string name="rem_txt_nodev">NO DEVICE</string>
+    <string name="rem_txt_upnpserviceerror">Upnp service not ready yet! Please try again</string>
+    <string name="rem_txt_conerror">Connection error</string>
+    <string name="rem_txt_conerrort">The device is present on your network but the remote control is not available. Please read on the help menu about how to enable web interface in order to work with the remote. It only takes 1 minute to setup.</string>
+    <string name="rem_txt_conlost">Device not available</string>
+    <string name="rem_txt_conlostt">"The device is no longer available.
+Please, check if it's still connected to your network.
+Exit to the main screen and try to connect again.
+If you continue experiencing problems, read the help menu or contact me."</string>
+    <string name="rem_txt_logerror">Login error</string>
+    <string name="rem_txt_nocon">Device not connected</string>
+    <string name="rem_txt_btnuna">Button not available</string>
+    <string name="rem_txt_btnunat">"This button is not available with the official firmware due to technical reasons.&lt;br>You'll need &lt;b>WDlxTV&lt;/b>, it's a custom firmware for WDTV mediaplayers that offers more options than the official firmware. To know more about how to install it &lt;a href=http://wdtv-osdmod.blogspot.com/p/wdtv-mediaplayers-remote-android.html#hlpen>tap here&lt;/a>. It's FREE."</string>
+    <string name="rem_txt_ok">Ok</string>
+    <string name="rem_txt_sndtxt">Sending text</string>
+    <string name="rem_txt_wait">Please wait...</string>
+    <string name="rem_txt_cancel">Cancel</string>
+    <string name="rem_txt_gespan">Gesture Panel</string>
+    <string name="rem_txt_upnpnot">uPnP device not found</string>
+    <string name="err_tit_nowifi">WiFi disconnected</string>
+    <string name="err_txt_nowifi">Do you want to proceed anyway?</string>
+    <string name="err_bacp_nowifi">OK</string>
+    <string name="err_bopt_nowifi">Settings</string>
+    <string name="err_bcan_nowifi">Cancel</string>
+    <string name="err_txt_hlpuim">"The top/left panel can be moved horizontally to show additional buttons.
+The dots indicates the current position (if no dots are showed it means that not additional buttons are available)."</string>
+    <string name="err_txt_hlpuip">Tap this button to show the gesture panel.</string>
+    <string name="err_txt_hlpuic">Do not show this message again</string>
+    <string name="edia_txt_editdev">Edit device</string>
+    <string name="edia_txt_createnew">Add new device</string>
+    <string name="edia_txt_help">Help</string>
+    <string name="edia_txt_cancel">Cancel</string>
+    <string name="edia_txt_save">Save</string>
+    <string name="edia_txt_model">Model:</string>
+    <string name="edia_txt_name">Name:</string>
+    <string name="edia_txt_namehint">WD TV - Living room</string>
+    <string name="edia_txt_ip">IP / hostname:</string>
+    <string name="edia_txt_iphint">192.168.1.10</string>
+    <string name="edia_txt_uuid">UUID:</string>
+    <string name="edia_txt_wdlxtv">WDlxTV firmware</string>
+    <string name="edia_txt_user">User:</string>
+    <string name="edia_txt_pass">Password:</string>
+    <string name="edia_txt_invip">"Not a valid IP address or hostname.
+Allowed formats: #.#.#.#  somehost.com"</string>
+    <string name="edia_txt_invname">Please enter a device name</string>
+    <string name="edia_txt_errmodel">ERROR GETTING DEVICE MODEL</string>
+    <string name="edia_txt_ok">Ok</string>
+    <string name="edia_txt_modelhelp">The model name is located on a sticker on your media player, you can also get the model name entering the P/N on &lt;a href=http://support.wdc.com/product/kb.asp?modelno=>this website&lt;/a>.</string>
+    <string name="edia_txt_namehelp">Choose a friendly name to identify this device</string>
+    <string name="edia_txt_uuidhelp">This is the Universal Unique Identifier from your device.</string>
+    <string name="edia_txt_iphelp">The IP address is located on the network configuration menu of your mediaplayer</string>
+    <string name="edia_txt_wdlxtvhelp">"&lt;b>&lt;u>WDlxTV&lt;/u>&lt;/b>&lt;br>is a custom firmware for WD TV mediap layers that offers more options than the official firmware. To know more about how to install it &lt;a href=http://forum.wdlxtv.com/viewtopic.php?p=17367#p17367>tap here&lt;/a>. It's FREE.&lt;br>&lt;br>&lt;b>&lt;u>user/password&lt;/u>&lt;/b>&lt;br>This is the user and password from the &lt;b>WEB INTERFACE&lt;/b> of WDlxTV firmware, both 'wdlxtv' by default."</string>
+    <string name="gespan_txt_swip">Swipe</string>
+    <string name="gespan_txt_tap">Tap</string>
+    <string name="gespan_txt_dtap">Double tap</string>
+    <string name="gespan_txt_thold">Tap &amp; hold</string>
+    <string name="gespan_txt_mvdir">Move direction</string>
+    <string name="gespan_txt_ok">Ok</string>
+    <string name="gespan_txt_back">Back</string>
+    <string name="gespan_txt_option">Option</string>
+    <string name="key_txt_not">"IMPORTANT: The 'a' character must be selected on the on-screen keyboard before sending the text.
+This keyboard is still on beta mode, requires a good WiFi signal."</string>
+    <string name="key_txt_txthint">Enter text</string>
+    <string name="m_about_tit">About</string>
+    <string name="m_about_txt">&lt;u>&lt;b>WDlxTV MEDIAPLAYERS REMOTE&lt;/b>&lt;/u>&lt;br>&lt;br>Application developed by juliojs that allows you to remote control WDTV devices:&lt;br>- WD TV® Live Streaming™&lt;br>- WD TV® Live Hub™&lt;br>- WD TV® Live™&lt;br>- WD TV® Live Plus™&lt;br>- WD TV® Gen2&lt;br>- WD TV®&lt;br>&lt;br>&lt;u>&lt;b>USAGE:&lt;/b>&lt;/u>&lt;br>Full &lt;a href=http://wdtv-osdmod.blogspot.com/p/wdtv-mediaplayers-remote-android.html#hlpen>step by step guide&lt;/a>.&lt;br>&lt;br>&lt;br>&lt;u>&lt;b>LEGAL:&lt;/b>&lt;/u>&lt;br>1- This is a FREE non-profit application.&lt;br>2- All the revenues obtained from ads goes to develop this application and maintain the help content available at: &lt;a href=http://www.wdtv-osdmod.blogspot.com>wdtv-osdmod.blogspot.com&lt;/a>&lt;br>3- WD TV®, WD TV® Live™, WD TV® Live Plus™, WD TV® Live Hub™, WD TV® Live Streaming™ trademarks and logos are property of \"Western Digital Technologies, Inc.\".&lt;br>4- This application is not endorsed by or affiliated with Western Digital Technologies, Inc.&lt;br>&lt;br>&lt;br>&lt;u>&lt;b>LICENSES:&lt;/b>&lt;/u>&lt;br>&lt;b>&lt;a href=http://www.gnu.org/licenses/lgpl.html>GNU LGPL v3:&lt;/a>&lt;/b>&lt;br>&lt;br>&lt;br>&lt;b>&lt;a href=http://www.apache.org/licenses/LICENSE-2.0>Apache 2.0:&lt;/a>&lt;/b>&lt;br>&lt;br>- &lt;a href=http://github.com/ysamlan/horizontalpager>HorizontalPager&lt;/a>&lt;br>- &lt;a href=http://github.com/lorensiuswlt/NewQuickAction>NewQuickAction&lt;/a>&lt;br>- &lt;a href=http://code.google.com/p/httpclientandroidlib>httpclientandroidlib&lt;/a>&lt;br>&lt;br>&lt;b>&lt;a href=http://creativecommons.org/licenses/by-nd/3.0/>CreativeCommons Attribution-NoDerivs 3.0:&lt;/a>&lt;/b>&lt;br>- Images &lt;a href=http://www.defaulticon.com/>DefaultIcon&lt;/a> - by &lt;a href=http://www.interactivemania.com/>Interactivemania&lt;/a>&lt;br>&lt;br>&lt;b>&lt;a href=http://creativecommons.org/licenses/by-sa/3.0/>CreativeCommons Attribution-ShareAlike 3.0:&lt;/a>&lt;/b>&lt;br>- &lt;a href=http://commons.wikimedia.org/wiki/File:Gestures_Pan.png>hand icon&lt;/a> - by GRPH3B18&lt;br>- &lt;a href=http://www.mediafire.com/?2agzddqcgvbp8da>SVG&lt;/a> - Modified sources released under the same CC-BY-SA license.&lt;br>&lt;br>&lt;br>&lt;u>&lt;b>ACKNOWLEDGEMENTS:&lt;/b>&lt;/u>&lt;br>To all the WDTV developers community.</string>
+    <string name="infd_txt_model">Model:</string>
+    <string name="infd_txt_name">Name:</string>
+    <string name="infd_txt_ip">IP/host:</string>
+    <string name="infd_txt_uuid">UUID:</string>
+    <string name="infd_txt_wdlxtv">WDlxTV:</string>
+    <string name="infd_txt_logged">Logged:</string>
+    <string name="infd_txt_remote">Remote control:</string>
+    <string name="infd_txt_keyboard">Keyboard:</string>
+    <string name="infd_txt_upnp">uPnP:</string>
+    <string name="infd_txt_ok">Ok</string>
+    <string name="b_pref_ok">Ok</string>
+    <string name="b_pref_conf_tit">Configuration</string>
+    <string name="b_pref_scron_t">Screen ON</string>
+    <string name="b_pref_scron_s">Keep the screen always on</string>
+    <string name="b_pref_discovery_t">Discovery seconds</string>
+    <string name="b_pref_discovery_s">Discovery devices timeout in seconds</string>
+    <string name="b_pref_gesp_t">Gesture panel</string>
+    <string name="b_pref_gesp_s">Open the gesture panel when the application starts</string>
+    <string name="b_pref_vibr_t">Vibrate</string>
+    <string name="b_pref_vibr_s">Vibrate when a button is pressed</string>
+    <string name="b_pref_contr_tit">Controls</string>
+    <string name="b_pref_shake_t">Shake</string>
+    <string name="b_pref_shake_s">Shake the device to send Play/Pause.</string>
+    <string name="b_pref_track_t">Trackball / Dir. Buttons</string>
+    <string name="b_pref_track_s">Use Trackball / Dir. Buttons</string>
+    <string name="b_pref_butt_t">Buttons</string>
+    <string name="b_pref_butt_s">Use Back and Search buttons</string>
+    <string name="b_pref_volbut_t">Volume Buttons</string>
+    <string name="b_pref_volbut_s">Use the Volume Buttons</string>
+    <string name="b_pref_info_tit">Info</string>
+    <string name="b_pref_hlp_t">Help</string>
+    <string name="b_pref_abo_t">About...</string>
+    <string name="b_pref_chglog_t">Changelog</string>
+    <string name="no_media_present">NO MEDIA PRESENT</string>
+    <string name="remote_stopped">STOPPED</string>
+</resources>

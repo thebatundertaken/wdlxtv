@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/background_dark"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/layout_divider" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_menu_attachment_b1" />
+
+            <LinearLayout
+                android:id="@+id/ly_emptyfav"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="12dp"
+                android:background="@color/layout_background2"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:visibility="gone"
+                app:cornerRadius="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:shadowColor="@color/layout_shadow"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2"
+                    android:singleLine="true"
+                    android:text="@string/m_txt_nofav"
+                    android:visibility="gone"
+                    android:textColor="@color/gray"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ly_loadingfav"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="12dp"
+                android:background="@color/layout_background2"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                app:cornerRadius="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                >
+
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:shadowColor="@color/layout_shadow"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2"
+                    android:singleLine="true"
+                    android:text="@string/m_txt_loadingfav"
+                    android:textColor="@color/progress_bar_text"
+                    android:textSize="16sp"
+                    />
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/savedlist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="12dp"
+                android:padding="5dp"
+                android:background="@color/layout_background2"
+                android:divider="@drawable/hor"
+                android:dividerHeight="3dp"
+                android:minHeight="16dp"
+                android:scrollbars="none"
+                android:smoothScrollbar="true"
+                android:visibility="gone"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_menu_attachment_b2" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_new"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:gravity="top"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/layout_background3"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btn_hrefresh"
+                        android:layout_width="fill_parent"
+                        android:layout_height="55dp"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@color/layout_background4"
+                        android:hapticFeedbackEnabled="true"
+                        android:drawableTop="@drawable/wifi_bar_question_32"
+                        android:shadowColor="@color/layout_shadow"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="2"
+                        android:text="@string/m_txt_retrysch"
+                        android:textColor="@color/gray3"
+                        android:textSize="11dp"
+                        app:cornerRadius="2dp" />
+
+                    <Button
+                        android:id="@+id/btn_hadd"
+                        android:layout_width="fill_parent"
+                        android:layout_height="55dp"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@color/layout_background4"
+                        android:hapticFeedbackEnabled="true"
+                        android:drawableTop="@drawable/add_32"
+                        android:shadowColor="@color/layout_shadow"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="2"
+                        android:text="@string/m_txt_crenew"
+                        android:textColor="@color/gray3"
+                        android:textSize="11dp"
+                        app:cornerRadius="2dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/layout_background2"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/newlist_empty"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:shadowColor="@color/layout_shadow"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="2"
+                        android:singleLine="true"
+                        android:text="@string/m_txt_nocon"
+                        android:textColor="@color/gray"
+                        android:textSize="16sp"
+                        android:visibility="visible"
+                        />
+
+                    <ListView
+                        android:id="@+id/newlist"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="5dp"
+                        android:background="@color/layout_background2"
+                        android:divider="@drawable/hor"
+                        android:dividerHeight="3dp"
+                        android:minHeight="16dp"
+                        android:scrollbars="none"
+                        android:smoothScrollbar="true"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/ly_searching"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:background="@color/progress_bar_overlay_background"
+        android:elevation="1dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@color/layout_background3"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:background="@color/layout_background2"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:visibility="visible">
+
+                <ProgressBar
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="center" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:shadowColor="@color/layout_shadow"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2"
+                    android:singleLine="true"
+                    android:text="@string/m_txt_searching"
+                    android:textColor="@color/progress_bar_text"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>
