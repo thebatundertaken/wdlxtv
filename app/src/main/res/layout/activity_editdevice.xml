@@ -107,7 +107,6 @@
                 android:shadowDy="1.0"
                 android:shadowRadius="0.8"
                 android:text="@string/edia_txt_ip"
-                android:hint="@string/edia_txt_iphint"
                 android:textColor="@color/blue2"
                 android:textColorHint="@color/gray2"
                 android:textSize="20sp" />
@@ -123,6 +122,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.0"
                     android:inputType="text"
+                    android:hint="@string/edia_txt_iphint"
                     android:autofillHints="none"
                     android:singleLine="true" />
 
