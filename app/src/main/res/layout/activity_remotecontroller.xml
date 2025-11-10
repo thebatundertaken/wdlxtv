@@ -25,7 +25,7 @@
         <com.osdmod.customviews.HorizontalPager
             android:id="@+id/horizontal_pager"
             android:layout_width="fill_parent"
-            android:layout_height="200.0dip"
+            android:layout_height="175dip"
             android:layout_gravity="center"
             android:gravity="center">
 
@@ -43,7 +43,7 @@
                 <LinearLayout
                     android:id="@+id/ly_one_swone"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:orientation="vertical">
@@ -53,7 +53,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingBottom="3.0dip">
+                        android:paddingBottom="10.0dip">
 
                         <TextView
                             android:id="@+id/txt_time_current"
@@ -71,7 +71,7 @@
                         <SeekBar
                             android:id="@+id/sk_play"
                             style="@style/seekbar_ics_style"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1.0"
@@ -334,14 +334,14 @@
 
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
                         android:layout_weight="1.0"
                         android:gravity="center"
                         android:orientation="horizontal"
@@ -429,7 +429,7 @@
                 <LinearLayout
                     android:id="@+id/ly_two_swtwo"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:orientation="vertical">
@@ -715,7 +715,7 @@
                 <LinearLayout
                     android:id="@+id/ly_one_swfour"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical" />
             </ScrollView>
         </com.osdmod.customviews.HorizontalPager>

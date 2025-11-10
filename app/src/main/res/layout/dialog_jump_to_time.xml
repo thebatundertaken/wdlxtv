@@ -23,7 +23,7 @@
                 android:layout_weight="1.0"
                 android:gravity="center"
                 android:text="hh"
-                android:textSize="15.0dip" />
+                android:textSize="15.0sp" />
 
             <TextView
                 android:layout_width="fill_parent"
@@ -31,7 +31,7 @@
                 android:layout_weight="1.0"
                 android:gravity="center"
                 android:text="mm"
-                android:textSize="15.0dip" />
+                android:textSize="15.0sp" />
 
             <TextView
                 android:layout_width="fill_parent"
@@ -39,7 +39,7 @@
                 android:layout_weight="1.0"
                 android:gravity="center"
                 android:text="ss"
-                android:textSize="15.0dip" />
+                android:textSize="15.0sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text=":"
-                android:textSize="30.0dip" />
+                android:textSize="30.0sp" />
 
             <com.osdmod.customviews.NumberPicker
                 android:id="@+id/num_min"
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text=":"
-                android:textSize="30.0dip" />
+                android:textSize="30.0sp" />
 
             <com.osdmod.customviews.NumberPicker
                 android:id="@+id/num_sec"
