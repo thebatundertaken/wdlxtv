@@ -1,9 +1,10 @@
 package com.osdmod.model;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.Xml;
 
-import com.osdmod.cipher.SimpleCrypto;
+import com.osdmod.cipher.SimpleCipher;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class XMLRepository {
-    private static final String CRYPTO_SEED = "mYCr1pT0";
+    private static final String TAG ="XMLRepository";
 
     public ArrayList<String[]> savedDevicesToArrayList(String filename, Context cntxt) {
         ArrayList<String[]> savedDevicesArray = new ArrayList<>();
@@ -75,9 +76,9 @@ public class XMLRepository {
                     case "lxpass":
                         datos[7] = xpp.nextText();
                         try {
-                            datos[7] = SimpleCrypto.decrypt(CRYPTO_SEED, datos[7]);
+                            datos[7] = SimpleCipher.decrypt(datos[7]);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            Log.d(TAG, e.getMessage(), e);
                         }
                         break;
                     case "remote":
@@ -95,8 +96,8 @@ public class XMLRepository {
             if (prevId != 1 && datos[0] != null) {
                 savedDevicesArray.add(datos);
             }
-        } catch (Exception e2) {
-            e2.printStackTrace();
+        } catch (Exception e) {
+            Log.w(TAG, e.getMessage(), e);
         }
 
         return savedDevicesArray;
@@ -133,9 +134,9 @@ public class XMLRepository {
                 serializer.text(str[6]);
                 serializer.endTag(null, "lxuser");
                 try {
-                    str[7] = SimpleCrypto.encrypt(CRYPTO_SEED, str[7]);
+                    str[7] = SimpleCipher.encrypt(str[7]);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.d(TAG, e.getMessage(), e);
                 }
                 serializer.startTag(null, "lxpass");
                 serializer.text(str[7]);
@@ -156,7 +157,7 @@ public class XMLRepository {
             serializer.flush();
             fos.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.w(TAG, e.getMessage(), e);
         }
     }
 
@@ -174,8 +175,8 @@ public class XMLRepository {
                 total.append(line);
 
             }
-        } catch (IOException e2) {
-            e2.printStackTrace();
+        } catch (IOException e) {
+            Log.w(TAG, e.getMessage(), e);
             return null;
         } finally {
             if (fos != null) {
