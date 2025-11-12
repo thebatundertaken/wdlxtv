@@ -28,10 +28,10 @@ import ch.boye.httpclientandroidlib.params.HttpParams;
 import ch.boye.httpclientandroidlib.protocol.BasicHttpContext;
 
 public class OpenLiveCon implements Runnable {
-    private String ip;
-    private String pass;
-    private ResultIntSetter setter;
-    private volatile String user;
+    private final String ip;
+    private final String pass;
+    private final ResultIntSetter setter;
+    private final String user;
 
     public OpenLiveCon(ResultIntSetter setter2, String ip2, String user2, String pass2) {
         this.setter = setter2;
@@ -52,10 +52,12 @@ public class OpenLiveCon implements Runnable {
         authpref.add(AuthPolicy.DIGEST);
         client.getParams().setParameter(AuthPNames.PROXY_AUTH_PREF, authpref);
         CredentialsProvider credProvider = new BasicCredentialsProvider();
-        credProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, -1), new UsernamePasswordCredentials(user, pass));
+        credProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, -1),
+                new UsernamePasswordCredentials(user, pass));
         client.setCredentialsProvider(credProvider);
         AuthCache authCache = new BasicAuthCache();
-        HttpHost host = new HttpHost(get.getURI().getHost(), get.getURI().getPort(), get.getURI().getScheme());
+        HttpHost host = new HttpHost(get.getURI().getHost(), get.getURI().getPort(),
+                get.getURI().getScheme());
         authCache.put(host, new BasicScheme());
         authCache.put(host, new DigestScheme());
         new BasicHttpContext().setAttribute(ClientContext.AUTH_CACHE, authCache);

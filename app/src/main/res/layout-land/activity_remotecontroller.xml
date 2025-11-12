@@ -58,7 +58,7 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <com.osdmod.customviews.HorizontalPager
+            <com.osdmod.android.customviews.HorizontalPager
                 android:id="@id/horizontal_pager"
                 android:layout_width="fill_parent"
                 android:layout_height="100.0px"
@@ -742,7 +742,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical" />
                 </ScrollView>
-            </com.osdmod.customviews.HorizontalPager>
+            </com.osdmod.android.customviews.HorizontalPager>
         </LinearLayout>
 
         <View

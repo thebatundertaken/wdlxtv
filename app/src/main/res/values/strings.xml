@@ -50,7 +50,7 @@ If you continue experiencing problems, read the help menu or contact me."</strin
     <string name="rem_txt_wait">Please wait...</string>
     <string name="rem_txt_cancel">Cancel</string>
     <string name="rem_txt_gespan">Gesture Panel</string>
-    <string name="rem_txt_upnpnot">uPnP device not found</string>
+    <string name="rem_txt_upnpnot">WD device not found or unreachable</string>
     <string name="err_tit_nowifi">WiFi disconnected</string>
     <string name="err_txt_nowifi">Do you want to proceed anyway?</string>
     <string name="err_bacp_nowifi">OK</string>

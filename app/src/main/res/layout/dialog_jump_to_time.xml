@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <com.osdmod.customviews.NumberPicker
+            <com.osdmod.android.customviews.NumberPicker
                 android:id="@+id/num_hor"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
@@ -60,7 +60,7 @@
                 android:text=":"
                 android:textSize="30.0sp" />
 
-            <com.osdmod.customviews.NumberPicker
+            <com.osdmod.android.customviews.NumberPicker
                 android:id="@+id/num_min"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
@@ -72,7 +72,7 @@
                 android:text=":"
                 android:textSize="30.0sp" />
 
-            <com.osdmod.customviews.NumberPicker
+            <com.osdmod.android.customviews.NumberPicker
                 android:id="@+id/num_sec"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />

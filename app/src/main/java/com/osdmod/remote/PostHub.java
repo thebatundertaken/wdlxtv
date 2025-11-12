@@ -1,5 +1,6 @@
 package com.osdmod.remote;
 
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -7,11 +8,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import ch.boye.httpclientandroidlib.client.utils.URLEncodedUtils;
 
 public class PostHub implements Runnable {
-    DefaultHttpClient httpClient = new DefaultHttpClient();
+    HttpClient httpClient = new DefaultHttpClient();
 
-    private String ip;
-    private ResultIntSetter setter;
-    private String command;
+    private final String ip;
+    private final ResultIntSetter setter;
+    private final String command;
 
     public PostHub(ResultIntSetter resultintsetter, String ip, String cmd) {
         setter = resultintsetter;

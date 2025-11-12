@@ -3,7 +3,7 @@ package com.osdmod.model;
 import android.content.Context;
 import android.util.Xml;
 
-import com.osdmod.remote.SimpleCrypto;
+import com.osdmod.cipher.SimpleCrypto;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;

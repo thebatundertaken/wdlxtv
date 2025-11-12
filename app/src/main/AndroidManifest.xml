@@ -22,7 +22,7 @@
         android:theme="@style/Wdlxtv">
 
         <activity
-            android:name="com.osdmod.activities.HomeActivity"
+            android:name="com.osdmod.android.activities.HomeActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:exported="true">
             <intent-filter>
@@ -32,19 +32,19 @@
         </activity>
 
         <activity
-            android:name="com.osdmod.activities.EditDeviceActivity"
+            android:name="com.osdmod.android.activities.EditDeviceActivity"
             android:windowSoftInputMode="stateUnchanged" />
         <activity
-            android:name="com.osdmod.activities.RemoteControllerActivity"
+            android:name="com.osdmod.android.activities.RemoteControllerActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.osdmod.activities.SettingsActivity"/>
+            android:name="com.osdmod.android.activities.SettingsActivity"/>
 
         <activity
-            android:name="com.osdmod.activities.DummyControllerActivity"
+            android:name="com.osdmod.android.activities.DummyControllerActivity"
             android:windowSoftInputMode="adjustPan" />
 
-        <service android:name=".BrowserUpnpService" />
+        <service android:name="com.osdmod.service.UpnpDiscoveryService" />
 
 
     </application>
