@@ -2,50 +2,41 @@ package com.osdmod.remote;
 
 import android.util.Log;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.teleal.cling.model.ServiceReference;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.lang.reflect.Array;
+import java.util.Objects;
 
-import ch.boye.httpclientandroidlib.protocol.HTTP;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class HubServices {
     private static final String TAG = "HubServices";
 
     public String[][] getServices(String ip) {
-        HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost(
-                "http://" + ip + ":3388/cgi-bin/toServerValue.cgi");
-        try {
-            StringEntity se = new StringEntity("{\"service\":-1}", "ISO-8859-1");
-            se.setContentType(HTTP.PLAIN_TEXT_TYPE);
-            httppost.setHeader("Content-Type", "text/plain;charset=ISO-8859-1");
-            httppost.setEntity(se);
-            HttpResponse response = httpclient.execute(httppost);
-            if (response.getStatusLine().getStatusCode() > 201) {
+        OkHttpClient client = new OkHttpClient();
+        String jsonBody = "{\"service\": -1}";
+        RequestBody body = RequestBody.create(jsonBody, MediaType.get("text/plain; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url("http://" + ip + ":3388/cgi-bin/toServerValue.cgi")
+                .addHeader("Accept-Encoding", "identity")
+                .post(body)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
                 return null;
             }
-            BufferedReader rd = new BufferedReader(
-                    new InputStreamReader(response.getEntity().getContent()));
-            String receivedString = "";
-            while (true) {
-                String line2 = rd.readLine();
-                if (line2 == null) {
-                    return extractServicesFromXML(receivedString);
-                }
-                receivedString += line2;
-            }
-        } catch (IOException e2) {
+
+            return extractServicesFromXML(Objects.requireNonNull(response.body()).string());
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage(), e);
             return null;
         }
     }

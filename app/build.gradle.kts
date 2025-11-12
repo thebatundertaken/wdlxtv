@@ -78,6 +78,9 @@ dependencies {
     implementation(libs.jetty.servlets)
     implementation(libs.google.material3)
 
+    implementation(libs.okhttp)
+    implementation(libs.okio)
+
     implementation(fileTree("libs") { include("*.jar") })
 }
 
