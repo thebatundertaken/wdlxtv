@@ -1,10 +1,10 @@
 package com.osdmod.service.listener;
 
-import org.teleal.cling.android.AndroidUpnpService;
+import com.osdmod.service.WdMediaService;
 
 public interface WdUpnpServiceEventListener {
 
-    void onServiceConnected(AndroidUpnpService service);
+    void onServiceConnected(WdMediaService wdMediaService);
     void onServiceConnectedError();
     void onServiceDisconnected();
 

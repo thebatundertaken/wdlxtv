@@ -49,9 +49,9 @@ public class WdUpnpService implements ServiceConnection {
 
             WdMediaService wdMediaService = new WdMediaService(remoteDevice,
                     upnpService.getControlPoint(), wdMediaServiceEventListener);
-            wdMediaService.subscribeToRemoteService(remoteDevice.getServices()[0]);
+            wdMediaService.subscribeToRemoteDevice();
 
-            wdUpnpServiceEventListener.onServiceConnected(upnpService);
+            wdUpnpServiceEventListener.onServiceConnected(wdMediaService);
         } catch (Exception e) {
             Log.w(TAG, e);
             wdUpnpServiceEventListener.onServiceConnectedError();

@@ -30,7 +30,7 @@ public class SubscriptionCallbackWrapper extends SubscriptionCallback {
                           String s) {
         Log.d(TAG, "Failed = " + genaSubscription);
 
-        listener.onServiceSubscriptionEnded();
+        listener.onServiceSubscriptionFailed(e);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class SubscriptionCallbackWrapper extends SubscriptionCallback {
 
         end();
 
-        listener.onServiceSubscriptionEnded();
+        listener.onServiceSubscriptionEnded(cancelReason);
     }
 
 }

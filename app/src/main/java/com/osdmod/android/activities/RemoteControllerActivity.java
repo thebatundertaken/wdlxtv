@@ -70,8 +70,6 @@ import com.osdmod.service.WdUpnpService;
 import com.osdmod.service.listener.WdMediaServiceEventListener;
 import com.osdmod.service.listener.WdUpnpServiceEventListener;
 
-import org.teleal.cling.android.AndroidUpnpService;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -120,6 +118,9 @@ public class RemoteControllerActivity extends AppCompatActivity {
             R.id.btn_pgn, R.id.btn_audio, R.id.btn_subs, R.id.btn_mute, R.id.btn_a, R.id.btn_b, R.id.btn_c,
             R.id.btn_d, R.id.btn_up, R.id.btn_left, R.id.btn_ok, R.id.btn_right, R.id.btn_down, R.id.btn_back, R.id.btn_option};
     private final Handler backgroundTaskHandler = new Handler();
+    private long mediaPlaybackStatusLastCheck = -1;
+    private int mediaPlaybackStatusCheckerCount = 0;
+    private boolean ismediaPlaybackStatusCheckerRunning = false;
     private Map<Integer, String> buttonsToCmd;
     private String[][] serviceList;
     private boolean dialogOpened = false;
@@ -185,8 +186,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private SeekBar sk_play;
     private View view_vol1;
     private GestureDetector gestureDetector;
-    private final View.OnTouchListener gesDetected = (v, event) -> gestureDetector.onTouchEvent(
-            event);
     private boolean isTablet = false;
     private long lastshake = 0L;
     private long mLCurTime;
@@ -293,7 +292,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
         }
     };
     private boolean conf_volumebuttons;
-    private boolean rewinding = false;
+    private boolean isMediaRewinding = false;
     private WdUpnpService wdUpnpService;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -389,7 +388,9 @@ public class RemoteControllerActivity extends AppCompatActivity {
         setTimesTxtsUI("00:00:00", "00:00:00");
         setTimeSeekUI(mLCurTime, mLTotTime);
         gestureDetector = new GestureDetector(new MyGestureDetector());
-        findViewById(R.id.img_gespa).setOnTouchListener(gesDetected);
+        findViewById(R.id.img_gespa).setOnTouchListener(
+                (v, event) -> gestureDetector.onTouchEvent(event)
+        );
         setDeviceOptions(wdDevice.getModelID());
         getSupportActionBar().setTitle(
                 wdDevice.getFriendlyName() != null && !wdDevice.getFriendlyName()
@@ -404,7 +405,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
         if (wdDevice.isUpnp()) {
             WdUpnpServiceEventListener wdUpnpServiceEventListener = new WdUpnpServiceEventListener() {
                 @Override
-                public void onServiceConnected(AndroidUpnpService service) {
+                public void onServiceConnected(WdMediaService mediaService) {
+                    wdMediaService = mediaService;
                 }
 
                 @Override
@@ -441,7 +443,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
                 @Override
                 public void onPlaybackSpeedChanged(int playSpeed) {
-                    rewinding = playSpeed < 0;
+                    isMediaRewinding = playSpeed < 0;
                 }
 
                 @Override
@@ -451,11 +453,11 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
                 @Override
                 public void onMediaTitleReceived(String title) {
-                    setTitleTxtUI(title == null ? "" : title);
+                    setTitleTxtUI(title == null ? getString(R.string.no_media_present) : title);
                 }
 
                 @Override
-                public void onDeviceDisconnected() {
+                public void onFail(Exception e) {
                     noUpnp(false);
                 }
             };
@@ -1270,8 +1272,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
     }
 
     //TODO SCF revisar y meter en WdMediaService
-    private void sumTime() {
-        if (rewinding) {
+    private void offlinePlaybackPositionUpdate() {
+        if (isMediaRewinding) {
             if (mLCurTime > 0) {
                 mLCurTime--;
             }
@@ -1377,6 +1379,24 @@ public class RemoteControllerActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         new FirstRunTask().execute();
+    }
+
+    private void startMediaPlaybackCheckerTask() {
+        synchronized (mediaPlaybackStatusChecker) {
+            if (ismediaPlaybackStatusCheckerRunning) {
+                return;
+            }
+            ismediaPlaybackStatusCheckerRunning = true;
+            mediaPlaybackStatusLastCheck = -1;
+            mediaPlaybackStatusChecker.run();
+        }
+    }
+
+    private void stopMediaPlaybackCheckerTask() {
+        synchronized (mediaPlaybackStatusChecker) {
+            ismediaPlaybackStatusCheckerRunning = false;
+            backgroundTaskHandler.removeCallbacks(mediaPlaybackStatusChecker);
+        }
     }
 
     private class FirstRunTask extends AsyncTask<Void, Integer, Void> {
@@ -1611,10 +1631,33 @@ public class RemoteControllerActivity extends AppCompatActivity {
         }
     }
 
-
     private final Runnable colorToggler = () -> {
         toggleTimeTextviewColor(false);
         backgroundTaskHandler.postDelayed(this.colorToggler, 500);
+    };
+
+    //TODO SCF se puede meter en WdMediaService??
+    private final Runnable mediaPlaybackStatusChecker = () -> {
+        if (WdMediaService.PLAYBACK_STOPPED.equals(wdMediaService.getPlaybackState())) {
+            mediaPlaybackStatusLastCheck = -1;
+            //wdMediaService.syncPlaybackStatus();
+            return;
+        }
+
+        if (mediaPlaybackStatusLastCheck == -1) {
+            mediaPlaybackStatusLastCheck = System.currentTimeMillis();
+            wdMediaService.syncPlaybackPosition();
+        } else {
+            if (mediaPlaybackStatusCheckerCount <= 5 || isMediaRewinding) {
+                offlinePlaybackPositionUpdate();
+                mediaPlaybackStatusCheckerCount++;
+            } else {
+                wdMediaService.syncPlaybackPosition();
+                mediaPlaybackStatusCheckerCount = 0;
+            }
+        }
+
+        backgroundTaskHandler.postDelayed(this.mediaPlaybackStatusChecker, 1000);
     };
 
 }

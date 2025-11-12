@@ -11,6 +11,5 @@ public interface WdMediaServiceEventListener {
     void onPlaybackStatusChanged(String playbackStatus);
 
     void onMediaTitleReceived(String title);
-
-    void onDeviceDisconnected();
+    void onFail(Exception e);
 }

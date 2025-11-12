@@ -1,15 +1,16 @@
 package com.osdmod.service;
 
-import android.os.Handler;
 import android.util.Log;
 
 import com.osdmod.service.listener.WdMediaServiceEventListener;
 import com.osdmod.service.listener.WdUpnpSubscriptionEventListener;
+import com.osdmod.utils.XmlUtils;
 
 import org.teleal.cling.controlpoint.ActionCallback;
 import org.teleal.cling.controlpoint.ControlPoint;
 import org.teleal.cling.controlpoint.SubscriptionCallback;
 import org.teleal.cling.model.action.ActionInvocation;
+import org.teleal.cling.model.gena.CancelReason;
 import org.teleal.cling.model.gena.GENASubscription;
 import org.teleal.cling.model.message.UpnpResponse;
 import org.teleal.cling.model.meta.RemoteDevice;
@@ -33,7 +34,6 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
     public static final String PLAYBACK_PAUSED_PLAYBACK = "PAUSED_PLAYBACK";
     public static final String PLAYBACK_PREBUFFING = "PREBUFFING";
     public static final String PLAYBACK_STOPPED = "STOPPED";
-    public static final String PLAYBACK_PREPARE = "PREPARE";
     public static final String PLAYBACK_PLAYING = "PLAYING";
     public static final String PLAYBACK_TRANSITIONING = "TRANSITIONING";
     public static final String PLAYBACK_NO_MEDIA_PRESENT = "NO_MEDIA_PRESENT";
@@ -52,55 +52,22 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
     private static final int VOLUMEN_MAX = 100;
     private static final int VOLUMEN_MIN = 0;
     private static final int MAX_TOTAL_RETRIES = 5;
-    /**
-     * @noinspection rawtypes
-     */
-    private final Service renderingControl;
-    /**
-     * @noinspection rawtypes
-     */
-    private final Service avTransportControl;
+    private final Service<?,?> renderingControl;
+    private final Service<?,?> avTransportControl;
+    private final RemoteDevice remoteDevice;
     private final ControlPoint controlPoint;
     private final WdMediaServiceEventListener mediaEventListener;
     private final ExecutorService executor;
     private int mediaVolumen = 100;
+    private int mediaPlaySpeed = 1;
     private String mediaPlayMode = PLAY_MODE_NORMAL;
     private String mediaPlaybackState = WdMediaService.PLAYBACK_STOPPED;
     private int retries = 0;
-    private boolean ismediaPlaybackStatusCheckerRunning = false;
-    private long mediaPlaybackStatusLastCheck = -1;
-    private int mediaPlaybackStatusCheckerCount = 0;
-    private final Handler backgroundTaskHandler = new Handler();
-
-    private final Runnable mediaPlaybackStatusChecker = () -> {
-        if (PLAYBACK_STOPPED.equals(mediaPlaybackState)) {
-            syncPlaybackStatus();
-            return;
-        }
-
-        if (mediaPlaybackStatusLastCheck == -1) {
-            mediaPlaybackStatusLastCheck = System.currentTimeMillis();
-            syncPlaybackPosition();
-        } else {
-            //TODO SCF revisar esto
-            /*if (mediaPlaybackStatusCheckerCount <= 5 || rewinding) {
-                sumTime();
-                mediaPlaybackStatusCheckerCount++;
-            } else {*/
-            if (mediaPlaybackStatusCheckerCount <= 5) {
-                mediaPlaybackStatusCheckerCount++;
-            } else {
-                syncPlaybackPosition();
-                syncPlayMode();
-                mediaPlaybackStatusCheckerCount = 0;
-            }
-        }
-
-        backgroundTaskHandler.postDelayed(this.mediaPlaybackStatusChecker, 1000);
-    };
+    private boolean subscribeToDevice = false;
 
     public WdMediaService(RemoteDevice remoteDevice, ControlPoint controlPoint,
                           WdMediaServiceEventListener mediaEventListener) {
+        this.remoteDevice = remoteDevice;
         this.controlPoint = controlPoint;
         this.mediaEventListener = mediaEventListener;
 
@@ -114,9 +81,15 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
         //executor = Executors.newSingleThreadExecutor();
     }
 
-    public void subscribeToRemoteService(Service<?, ?> service) {
-        SubscriptionCallback callback = new SubscriptionCallbackWrapper(service, this);
+    public void subscribeToRemoteDevice() {
+        subscribeToDevice = true;
+        SubscriptionCallback callback = new SubscriptionCallbackWrapper(remoteDevice.getServices()[0], this);
         controlPoint.execute(callback);
+    }
+
+    /** @noinspection unused*/
+    public void unsubscribeFromRemoteDevice() {
+        subscribeToDevice = false;
     }
 
     public String getPlaybackState() {
@@ -124,14 +97,19 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
     }
 
     public void initialSync() {
-        syncPlaybackPosition();
-        syncPlayMode();
-        syncVolumen();
         syncPlaybackStatus();
+        syncPlaybackPosition();
+        syncVolumen();
+        syncPlayMode();
     }
 
     public int getVolumen() {
         return mediaVolumen;
+    }
+
+    /** @noinspection unused*/
+    public int getMediaPlaySpeed() {
+        return mediaPlaySpeed;
     }
 
     /**
@@ -171,35 +149,6 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
             }
         });
 
-    }
-
-    public void syncMediaInfo() {
-        //noinspection rawtypes,unchecked
-        ActionInvocation<?> invocation = new ActionInvocation<>(
-                avTransportControl.getAction(GET_MEDIA_INFO_ACTION));
-        invocation.setInput("InstanceID", "0");
-        controlPoint.execute(new ActionCallback(invocation) {
-            public void success(ActionInvocation invocation) {
-                retries = 0;
-                try {
-
-                    String title = getMediaTitleFromMetadata(
-                            invocation.getOutput("CurrentURIMetaData").getValue()
-                                    .toString());
-                    mediaEventListener.onMediaTitleReceived(title);
-                } catch (Exception e) {
-                    Log.e(TAG, e.getMessage(), e);
-                }
-            }
-
-            public void failure(ActionInvocation invocation, UpnpResponse operation,
-                                String defaultMsg) {
-                Log.d(TAG, defaultMsg);
-                if (retries++ < MAX_TOTAL_RETRIES) {
-                    syncMediaInfo();
-                }
-            }
-        });
     }
 
     public void syncVolumen() {
@@ -450,7 +399,7 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
             factory.setNamespaceAware(true);
             factory.setValidating(false);
             XmlPullParser xpp = factory.newPullParser();
-            xpp.setInput(new StringReader(XML.replaceAll("&", "&amp;")));
+            xpp.setInput(new StringReader(XmlUtils.escape(XML)));
             int eventType = xpp.getEventType();
             while (eventType != 1) {
                 try {
@@ -473,13 +422,12 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
         return null;
     }
 
-    //TODO SCF combinar con el de arriba
     private void newEvent(String XML) {
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
             XmlPullParser xpp = factory.newPullParser();
-            xpp.setInput(new StringReader(XML.replaceAll("&", "&amp;")));
+            xpp.setInput(new StringReader(XmlUtils.escape(XML)));
             int eventType = xpp.getEventType();
             while (eventType != 1) {
                 eventType = xpp.next();
@@ -489,7 +437,7 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
 
                 switch (xpp.getName()) {
                     case "TransportState":
-                    case "TransportStatus":
+                    //case "TransportStatus":
                         String state = xpp.getAttributeValue(null, "val");
                         mediaEventListener.onPlaybackStatusChanged(state);
                         break;
@@ -497,16 +445,25 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
                     case "CurrentTrackMetaData":
                         try {
                             String title = xpp.getAttributeValue(null, "val");
-                            mediaEventListener.onMediaTitleReceived(getMediaTitleFromMetadata(title));
+                            title = getMediaTitleFromMetadata(XmlUtils.unescape(title));
+                            mediaEventListener.onMediaTitleReceived(title);
                         } catch (Exception ignored) {
-                            mediaEventListener.onMediaTitleReceived("");
+                            mediaEventListener.onMediaTitleReceived(null);
                         }
                         break;
 
                     case "TransportPlaySpeed":
-                        int playSpeed = Integer.parseInt(xpp.getAttributeValue(null, "val"));
-                        mediaEventListener.onPlaybackSpeedChanged(playSpeed);
+                        mediaPlaySpeed = Integer.parseInt(xpp.getAttributeValue(null, "val"));
+                        mediaEventListener.onPlaybackSpeedChanged(mediaPlaySpeed);
                         break;
+
+                    case "CurrentPlayMode":
+                        mediaPlayMode = xpp.getAttributeValue(null, "val");
+                        mediaEventListener.onPlaymodeChanged(mediaPlayMode);
+                        break;
+
+                    default:
+                        Log.d(TAG, "XML field " + xpp.getName());
                 }
             }
         } catch (Exception e) {
@@ -516,13 +473,19 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
 
     @Override
     public void onServiceSubscribed() {
-        //startMediaPlaybackCheckerTask();
         initialSync();
     }
 
     @Override
-    public void onServiceSubscriptionEnded() {
-        mediaEventListener.onDeviceDisconnected();
+    public void onServiceSubscriptionFailed(Exception e) {
+        mediaEventListener.onFail(e);
+    }
+
+    @Override
+    public void onServiceSubscriptionEnded(CancelReason cancelReason) {
+        if(subscribeToDevice) {
+            subscribeToRemoteDevice();
+        }
     }
 
     /** @noinspection rawtypes*/
@@ -542,27 +505,35 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
     public void onSubscriptionEventMissed() {
     }
 
-
-    //TODO SCF runner task meter en WdMediaService
-    private void startMediaPlaybackCheckerTask() {
-        synchronized (mediaPlaybackStatusChecker) {
-            if (ismediaPlaybackStatusCheckerRunning) {
-                return;
-            }
-            ismediaPlaybackStatusCheckerRunning = true;
-            mediaPlaybackStatusLastCheck = -1;
-            mediaPlaybackStatusChecker.run();
-        }
-    }
-
-    private void stopMediaPlaybackCheckerTask() {
-        synchronized (mediaPlaybackStatusChecker) {
-            ismediaPlaybackStatusCheckerRunning = false;
-            backgroundTaskHandler.removeCallbacks(mediaPlaybackStatusChecker);
-        }
-    }
-
 }
+
+    /*public void syncMediaInfo() {
+        //noinspection rawtypes,unchecked
+        ActionInvocation<?> invocation = new ActionInvocation<>(
+                avTransportControl.getAction(GET_MEDIA_INFO_ACTION));
+        invocation.setInput("InstanceID", "0");
+        controlPoint.execute(new ActionCallback(invocation) {
+            public void success(ActionInvocation invocation) {
+                retries = 0;
+                try {
+                    String title = getMediaTitleFromMetadata(
+                            invocation.getOutput("CurrentURIMetaData").getValue()
+                                    .toString());
+                    mediaEventListener.onMediaTitleReceived(title);
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage(), e);
+                }
+            }
+
+            public void failure(ActionInvocation invocation, UpnpResponse operation,
+                                String defaultMsg) {
+                Log.d(TAG, defaultMsg);
+                if (retries++ < MAX_TOTAL_RETRIES) {
+                    syncMediaInfo();
+                }
+            }
+        });
+    }*/
 
     /*private void listPres() {
         ActionInvocation setTargetInvocation = new ActionInvocation(
