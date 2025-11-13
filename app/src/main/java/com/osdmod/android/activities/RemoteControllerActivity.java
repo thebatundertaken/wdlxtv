@@ -53,7 +53,6 @@ import com.osdmod.formatter.PlaybackTimeFormatter;
 import com.osdmod.model.WdDevice;
 import com.osdmod.remote.R;
 import com.osdmod.remote.RemoteKeyboard;
-import com.osdmod.remote.ResultIntSetter;
 import com.osdmod.remote.WDTVLiveHub;
 import com.osdmod.remote.WdRemoteController;
 import com.osdmod.service.UpnpDiscoveryService;
@@ -124,23 +123,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private WdMediaService wdMediaService;
     private boolean isToggleBlueColor = false;
     private int errorCount = 0;
-    private final ResultIntSetter setter = result -> {
-        switch (result) {
-            case 0:
-                if (++errorCount >= 3) {
-                    new Thread(new CheckPingTask()).start();
-                }
-                break;
-
-            case 1:
-                errorCount = 0;
-                break;
-
-            case -1:
-                openInvalidButtonDialog();
-                return;
-        }
-    };
     private TextView txt_vol;
     private TextView txt_time_total;
     private TextView txt_time_current;
@@ -256,32 +238,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
             case R.id.btn_tinfo:
                 openGesHelpDialog();
                 return;
-        }
-    };
-    private final ResultIntSetter checker = result -> {
-        if (result != 1) {
-            remoteNotAvailable();
-            showToastLong(getString(R.string.rem_txt_nocon));
-            return;
-        }
-
-        if (wdDevice.getModelID() == WdDevice.MODELID_HUB || wdDevice.getModelID() == WdDevice.MODELID_STREAMING) {
-            new Thread(
-                    () -> {
-                        serviceList = wdRemoteController.getDeviceServices();
-                        runOnUiThread(() -> {
-                            if (serviceList == null) {
-                                if (horizontal_pager != null) {
-                                    horizontal_pager.removeViewAt(isTablet ? 1 : 2);
-                                }
-                                return;
-                            }
-                            createHubServicesLayout(serviceList);
-                            ((ImageView) findViewById(R.id.img_pos)).setImageResource(
-                                    isTablet ? R.drawable.one : R.drawable.tone);
-                        });
-                    }
-            ).start();
         }
     };
     private boolean conf_volumebuttons;
@@ -589,7 +545,29 @@ public class RemoteControllerActivity extends AppCompatActivity {
         if (wdRemoteController != null) {
             new Thread(() -> {
                 int result = wdRemoteController.check();
-                checker.setResult(result);
+
+                if (result != 1) {
+                    remoteNotAvailable();
+                    showToastLong(getString(R.string.rem_txt_nocon));
+                    return;
+                }
+
+                new Thread(
+                        () -> {
+                            serviceList = wdRemoteController.getDeviceServices();
+                            runOnUiThread(() -> {
+                                if (serviceList == null) {
+                                    if (horizontal_pager != null) {
+                                        horizontal_pager.removeViewAt(isTablet ? 1 : 2);
+                                    }
+                                    return;
+                                }
+                                createHubServicesLayout(serviceList);
+                                ((ImageView) findViewById(R.id.img_pos)).setImageResource(
+                                        isTablet ? R.drawable.one : R.drawable.tone);
+                            });
+                        }
+                ).start();
             }
             ).start();
         }
@@ -743,7 +721,21 @@ public class RemoteControllerActivity extends AppCompatActivity {
         ledflash();
         new Thread(() -> {
             int result = wdRemoteController.sendCommand(cmd);
-            setter.setResult(result);
+            switch (result) {
+                case 0:
+                    if (++errorCount >= 3) {
+                        new Thread(new CheckPingTask()).start();
+                    }
+                    break;
+
+                case 1:
+                    errorCount = 0;
+                    break;
+
+                case -1:
+                    openInvalidButtonDialog();
+                    return;
+            }
         }
         ).start();
         return;
