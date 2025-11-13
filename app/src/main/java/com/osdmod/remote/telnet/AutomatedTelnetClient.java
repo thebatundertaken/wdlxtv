@@ -1,4 +1,4 @@
-package com.osdmod.remote;
+package com.osdmod.remote.telnet;
 
 import android.util.Log;
 
@@ -8,11 +8,11 @@ import java.io.PrintStream;
 
 public class AutomatedTelnetClient {
     private static final String TAG = "AutomatedTelnetClient";
-    private static PrintStream out;
-    private static final TelnetClient telnet = new TelnetClient();
+    private final PrintStream out;
+    private final TelnetClient telnet;
 
-    //TODO SCF transformar a singleton
     public AutomatedTelnetClient(String server) throws Exception {
+        telnet = new TelnetClient();
         if (telnet.isConnected()) {
             telnet.disconnect();
         }
@@ -20,7 +20,7 @@ public class AutomatedTelnetClient {
         out = new PrintStream(telnet.getOutputStream());
     }
 
-    public static void write(String value) {
+    public void write(String value) {
         try {
             out.println(value);
             out.flush();
@@ -29,7 +29,7 @@ public class AutomatedTelnetClient {
         }
     }
 
-    public static void sendCommand(String command) {
+    public void sendCommand(String command) {
         try {
             write(command);
         } catch (Exception e) {
@@ -37,7 +37,7 @@ public class AutomatedTelnetClient {
         }
     }
 
-    public static void disconnect() {
+    public void disconnect() {
         try {
             telnet.disconnect();
         } catch (Exception e) {
@@ -45,7 +45,7 @@ public class AutomatedTelnetClient {
         }
     }
 
-    public static boolean isConnected() {
+    public boolean isConnected() {
         return telnet.isConnected();
     }
 }

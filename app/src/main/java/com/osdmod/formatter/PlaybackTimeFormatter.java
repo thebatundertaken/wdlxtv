@@ -1,6 +1,6 @@
 package com.osdmod.formatter;
 
-public class TimeConvertion {
+public class PlaybackTimeFormatter {
     public long stringToSec(String sTime) {
         String[] parsedTime = sTime.split(":");
         int h = 0;

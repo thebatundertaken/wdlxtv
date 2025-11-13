@@ -2,6 +2,8 @@ package com.osdmod.remote;
 
 import android.util.Log;
 
+import com.osdmod.model.WdDevice;
+
 import java.lang.reflect.Array;
 
 public class SendTxtWDlxTV implements Runnable {
@@ -229,7 +231,7 @@ public class SendTxtWDlxTV implements Runnable {
         try {
             if (str.equals("sleep")) {
                 Thread.sleep(500);
-            } else if (this.id == 0) {
+            } else if (id == WdDevice.MODELID_GEN1) {
                 gen1Post(str);
                 Thread.sleep(350);
             } else {

@@ -483,6 +483,8 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
 
     @Override
     public void onServiceSubscriptionEnded(CancelReason cancelReason) {
+        //RENEWAL_FAILED
+        //DEVICE_WAS_REMOVED
         if(subscribeToDevice) {
             subscribeToRemoteDevice();
         }

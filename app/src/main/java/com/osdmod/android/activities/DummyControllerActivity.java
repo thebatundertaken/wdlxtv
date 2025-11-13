@@ -40,10 +40,9 @@ import androidx.core.view.accessibility.AccessibilityEventCompat;
 import com.osdmod.android.customviews.HorizontalPager;
 import com.osdmod.android.customviews.NumberPicker;
 import com.osdmod.android.customviews.NumberPickerChangeListener;
-import com.osdmod.remote.AutomatedTelnetClient;
 import com.osdmod.remote.R;
 import com.osdmod.android.sensor.ShakeListener;
-import com.osdmod.formatter.TimeConvertion;
+import com.osdmod.formatter.PlaybackTimeFormatter;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -359,7 +358,7 @@ public class DummyControllerActivity extends AppCompatActivity {
     private long mLTotTime;
     private final NumberPickerChangeListener nChangeListener = (picker, oldVal, newVal) -> {
         View v = picker.getRootView();
-        String[] t = new TimeConvertion().secToStringArray(mLTotTime);
+        String[] t = new PlaybackTimeFormatter().secToStringArray(mLTotTime);
         int h = Integer.parseInt(t[0]);
         int m = Integer.parseInt(t[1]);
         int s = Integer.parseInt(t[2]);
@@ -414,9 +413,9 @@ public class DummyControllerActivity extends AppCompatActivity {
                 if (fromUser && mLTotTime != 0) {
                     String sTot = ((TextView) findViewById(R.id.txt_time_total)).getText()
                             .toString();
-                    long lCur = (((long) progress) * new TimeConvertion().stringToSec(sTot)) / 255;
+                    long lCur = (((long) progress) * new PlaybackTimeFormatter().stringToSec(sTot)) / 255;
                     mLCurTime = lCur;
-                    setTimesTxtsUI(new TimeConvertion().secToString(lCur), sTot);
+                    setTimesTxtsUI(new PlaybackTimeFormatter().secToString(lCur), sTot);
                     return;
                 }
                 return;
@@ -434,7 +433,7 @@ public class DummyControllerActivity extends AppCompatActivity {
 
         public void onStopTrackingTouch(SeekBar seekBar) {
             if (seekBar.getId() == R.id.sk_play && mLTotTime != 0) {
-                new TimeConvertion().secToString(mLCurTime);
+                new PlaybackTimeFormatter().secToString(mLCurTime);
             }
         }
     };
@@ -944,18 +943,18 @@ public class DummyControllerActivity extends AppCompatActivity {
                             time[1] = (m < 10 ? "0" : "") + m;
                             time[2] = (s < 10 ? "0" : "") + s;
                             String a = time[0] + ":" + time[1] + ":" + time[2];
-                            mLCurTime = new TimeConvertion().stringToSec(a);
-                            setTimeSeekUI(new TimeConvertion().stringToSec(a), mLTotTime);
-                            setTimesTxtsUI(a, new TimeConvertion().secToString(mLTotTime));
+                            mLCurTime = new PlaybackTimeFormatter().stringToSec(a);
+                            setTimeSeekUI(new PlaybackTimeFormatter().stringToSec(a), mLTotTime);
+                            setTimesTxtsUI(a, new PlaybackTimeFormatter().secToString(mLTotTime));
                         }).setNegativeButton(getString(R.string.rem_txt_cancel),
                         (dialog, whichButton) -> {
                         }).create();
         alert.setIcon(R.drawable.ic_menu_time);
-        String[] tt = new TimeConvertion().secToStringArray(this.mLTotTime);
+        String[] tt = new PlaybackTimeFormatter().secToStringArray(this.mLTotTime);
         int ht = Integer.parseInt(tt[0]);
         int mt = Integer.parseInt(tt[1]);
         int st = Integer.parseInt(tt[2]);
-        String[] tc = new TimeConvertion().secToStringArray(this.mLCurTime);
+        String[] tc = new PlaybackTimeFormatter().secToStringArray(this.mLCurTime);
         int hc = Integer.parseInt(tc[0]);
         int mc = Integer.parseInt(tc[1]);
         int sc = Integer.parseInt(tc[2]);
@@ -1073,8 +1072,8 @@ public class DummyControllerActivity extends AppCompatActivity {
         } else {
             this.mLCurTime++;
         }
-        setTimesTxtsUI(new TimeConvertion().secToString(this.mLCurTime),
-                new TimeConvertion().secToString(this.mLTotTime));
+        setTimesTxtsUI(new PlaybackTimeFormatter().secToString(this.mLCurTime),
+                new PlaybackTimeFormatter().secToString(this.mLTotTime));
     }
 
     /* access modifiers changed from: package-private */
@@ -1131,11 +1130,6 @@ public class DummyControllerActivity extends AppCompatActivity {
         mpause_handler.removeCallbacks(m_pause);
         if (shakeListener != null) {
             shakeListener.shutdown();
-        }
-        try {
-            AutomatedTelnetClient.disconnect();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

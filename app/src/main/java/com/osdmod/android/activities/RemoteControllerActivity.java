@@ -18,8 +18,6 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -37,7 +35,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,23 +49,18 @@ import com.osdmod.android.customviews.NumberPickerChangeListener;
 import com.osdmod.android.drawable.HubServicesDrawable;
 import com.osdmod.android.prefs.WDPrefs;
 import com.osdmod.android.sensor.ShakeListener;
-import com.osdmod.formatter.TimeConvertion;
+import com.osdmod.formatter.PlaybackTimeFormatter;
 import com.osdmod.model.WdDevice;
-import com.osdmod.remote.AutomatedTelnetClient;
-import com.osdmod.remote.HubServices;
-import com.osdmod.remote.OpenLiveCon;
-import com.osdmod.remote.PostGen1;
-import com.osdmod.remote.PostHub;
-import com.osdmod.remote.PostLive;
 import com.osdmod.remote.R;
 import com.osdmod.remote.ResultIntSetter;
-import com.osdmod.remote.SendLiveOrig;
 import com.osdmod.remote.SendTxtWDlxTV;
+import com.osdmod.remote.WdRemoteController;
 import com.osdmod.service.UpnpDiscoveryService;
 import com.osdmod.service.WdMediaService;
 import com.osdmod.service.WdUpnpService;
 import com.osdmod.service.listener.WdMediaServiceEventListener;
 import com.osdmod.service.listener.WdUpnpServiceEventListener;
+import com.osdmod.utils.TextUtils;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -82,7 +74,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private static final String TAG = "RemoteControllerActivity";
     private static final int PREFERENCES_REQUEST_CODE = 1123;
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 83;
-    private final TimeConvertion tc = new TimeConvertion();
+    private final PlaybackTimeFormatter formatter = new PlaybackTimeFormatter();
     private final HorizontalPager.OnScreenSwitchListener onSwitch = screen -> {
         ImageView img_pos = findViewById(R.id.img_pos);
         int tot = ((HorizontalPager) findViewById(
@@ -127,34 +119,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private long lastost = 0;
     private ProgressDialog mProgress;
     private WdDevice wdDevice;
-    private final ResultIntSetter checker = result -> {
-        switch (result) {
-            case 0:
-                remoteNotAvailable();
-                if (wdDevice.iswDlxTVFirmware() && (wdDevice.getModelID() == WdDevice.MODELID_PLUS || wdDevice.getModelID() == WdDevice.MODELID_LIVE)) {
-                    showToastLong(getString(R.string.rem_txt_conerror));
-                } else {
-                    showToastLong(getString(R.string.rem_txt_nocon));
-                }
-
-                break;
-
-            case 1:
-                if (wdDevice.getModelID() == WdDevice.MODELID_HUB || wdDevice.getModelID() == WdDevice.MODELID_STREAMING) {
-                    new ReadHubServicesTask().execute();
-                }
-                break;
-
-            case 2:
-                remoteNotAvailable();
-                if (wdDevice.iswDlxTVFirmware() && wdDevice.getModelID() >= WdDevice.MODELID_LIVE) {
-                    showToastLong(getString(R.string.rem_txt_logerror));
-                } else {
-                    showToastLong(getString(R.string.rem_txt_nocon));
-                }
-                break;
-        }
-    };
+    private WdRemoteController wdRemoteController;
     private boolean isColorTogglerRunning = false;
     private WdMediaService wdMediaService;
     private boolean isToggleBlueColor = false;
@@ -162,16 +127,18 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private final ResultIntSetter setter = result -> {
         switch (result) {
             case 0:
-                errorCount++;
+                if (++errorCount >= 3) {
+                    new CheckPingTask().execute();
+                }
                 break;
 
             case 1:
                 errorCount = 0;
                 break;
-        }
 
-        if (errorCount >= 3) {
-            new CheckPingTask().execute();
+            case -1:
+                openInvalidButtonDialog();
+                return;
         }
     };
     private TextView txt_vol;
@@ -201,8 +168,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
                 if (fromUser) {
                     String sTot = txt_time_total.getText().toString();
-                    mLCurTime = (((long) progress) * tc.stringToSec(sTot)) / 255;
-                    setTimesTxtsUI(tc.secToString(mLCurTime), sTot);
+                    mLCurTime = (((long) progress) * formatter.stringToSec(sTot)) / 255;
+                    setTimesTxtsUI(formatter.secToString(mLCurTime), sTot);
                     return;
                 }
                 return;
@@ -218,7 +185,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
         public void onStopTrackingTouch(SeekBar seekBar) {
             if (seekBar.getId() == R.id.sk_play && mLTotTime != 0) {
-                String position = tc.secToString(mLCurTime);
+                String position = formatter.secToString(mLCurTime);
                 wdMediaService.setPlaybackPosition(position);
             } else if (seekBar.getId() == R.id.sk_vol) {
                 wdMediaService.setVolumen(seekBar.getProgress());
@@ -289,6 +256,35 @@ public class RemoteControllerActivity extends AppCompatActivity {
             case R.id.btn_tinfo:
                 openGesHelpDialog();
                 return;
+        }
+    };
+    private final ResultIntSetter checker = result -> {
+        switch (result) {
+            case 1:
+                if (wdDevice.getModelID() == WdDevice.MODELID_HUB || wdDevice.getModelID() == WdDevice.MODELID_STREAMING) {
+                    new Thread(
+                            () -> {
+                                serviceList = wdRemoteController.getDeviceServices();
+                                runOnUiThread(() -> {
+                                    if (serviceList == null) {
+                                        if (horizontal_pager != null) {
+                                            horizontal_pager.removeViewAt(isTablet ? 1 : 2);
+                                        }
+                                        return;
+                                    }
+                                    createHubServicesLayout(serviceList);
+                                    ((ImageView) findViewById(R.id.img_pos)).setImageResource(
+                                            isTablet ? R.drawable.one : R.drawable.tone);
+                                });
+                            }
+                    ).start();
+                }
+                break;
+
+            default:
+                remoteNotAvailable();
+                showToastLong(getString(R.string.rem_txt_nocon));
+                break;
         }
     };
     private boolean conf_volumebuttons;
@@ -407,6 +403,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
                 @Override
                 public void onServiceConnected(WdMediaService mediaService) {
                     wdMediaService = mediaService;
+                    startMediaPlaybackCheckerTask();
                 }
 
                 @Override
@@ -430,9 +427,9 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
                 @Override
                 public void onPlaybackPositionChanged(String trackDuration, String relTime) {
-                    mLTotTime = tc.stringToSec(trackDuration);
-                    mLCurTime = Math.min(tc.stringToSec(relTime), mLTotTime);
-                    setTimesTxtsUI(tc.secToString(mLCurTime), trackDuration);
+                    mLTotTime = formatter.stringToSec(trackDuration);
+                    mLCurTime = Math.min(formatter.stringToSec(relTime), mLTotTime);
+                    setTimesTxtsUI(formatter.secToString(mLCurTime), trackDuration);
                     setTimeSeekUI(mLCurTime, mLTotTime);
                 }
 
@@ -544,6 +541,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
     private void noUpnp(boolean silent) {
         wdMediaService = null;
+        stopMediaPlaybackCheckerTask();
 
         runOnUiThread(() -> {
             if (!silent) {
@@ -577,76 +575,27 @@ public class RemoteControllerActivity extends AppCompatActivity {
     }
 
     private void setDeviceOptions(int modelID) {
-        switch (modelID) {
-            case WdDevice.MODELID_HUB:
-            case WdDevice.MODELID_STREAMING:
-                if (isTablet) {
-                    horizontal_pager.removeViewAt(0);
-                } else {
-                    horizontal_pager.removeViewAt(1);
-                }
-                hubPost(checker, "check");
-                break;
-
-            case WdDevice.MODELID_LIVE:
-            case WdDevice.MODELID_PLUS:
-                if (isTablet) {
-                    horizontal_pager.removeViewAt(1);
-                    horizontal_pager.removeViewAt(1);
-                    findViewById(R.id.ly_dots).setVisibility(View.INVISIBLE);
-                } else {
-                    horizontal_pager.removeViewAt(2);
-                    horizontal_pager.removeViewAt(2);
-                }
-                if (!wdDevice.iswDlxTVFirmware()) {
-                    if (wdDevice.isRemoteControlAvailable()) {
-                        new OpenTelnetTask().execute();
-                    }
-                    final AlphaAnimation alpha = new AlphaAnimation(0.2f, 0.2f);
-                    alpha.setDuration(0);
-                    alpha.setFillAfter(true);
-                    runOnUiThread(() -> {
-                        ImageButton btn_pplay = findViewById(R.id.btn_pplay);
-                        ImageButton btn_wsearch = findViewById(R.id.btn_wsearch);
-                        ObjectAnimator.ofFloat(btn_pplay, "alpha", 0.2f).setDuration(0).start();
-                        ObjectAnimator.ofFloat(btn_wsearch, "alpha", 0.2f).setDuration(0)
-                                .start();
-                    });
-                } else if (!wdDevice.getIp().isEmpty()) {
-                    openLive(checker, wdDevice.getIp(), wdDevice.getUsername(),
-                            wdDevice.getPassword());
-                }
-                break;
-
-            case WdDevice.MODELID_GEN2:
-                if (!wdDevice.getIp().isEmpty()) {
-                    openLive(checker, wdDevice.getIp(), wdDevice.getUsername(),
-                            wdDevice.getPassword());
-                }
-                if (isTablet) {
-                    findViewById(R.id.img_pos).setVisibility(View.GONE);
-                    horizontal_pager.removeViewAt(1);
-                    horizontal_pager.removeViewAt(1);
-                    return;
-                }
+        if (modelID == WdDevice.MODELID_STREAMING || modelID == WdDevice.MODELID_HUB) {
+            horizontal_pager.removeViewAt(isTablet ? 0 : 1);
+        } else {
+            if (isTablet) {
+                findViewById(R.id.ly_dots).setVisibility(View.INVISIBLE);
+                horizontal_pager.removeViewAt(1);
+                horizontal_pager.removeViewAt(1);
+            } else {
                 horizontal_pager.removeViewAt(2);
                 horizontal_pager.removeViewAt(2);
-                break;
-
-            default:
-                if (isTablet) {
-                    findViewById(R.id.img_pos).setVisibility(View.GONE);
-                    horizontal_pager.removeViewAt(1);
-                    horizontal_pager.removeViewAt(1);
-                    return;
-                }
-                horizontal_pager.removeViewAt(2);
-                horizontal_pager.removeViewAt(2);
+            }
         }
-    }
 
-    private void openLive(ResultIntSetter csetter, String cip, String cuser, String cpass) {
-        new Thread(new OpenLiveCon(csetter, cip, cuser, cpass)).start();
+        wdRemoteController = wdDevice.createRemoteController();
+        if (wdRemoteController != null) {
+            new Thread(() -> {
+                int result = wdRemoteController.check();
+                checker.setResult(result);
+            }
+            ).start();
+        }
     }
 
     private void remoteNotAvailable() {
@@ -777,7 +726,11 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private void sendCmdToDevice(String cmd) {
         ledflash();
         if (wdDevice.getModelID() == WdDevice.MODELID_HUB || wdDevice.getModelID() == WdDevice.MODELID_STREAMING) {
-            hubPost(setter, cmd);
+            new Thread(() -> {
+                int result = wdRemoteController.sendCommand(cmd);
+                setter.setResult(result);
+            }
+            ).start();
             return;
         }
 
@@ -786,22 +739,18 @@ public class RemoteControllerActivity extends AppCompatActivity {
             return;
         }
 
-        if (wdDevice.getModelID() == WdDevice.MODELID_GEN1) {
-            gen1Post(setter, cmd);
-            return;
+        new Thread(() -> {
+            int result = wdRemoteController.sendCommand(cmd);
+            setter.setResult(result);
         }
-
-        if (wdDevice.iswDlxTVFirmware() || !wdDevice.isRemoteControlAvailable()) {
-            livePost(setter, cmd);
-            return;
-        }
-        new LiveOrigSendTask().execute(cmd);
+        ).start();
+        return;
     }
 
     private void openInvalidButtonDialog() {
         new AlertDialog.Builder(this).setIcon(R.drawable.ic_menu_info_details)
                 .setTitle(getString(R.string.rem_txt_btnuna))
-                .setView(LinkifyText(getString(R.string.rem_txt_btnunat)))
+                .setView(TextUtils.linkifyText(getString(R.string.rem_txt_btnunat), this))
                 .setPositiveButton(getString(R.string.rem_txt_ok),
                         (dialog, which) -> {
                         }).show();
@@ -810,7 +759,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private void openHelpDialog() {
         new AlertDialog.Builder(this).setIcon(R.drawable.ic_menu_help)
                 .setTitle(getString(R.string.edia_txt_help))
-                .setView(LinkifyText(getString(R.string.d_help)))
+                .setView(TextUtils.linkifyText(getString(R.string.d_help), this))
                 .setPositiveButton(getString(R.string.rem_txt_ok),
                         (dialog, which) -> dialogOpened = false)
                 .setOnCancelListener(dialog -> dialogOpened = false)
@@ -818,64 +767,16 @@ public class RemoteControllerActivity extends AppCompatActivity {
         dialogOpened = true;
     }
 
-    private ScrollView LinkifyText(String message) {
-        ScrollView svMessage = new ScrollView(this);
-        TextView tvMessage = new TextView(this);
-        tvMessage.setText(Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY));
-        tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
-        tvMessage.setTextColor(-1);
-        svMessage.setPadding(14, 2, 10, 12);
-        svMessage.addView(tvMessage);
-        return svMessage;
-    }
-
-    private ScrollView LinkifyTextNoLink(String message) {
-        ScrollView svMessage = new ScrollView(this);
-        TextView tvMessage = new TextView(this);
-        tvMessage.setText(message);
-        tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
-        tvMessage.setTextColor(-1);
-        svMessage.setPadding(14, 2, 10, 12);
-        svMessage.addView(tvMessage);
-        return svMessage;
-    }
-
-    private void hubPost(ResultIntSetter csetter, String cstr) {
-        if (wdDevice.getIp().isEmpty()) {
-            return;
-        }
-        new Thread(new PostHub(csetter, wdDevice.getIp(), cstr)).start();
-    }
-
-    private void livePost(ResultIntSetter csetter, String str) {
-        if (wdDevice.getIp().isEmpty()) {
-            return;
-        }
-        new Thread(new PostLive(csetter, str, wdDevice.getIp(), wdDevice.getUsername(),
-                wdDevice.getPassword())).start();
-    }
-
-    private void gen1Post(ResultIntSetter csetter, String str) {
-        if (wdDevice.getIp().isEmpty()) {
-            return;
-        }
-        new Thread(new PostGen1(csetter, wdDevice.getIp(), str)).start();
-    }
-
-    private void openErrorDialog(boolean ping) {
+    private void openConnectionErrorDialog(boolean ping) {
         if (dialogOpened) {
             return;
         }
 
-        String tit = getString(R.string.rem_txt_conerror);
-        String txt = getString(R.string.rem_txt_conerrort);
-        if (!ping) {
-            tit = getString(R.string.rem_txt_conlost);
-            txt = getString(R.string.rem_txt_conlostt);
-        }
+        String tit = getString(ping ? R.string.rem_txt_conerror : R.string.rem_txt_conlost);
+        String txt = getString(ping ? R.string.rem_txt_conerrort : R.string.rem_txt_conlostt);
         try {
             new AlertDialog.Builder(this).setIcon(R.drawable.appicon).setTitle(tit)
-                    .setView(LinkifyTextNoLink(txt))
+                    .setView(TextUtils.linkifyTextNoLink(txt, this))
                     .setPositiveButton(getString(R.string.m_txt_ok),
                             (dialog, which) -> dialogOpened = false)
                     .setNeutralButton(getString(R.string.m_txt_help),
@@ -1098,7 +999,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
                 shakeListener.setShakeListenerCallback(() -> {
                     if ((System.currentTimeMillis() - lastshake) > 500) {
                         lastshake = System.currentTimeMillis();
-                        sendCmdToDevice("p");
+                        sendCmdToDevice(WdDevice.CMD_PLAY);
                     }
                 });
             }
@@ -1117,11 +1018,11 @@ public class RemoteControllerActivity extends AppCompatActivity {
         NumberPicker nHor = addView.findViewById(R.id.num_hor);
         NumberPicker nMin = addView.findViewById(R.id.num_min);
         NumberPicker nSec = addView.findViewById(R.id.num_sec);
-        String[] totalTime = tc.secToStringArray(mLTotTime);
+        String[] totalTime = formatter.secToStringArray(mLTotTime);
         int ht = Integer.parseInt(totalTime[0]);
         int mt = Integer.parseInt(totalTime[1]);
         int st = Integer.parseInt(totalTime[2]);
-        String[] currentTime = tc.secToStringArray(mLCurTime);
+        String[] currentTime = formatter.secToStringArray(mLCurTime);
         int hc = Integer.parseInt(currentTime[0]);
         int mc = Integer.parseInt(currentTime[1]);
         int sc = Integer.parseInt(currentTime[2]);
@@ -1151,11 +1052,11 @@ public class RemoteControllerActivity extends AppCompatActivity {
                             time[1] = (m < 10 ? "0" : "") + m;
                             time[2] = (s < 10 ? "0" : "") + s;
                             String jumpToPosition = time[0] + ":" + time[1] + ":" + time[2];
-                            mLCurTime = tc.stringToSec(jumpToPosition);
+                            mLCurTime = formatter.stringToSec(jumpToPosition);
                             wdMediaService.setPlaybackPosition(jumpToPosition);
                             setTimeSeekUI(mLCurTime, mLTotTime);
                             setTimesTxtsUI(jumpToPosition,
-                                    tc.secToString(mLTotTime));
+                                    formatter.secToString(mLTotTime));
                         }).setNegativeButton(getString(R.string.rem_txt_cancel),
                         (dialog, whichButton) -> {
                         }).create();
@@ -1283,7 +1184,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
             mLCurTime++;
         }
 
-        setTimesTxtsUI(tc.secToString(mLCurTime), tc.secToString(mLTotTime));
+        setTimesTxtsUI(formatter.secToString(mLCurTime), formatter.secToString(mLTotTime));
     }
 
     private void startColorTogglerTask() {
@@ -1360,14 +1261,12 @@ public class RemoteControllerActivity extends AppCompatActivity {
         if (mProgress != null) {
             mProgress.dismiss();
         }
-        backgroundTaskHandler.removeCallbacks(colorToggler);
+
+        stopColorTogglerTask();
+        stopMediaPlaybackCheckerTask();
 
         if (shakeListener != null) {
             shakeListener.shutdown();
-        }
-        try {
-            AutomatedTelnetClient.disconnect();
-        } catch (Exception ignored) {
         }
     }
 
@@ -1408,44 +1307,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
             }
             runOnUiThread(RemoteControllerActivity.this::positionAndResizeUI);
             return null;
-        }
-    }
-
-    private class OpenTelnetTask extends AsyncTask<Void, Integer, Void> {
-        protected Void doInBackground(Void... params) {
-            try {
-                new AutomatedTelnetClient(wdDevice.getIp());
-            } catch (Exception e) {
-                Log.w(TAG, e);
-            }
-            return null;
-        }
-    }
-
-    private class ReadHubServicesTask extends AsyncTask<Void, Integer, Boolean> {
-        protected Boolean doInBackground(Void... params) {
-            serviceList = new HubServices().getServices(wdDevice.getIp());
-            return serviceList != null;
-        }
-
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-
-            ImageView img_pos = findViewById(R.id.img_pos);
-            if (result && img_pos != null && serviceList != null) {
-                createHubServicesLayout(serviceList);
-                if (isTablet) {
-                    img_pos.setImageResource(R.drawable.one);
-                } else {
-                    img_pos.setImageResource(R.drawable.tone);
-                }
-            } else if (horizontal_pager != null) {
-                if (isTablet) {
-                    horizontal_pager.removeViewAt(1);
-                } else {
-                    horizontal_pager.removeViewAt(2);
-                }
-            }
         }
     }
 
@@ -1492,68 +1353,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
             super.onPostExecute(result);
             runOnUiThread(() -> {
                 remoteNotAvailable();
-                openErrorDialog(result == 1);
+                openConnectionErrorDialog(result == 1);
             });
-        }
-    }
-
-    private class LiveOrigSendTask extends AsyncTask<String, Integer, Integer> {
-        private String currentstr;
-        private int countPing = 0;
-
-        protected Integer doInBackground(String... str) {
-            if (str[0].startsWith("p") || str[0].startsWith("E")) {
-                return -1;
-            }
-            try {
-                boolean connected = AutomatedTelnetClient.isConnected();
-                if (!connected) {
-                    return 0;
-                }
-
-                if (countPing++ >= 3) {
-                    countPing = 0;
-                    try {
-                        connected = InetAddress.getByName(wdDevice.getIp()).isReachable(500);
-                    } catch (IOException e) {
-                        Log.w(TAG, e);
-                        return 0;
-                    }
-                }
-
-                if (!connected) {
-                    return 0;
-                }
-                currentstr = str[0];
-                return 1;
-            } catch (Exception e) {
-                Log.w(TAG, e);
-                return 0;
-            }
-        }
-
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
-            if (result == null) {
-                return;
-            }
-
-            switch (result) {
-                case 1:
-                    errorCount = 0;
-                    new Thread(new SendLiveOrig(currentstr)).start();
-                    return;
-
-                case 0:
-                    if (++errorCount >= 3) {
-                        new CheckPingTask().execute();
-                    }
-                    return;
-
-                case -1:
-                    openInvalidButtonDialog();
-                    return;
-            }
         }
     }
 

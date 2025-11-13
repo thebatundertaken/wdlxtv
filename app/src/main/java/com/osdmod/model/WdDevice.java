@@ -3,6 +3,11 @@ package com.osdmod.model;
 import androidx.annotation.Nullable;
 
 import com.osdmod.remote.R;
+import com.osdmod.remote.WDTVHDGen1;
+import com.osdmod.remote.WDTVHDGen2;
+import com.osdmod.remote.WDTVLiveHub;
+import com.osdmod.remote.WDTVLivePlus;
+import com.osdmod.remote.WdRemoteController;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -24,19 +29,6 @@ public class WdDevice implements Comparable<WdDevice>, Serializable {
 
     private static final int[] galleryModelIcons = {R.drawable.icon_streaming, R.drawable.icon_hub, R.drawable.icon_live, R.drawable.icon_live, R.drawable.icon_gen1, R.drawable.icon_gen1};
     private static final int[] modelSmallIcons = {R.drawable.micon_streaming, R.drawable.micon_hub, R.drawable.micon_live, R.drawable.micon_live, R.drawable.micon_gen1, R.drawable.micon_gen1};
-
-    private final String modelName;
-    private String friendlyName;
-    private String ip;
-    private String uuid;
-    private boolean wDlxTVFirmware;
-    private boolean upnp;
-    private boolean keyboardAvailable;
-    private boolean remoteControlAvailable;
-    private boolean connected;
-    private String username;
-    private String password;
-    private int deviceId;
     public static String CMD_BACK = "T";
     public static String CMD_OK = "n";
     public static String CMD_OPTION = "G";
@@ -64,6 +56,18 @@ public class WdDevice implements Comparable<WdDevice>, Serializable {
     public static String CMD_BTN_B = "y";
     public static String CMD_BTN_C = "z";
     public static String CMD_BTN_D = "A";
+    private final String modelName;
+    private String friendlyName;
+    private String ip;
+    private String uuid;
+    private boolean wDlxTVFirmware;
+    private boolean upnp;
+    private boolean keyboardAvailable;
+    private boolean remoteControlAvailable;
+    private boolean connected;
+    private String username;
+    private String password;
+    private int deviceId;
 
     public WdDevice(String modelName, String friendlyName, String ip, String uuid) {
         this(modelName, friendlyName, ip, uuid, false, null, null,
@@ -72,7 +76,8 @@ public class WdDevice implements Comparable<WdDevice>, Serializable {
 
     public WdDevice(String modelName, String friendlyName, String ip, String uuid,
                     boolean wDlxTVFirmware, String username, String password,
-                    boolean remoteControlAvailable, boolean keyboard, boolean upnp, boolean connected) {
+                    boolean remoteControlAvailable, boolean keyboard, boolean upnp,
+                    boolean connected) {
         this(modelName, friendlyName, ip, uuid, wDlxTVFirmware, username, password,
                 remoteControlAvailable,
                 keyboard, upnp, connected, generateDeviceId());
@@ -80,7 +85,8 @@ public class WdDevice implements Comparable<WdDevice>, Serializable {
 
     public WdDevice(String modelName, String friendlyName, String ip, String uuid,
                     boolean wDlxTVFirmware, String username, String password,
-                    boolean remoteControlAvailable, boolean keyboard, boolean upnp, boolean connected,
+                    boolean remoteControlAvailable, boolean keyboard, boolean upnp,
+                    boolean connected,
                     int deviceId) {
         this.modelName = modelName;
         this.friendlyName = friendlyName;
@@ -121,20 +127,22 @@ public class WdDevice implements Comparable<WdDevice>, Serializable {
     public static int getModelIDFromString(String model) {
         //TODO SCF unificar con getDeviceDrawable para utilizar el mismo modelID
         String lower = model.toLowerCase();
-        if (lower.contains("streaming")) {
-            return MODELID_STREAMING;
-        }
-        if (lower.contains("hub")) {
-            return MODELID_HUB;
-        }
-        if (lower.contains("plus")) {
-            return MODELID_PLUS;
-        }
-        if (lower.contains("live")) {
-            return MODELID_LIVE;
-        }
-        if (lower.contains("gen2")) {
-            return MODELID_GEN2;
+        if (lower.contains("wd tv")) {
+            if (lower.contains("streaming")) {
+                return MODELID_STREAMING;
+            }
+            if (lower.contains("hub")) {
+                return MODELID_HUB;
+            }
+            if (lower.contains("plus")) {
+                return MODELID_PLUS;
+            }
+            if (lower.contains("live")) {
+                return MODELID_LIVE;
+            }
+            if (lower.contains("gen2")) {
+                return MODELID_GEN2;
+            }
         }
 
         return MODELID_GEN1;
@@ -288,6 +296,29 @@ public class WdDevice implements Comparable<WdDevice>, Serializable {
 
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public WdRemoteController createRemoteController() {
+        switch (getModelID()) {
+            case MODELID_STREAMING:
+            case MODELID_HUB:
+                return new WDTVLiveHub(ip);
+
+            case WdDevice.MODELID_LIVE:
+            case WdDevice.MODELID_PLUS:
+                if (!iswDlxTVFirmware() && remoteControlAvailable) {
+                    return new WDTVLivePlus(ip);
+                }
+                return new WDTVHDGen2(ip, username, password);
+
+            case WdDevice.MODELID_GEN2:
+                return new WDTVHDGen2(ip, username, password);
+
+            case WdDevice.MODELID_GEN1:
+                return new WDTVHDGen1(ip);
+        }
+
+        return null;
     }
 
     @Override

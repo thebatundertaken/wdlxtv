@@ -2,6 +2,8 @@ package com.osdmod.remote;
 
 import android.util.Log;
 
+import com.osdmod.remote.telnet.AutomatedTelnetClient;
+
 import org.apache.commons.net.tftp.TFTP;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -36,6 +38,7 @@ import ch.boye.httpclientandroidlib.protocol.HTTP;
 
 public class GetInfoFromLx {
     private static final String TAG = "GetInfoFromLx";
+    private AutomatedTelnetClient telnetClient;
 
     private String getGen1DeviceModel(String ip) {
         DefaultHttpClient client = new DefaultHttpClient();
@@ -139,9 +142,7 @@ public class GetInfoFromLx {
 
     private String[] tryTelnet(String ip) {
         boolean remote = false;
-        AutomatedTelnetClient telnetClient;
         try {
-            //noinspection UnusedAssignment,InstantiationOfUtilityClass
             telnetClient = new AutomatedTelnetClient(ip);
             remote = true;
         } catch (Exception e) {
@@ -169,8 +170,9 @@ public class GetInfoFromLx {
             s[7] = "true";
         }
         try {
-            //telnetClient.disconnect();
-            AutomatedTelnetClient.disconnect();
+            if (telnetClient != null) {
+                telnetClient.disconnect();
+            }
         } catch (Exception e) {
             Log.d(TAG, e.getMessage(), e);
         }

@@ -41,8 +41,7 @@
 Please, check if it's still connected to your network.
 Exit to the main screen and try to connect again.
 If you continue experiencing problems, read the help menu or contact me."</string>
-    <string name="rem_txt_logerror">Login error</string>
-    <string name="rem_txt_nocon">Device not connected</string>
+    <string name="rem_txt_nocon">Unable to connect to device</string>
     <string name="rem_txt_btnuna">Button not available</string>
     <string name="rem_txt_btnunat">"This button is not available with the official firmware due to technical reasons.&lt;br>You'll need &lt;b>WDlxTV&lt;/b>, it's a custom firmware for WDTV mediaplayers that offers more options than the official firmware. To know more about how to install it &lt;a href=https://wdtv-osdmod.blogspot.com/p/wdtv-mediaplayers-remote-android.html#hlpen>tap here&lt;/a>. It's FREE."</string>
     <string name="rem_txt_ok">Ok</string>

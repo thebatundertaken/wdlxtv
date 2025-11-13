@@ -5,8 +5,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +17,6 @@ import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.osdmod.model.WdDevice;
 import com.osdmod.model.WdDeviceRepository;
 import com.osdmod.remote.R;
+import com.osdmod.utils.TextUtils;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -303,21 +301,10 @@ public class EditDeviceActivity extends AppCompatActivity {
                 break;
         }
         new AlertDialog.Builder(this).setIcon(R.drawable.ic_menu_help)
-                .setTitle(getString(R.string.edia_txt_help)).setView(linkifyText(message))
+                .setTitle(getString(R.string.edia_txt_help)).setView(TextUtils.linkifyText(message, this))
                 .setPositiveButton(getString(R.string.edia_txt_ok),
                         (dialog, which) -> {
                         }).show();
-    }
-
-    private ScrollView linkifyText(String message) {
-        ScrollView svMessage = new ScrollView(this);
-        TextView tvMessage = new TextView(this);
-        tvMessage.setText(Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY));
-        tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
-        tvMessage.setTextColor(-1);
-        svMessage.setPadding(14, 2, 10, 12);
-        svMessage.addView(tvMessage);
-        return svMessage;
     }
 
     private Boolean validateHostAddress(String address) {

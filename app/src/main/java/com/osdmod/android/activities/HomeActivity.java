@@ -12,8 +12,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -25,7 +23,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,12 +31,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.osdmod.android.adapters.WdDeviceListAdapter;
+import com.osdmod.android.prefs.WDPrefs;
 import com.osdmod.model.WdDevice;
 import com.osdmod.model.WdDeviceRepository;
-import com.osdmod.android.prefs.WDPrefs;
-import com.osdmod.service.UpnpDiscoveryService;
-import com.osdmod.remote.GetInfoFromLx;
 import com.osdmod.remote.R;
+import com.osdmod.remote.WDTVHDGen1;
+import com.osdmod.remote.WDTVLiveHub;
+import com.osdmod.remote.WDTVLivePlus;
+import com.osdmod.remote.WdRemoteController;
+import com.osdmod.service.UpnpDiscoveryService;
+import com.osdmod.utils.TextUtils;
 
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.model.meta.RemoteDevice;
@@ -51,6 +52,7 @@ import org.teleal.cling.registry.Registry;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
@@ -343,21 +345,10 @@ public class HomeActivity extends AppCompatActivity {
     private void openHelpDialog() {
         new AlertDialog.Builder(this).setIcon(R.drawable.ic_menu_help)
                 .setTitle(getString(R.string.edia_txt_help))
-                .setView(linkifyText(getString(R.string.d_help)))
+                .setView(TextUtils.linkifyText(getString(R.string.d_help), this))
                 .setPositiveButton(getString(R.string.rem_txt_ok),
                         (dialog, which) -> {
                         }).show();
-    }
-
-    private ScrollView linkifyText(String message) {
-        ScrollView svMessage = new ScrollView(this);
-        TextView tvMessage = new TextView(this);
-        tvMessage.setText(Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY));
-        tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
-        tvMessage.setTextColor(-1);
-        svMessage.setPadding(14, 2, 10, 12);
-        svMessage.addView(tvMessage);
-        return svMessage;
     }
 
     private boolean checkNetworkStatus() {
@@ -427,7 +418,7 @@ public class HomeActivity extends AppCompatActivity {
     private void openAboutDialog() {
         new AlertDialog.Builder(this).setIcon(R.drawable.ic_menu_info_details)
                 .setTitle(getString(R.string.m_about_tit))
-                .setView(linkifyText(getString(R.string.m_about_txt)))
+                .setView(TextUtils.linkifyText(getString(R.string.m_about_txt), this))
                 .setPositiveButton(getString(R.string.b_pref_ok),
                         (dialog, which) -> {
                         }).show();
@@ -627,57 +618,38 @@ public class HomeActivity extends AppCompatActivity {
 
             showToastLong(getString(R.string.m_txt_wdtvfound));
 
-            boolean wdlxtv;
-            String user;
-            String password;
-            boolean connected;
-            boolean remoteControlAvailable;
-            boolean keyboard;
-            boolean upnp;
             String friendlyName = device[0].getDetails().getFriendlyName();
             String ip = device[0].getIdentity().getDescriptorURL().toString()
                     .replace("http://", "");
             ip = ip.substring(0, ip.indexOf(":"));
-            String modelName = device[0].getDetails().getModelDetails()
+            String rawModelName = device[0].getDetails().getModelDetails()
                     .getModelName() + " " + device[0].getDetails().getModelDetails()
                     .getModelDescription();
 
-            if (modelName.contains("WD TV")) {
-                int modelID = WdDevice.getModelIDFromString(modelName);
-                modelName = WdDevice.gentModelStringFromModelID(modelID);
-                if (modelID == WdDevice.MODELID_HUB || modelID == WdDevice.MODELID_STREAMING) {
-                    String[] respHub = new GetInfoFromLx().getHubConfig(ip);
-                    wdlxtv = false;
-                    user = WdDevice.DEFAULT_USERNAME;
-                    password = WdDevice.DEFAULT_PASSWORD;
-                    connected = true;
-                    upnp = true;
-                    remoteControlAvailable = Boolean.parseBoolean(respHub[0]);
-                    keyboard = Boolean.parseBoolean(respHub[1]);
-                } else {
-                    String[] resp = new GetInfoFromLx().getLiveConfig(ip, WdDevice.DEFAULT_USERNAME,
-                            WdDevice.DEFAULT_PASSWORD);
-                    wdlxtv = Boolean.parseBoolean(resp[0]);
-                    user = resp[1];
-                    password = resp[2];
-                    //login = Boolean.parseBoolean(resp[3]);
-                    connected = Boolean.parseBoolean(resp[4]);
-                    remoteControlAvailable = Boolean.parseBoolean(resp[5]);
-                    keyboard = Boolean.parseBoolean(resp[6]);
-                    upnp = Boolean.parseBoolean(resp[7]);
-                }
+            WdRemoteController wdRemoteController;
+            int modelID = WdDevice.getModelIDFromString(rawModelName);
+            if (modelID == WdDevice.MODELID_HUB || modelID == WdDevice.MODELID_STREAMING) {
+                wdRemoteController = new WDTVLiveHub(ip);
+            } else if (modelID == WdDevice.MODELID_PLUS) {
+                wdRemoteController = new WDTVLivePlus(ip);
             } else {
-                String[] resp2 = new GetInfoFromLx().getGen12Config(ip);
-                modelName = resp2[0];
-                wdlxtv = Boolean.parseBoolean(resp2[1]);
-                user = resp2[2];
-                password = resp2[3];
-                //login = Boolean.parseBoolean(resp2[4]);
-                connected = Boolean.parseBoolean(resp2[5]);
-                remoteControlAvailable = Boolean.parseBoolean(resp2[6]);
-                keyboard = Boolean.parseBoolean(resp2[7]);
-                upnp = Boolean.parseBoolean(resp2[8]);
+                wdRemoteController = new WDTVHDGen1(ip);
             }
+            String modelName = WdDevice.gentModelStringFromModelID(modelID);
+            Map<String, Object> respHub = wdRemoteController.getInfo();
+            //noinspection DataFlowIssue
+            boolean remoteControlAvailable = (boolean) respHub.get(
+                    WdRemoteController.INFO_REMOTECONTROL_AVAILABLE);
+            //noinspection DataFlowIssue
+            boolean keyboard = (boolean) respHub.get(WdRemoteController.INFO_KEYBOARD_AVAILABLE);
+            //noinspection DataFlowIssue
+            boolean wdlxtv = (boolean) respHub.get(WdRemoteController.INFO_WDLXTV_FIRMWARE);
+            String user = (String) respHub.get(WdRemoteController.INFO_USERNAME);
+            String password = (String) respHub.get(WdRemoteController.INFO_PASSWORD);
+            //noinspection DataFlowIssue
+            boolean connected = (boolean) respHub.get(WdRemoteController.INFO_CONNECTED);
+            //noinspection DataFlowIssue
+            boolean upnp = (boolean) respHub.get(WdRemoteController.INFO_UPNP);
 
             WdDevice wdDevice = new WdDevice(modelName, friendlyName, ip, device[0].getIdentity()
                     .getUdn().getIdentifierString(), wdlxtv, user, password, remoteControlAvailable,
