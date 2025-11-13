@@ -117,7 +117,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private String[][] serviceList;
     private boolean dialogOpened = false;
     private long lastost = 0;
-    private ProgressDialog mProgress;
     private WdDevice wdDevice;
     private WdRemoteController wdRemoteController;
     private boolean isColorTogglerRunning = false;
@@ -128,7 +127,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
         switch (result) {
             case 0:
                 if (++errorCount >= 3) {
-                    new CheckPingTask().execute();
+                    new Thread(new CheckPingTask()).start();
                 }
                 break;
 
@@ -259,32 +258,29 @@ public class RemoteControllerActivity extends AppCompatActivity {
         }
     };
     private final ResultIntSetter checker = result -> {
-        switch (result) {
-            case 1:
-                if (wdDevice.getModelID() == WdDevice.MODELID_HUB || wdDevice.getModelID() == WdDevice.MODELID_STREAMING) {
-                    new Thread(
-                            () -> {
-                                serviceList = wdRemoteController.getDeviceServices();
-                                runOnUiThread(() -> {
-                                    if (serviceList == null) {
-                                        if (horizontal_pager != null) {
-                                            horizontal_pager.removeViewAt(isTablet ? 1 : 2);
-                                        }
-                                        return;
-                                    }
-                                    createHubServicesLayout(serviceList);
-                                    ((ImageView) findViewById(R.id.img_pos)).setImageResource(
-                                            isTablet ? R.drawable.one : R.drawable.tone);
-                                });
-                            }
-                    ).start();
-                }
-                break;
+        if (result != 1) {
+            remoteNotAvailable();
+            showToastLong(getString(R.string.rem_txt_nocon));
+            return;
+        }
 
-            default:
-                remoteNotAvailable();
-                showToastLong(getString(R.string.rem_txt_nocon));
-                break;
+        if (wdDevice.getModelID() == WdDevice.MODELID_HUB || wdDevice.getModelID() == WdDevice.MODELID_STREAMING) {
+            new Thread(
+                    () -> {
+                        serviceList = wdRemoteController.getDeviceServices();
+                        runOnUiThread(() -> {
+                            if (serviceList == null) {
+                                if (horizontal_pager != null) {
+                                    horizontal_pager.removeViewAt(isTablet ? 1 : 2);
+                                }
+                                return;
+                            }
+                            createHubServicesLayout(serviceList);
+                            ((ImageView) findViewById(R.id.img_pos)).setImageResource(
+                                    isTablet ? R.drawable.one : R.drawable.tone);
+                        });
+                    }
+            ).start();
         }
     };
     private boolean conf_volumebuttons;
@@ -637,7 +633,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
         HubServicesDrawable get_serv = new HubServicesDrawable();
         int i = 0;
         while (services[i][0] != null) {
-            View custom = inflater.inflate(R.layout.row_service, null);
+            View custom = inflater.inflate(R.layout.row_service, parent);
             ImageButton btn1 = custom.findViewById(R.id.btn_s_1);
             ImageButton btn2 = custom.findViewById(R.id.btn_s_2);
             ImageButton btn3 = custom.findViewById(R.id.btn_s_3);
@@ -932,7 +928,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
     }
 
     private void openKeyboardDialog() {
-        final View addView = getLayoutInflater().inflate(R.layout.dialog_keyboard, null);
+        View addView = getLayoutInflater().inflate(R.layout.dialog_keyboard, null);
         alertKeyboard = new AlertDialog.Builder(this).setTitle(
                         getString(R.string.rem_txt_keyboard)).setView(addView)
                 .setPositiveButton(getString(R.string.rem_txt_send),
@@ -958,7 +954,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
     private void startVoiceRecognitionActivity() {
         Intent intent = new Intent("android.speech.action.RECOGNIZE_SPEECH");
-        intent.putExtra("calling_package", getClass().getPackage().getName());
+        intent.putExtra("calling_package", Objects.requireNonNull(getClass().getPackage()).getName());
         intent.putExtra("android.speech.extra.LANGUAGE_MODEL", "free_form");
         intent.putExtra("android.speech.extra.MAX_RESULTS", 5);
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
@@ -970,7 +966,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
                     "android.speech.extra.RESULTS");
             EditText etx_text = alertKeyboard.findViewById(R.id.etx_text);
             if (etx_text != null) {
-                etx_text.setText(matches.get(0));
+                etx_text.setText(Objects.requireNonNull(matches).get(0));
             }
         } else if (requestCode == PREFERENCES_REQUEST_CODE) {
             loadPreferences();
@@ -1258,9 +1254,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
         if (wdUpnpService != null) {
             getApplicationContext().unbindService(wdUpnpService);
         }
-        if (mProgress != null) {
-            mProgress.dismiss();
-        }
 
         stopColorTogglerTask();
         stopMediaPlaybackCheckerTask();
@@ -1277,7 +1270,16 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
     protected void onStart() {
         super.onStart();
-        new FirstRunTask().execute();
+        new Thread(
+                () -> {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        Log.w(TAG, e);
+                    }
+                    runOnUiThread(RemoteControllerActivity.this::positionAndResizeUI);
+                }
+        ).start();
     }
 
     private void startMediaPlaybackCheckerTask() {
@@ -1298,19 +1300,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
         }
     }
 
-    private class FirstRunTask extends AsyncTask<Void, Integer, Void> {
-        protected Void doInBackground(Void... params) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                Log.w(TAG, e);
-            }
-            runOnUiThread(RemoteControllerActivity.this::positionAndResizeUI);
-            return null;
-        }
-    }
-
     private class SendTextTask extends AsyncTask<String, Integer, Void> {
+        private ProgressDialog mProgress;
         private SendTxtWDlxTV sendTxtWDlxTV;
 
         protected void onPreExecute() {
@@ -1337,23 +1328,22 @@ public class RemoteControllerActivity extends AppCompatActivity {
         }
     }
 
-    private class CheckPingTask extends AsyncTask<Void, Void, Integer> {
-        protected Integer doInBackground(Void... param) {
+    private class CheckPingTask implements Runnable {
+        @Override
+        public void run() {
+            int result = 0;
             try {
                 if (InetAddress.getByName(wdDevice.getIp()).isReachable(500)) {
-                    return 1;
+                    result = 1;
                 }
             } catch (IOException e) {
                 Log.w(TAG, e);
             }
-            return 0;
-        }
 
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
+            final int finalResult = result;
             runOnUiThread(() -> {
                 remoteNotAvailable();
-                openConnectionErrorDialog(result == 1);
+                openConnectionErrorDialog(finalResult == 1);
             });
         }
     }
@@ -1377,6 +1367,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
         }
 
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            //noinspection DataFlowIssue
             if (Math.abs(e2.getRawY() - e1.getRawY()) > Math.abs(e2.getRawX() - e1.getRawX())) {
                 if (e2.getRawY() - e1.getRawY() > 0.0f) {
                     flash(findViewById(R.id.btn_down));

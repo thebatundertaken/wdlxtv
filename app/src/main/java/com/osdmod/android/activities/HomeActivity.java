@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.PixelFormat;
 import android.net.ConnectivityManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
@@ -234,7 +233,7 @@ public class HomeActivity extends AppCompatActivity {
 
             case R.id.home_new_contextm_favorite:
                 updateLists();
-                new AddNewDeviceToFavoritesTask().execute(new WdDevice[]{device});
+                new Thread(new AddNewDeviceToFavoritesTask(device)).start();
                 return true;
 
             case R.id.home_saved_contextm_edit:
@@ -245,7 +244,7 @@ public class HomeActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage(R.string.m_txt_delete)
                         .setPositiveButton(R.string.m_txt_ok, (dialog, id) -> {
-                            new RemoveDeviceFromFavoritesTask().execute(device);
+                            new Thread(new RemoveDeviceFromFavoritesTask(device)).start();
                         })
                         .setNegativeButton(R.string.m_txt_cancel, (dialog, id) -> {
                         });
@@ -267,7 +266,7 @@ public class HomeActivity extends AppCompatActivity {
                 if (resultCode == 0) {
                     adapterSaved.notifyDataSetChanged();
                 } else if (resultCode == -1) {
-                    new LoadFavouritesTask().execute();
+                    new Thread(new LoadFavouritesTask()).start();
                 }
                 break;
 
@@ -488,9 +487,9 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void showToastLong(final String val) {
-        if (System.currentTimeMillis() - this.lastost > 3500) {
+        if (System.currentTimeMillis() - lastost > 3500) {
             runOnUiThread(() -> Toast.makeText(HomeActivity.this, val, Toast.LENGTH_LONG).show());
-            this.lastost = System.currentTimeMillis();
+            lastost = System.currentTimeMillis();
         }
     }
 
@@ -517,9 +516,9 @@ public class HomeActivity extends AppCompatActivity {
 
         if (firstRun) {
             firstRun = false;
-            new UpnpServiceRunTask().execute();
-            new LoadFavouritesTask().execute();
-            new RunDevicesDiscoveryTask().execute();
+            new Thread(new UpnpServiceRunTask()).start();
+            new Thread(new LoadFavouritesTask()).start();
+            new Thread(new RunDevicesDiscoveryTask()).start();
         }
     }
 
@@ -551,8 +550,10 @@ public class HomeActivity extends AppCompatActivity {
         clearAppCache();
     }
 
-    private class UpnpServiceRunTask extends AsyncTask<Void, Integer, Void> {
-        protected Void doInBackground(Void... target) {
+    private class UpnpServiceRunTask implements Runnable {
+
+        @Override
+        public void run() {
             ServiceConnection serviceConnection = new ServiceConnection() {
                 public void onServiceConnected(ComponentName className, IBinder service) {
                     upnpService = (AndroidUpnpService) service;
@@ -567,7 +568,6 @@ public class HomeActivity extends AppCompatActivity {
             getApplicationContext()
                     .bindService(new Intent(HomeActivity.this, UpnpDiscoveryService.class),
                             serviceConnection, 1);
-            return null;
         }
     }
 
@@ -581,7 +581,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         private void deviceAdded(RemoteDevice device) {
-            Service service = device.findService(new UDAServiceType("RenderingControl"));
+            Service<?, ?> service = device.findService(new UDAServiceType("RenderingControl"));
             if (service == null || service.getAction("GetVolume") == null || service.getAction(
                     "SetVolume") == null || service.getAction("GetMute") == null) {
                 return;
@@ -589,7 +589,7 @@ public class HomeActivity extends AppCompatActivity {
 
             if (searching) {
                 // Discoverable device found
-                new NewDeviceFoundTask().execute(device);
+                new Thread(new NewDeviceFoundTask(device)).start();
                 return;
             }
 
@@ -602,28 +602,34 @@ public class HomeActivity extends AppCompatActivity {
 
             int positionInNewList = checkIfOnNewList(uuid);
             if (positionInSavedList == -1 && positionInNewList == -1) {
-                new NewDeviceFoundTask().execute(device);
+                new Thread(new NewDeviceFoundTask(device)).start();
             }
         }
     }
 
-    private class NewDeviceFoundTask extends AsyncTask<RemoteDevice, Void, Void> {
+    private class NewDeviceFoundTask implements Runnable {
+        private final RemoteDevice device;
 
-        protected Void doInBackground(RemoteDevice... device) {
-            if (!device[0].getDetails().getModelDetails().getModelName()
-                    .contains("WD TV") && !device[0].getIdentity().getUdn()
+        private NewDeviceFoundTask(RemoteDevice device) {
+            this.device = device;
+        }
+
+        @Override
+        public void run() {
+            if (!device.getDetails().getModelDetails().getModelName()
+                    .contains("WD TV") && !device.getIdentity().getUdn()
                     .getIdentifierString().equals(WdDevice.DEFAULT_UUID)) {
-                return null;
+                return;
             }
 
             showToastLong(getString(R.string.m_txt_wdtvfound));
 
-            String friendlyName = device[0].getDetails().getFriendlyName();
-            String ip = device[0].getIdentity().getDescriptorURL().toString()
+            String friendlyName = device.getDetails().getFriendlyName();
+            String ip = device.getIdentity().getDescriptorURL().toString()
                     .replace("http://", "");
             ip = ip.substring(0, ip.indexOf(":"));
-            String rawModelName = device[0].getDetails().getModelDetails()
-                    .getModelName() + " " + device[0].getDetails().getModelDetails()
+            String rawModelName = device.getDetails().getModelDetails()
+                    .getModelName() + " " + device.getDetails().getModelDetails()
                     .getModelDescription();
 
             WdRemoteController wdRemoteController;
@@ -651,7 +657,7 @@ public class HomeActivity extends AppCompatActivity {
             //noinspection DataFlowIssue
             boolean upnp = (boolean) respHub.get(WdRemoteController.INFO_UPNP);
 
-            WdDevice wdDevice = new WdDevice(modelName, friendlyName, ip, device[0].getIdentity()
+            WdDevice wdDevice = new WdDevice(modelName, friendlyName, ip, device.getIdentity()
                     .getUdn().getIdentifierString(), wdlxtv, user, password, remoteControlAvailable,
                     keyboard, upnp,
                     connected);
@@ -664,8 +670,7 @@ public class HomeActivity extends AppCompatActivity {
                 wdDevice.setDeviceId(savedDevice.getDeviceId());
                 wdDevice.setFriendlyName(savedDevice.getFriendlyName());
                 listOfSavedDevices.set(positionInSavedList, wdDevice);
-                runOnUiThread(() -> new UpdateFavoriteNoListRefreshTask().execute(
-                        new WdDevice[]{wdDevice}));
+                new Thread(new UpdateFavoriteNoListRefreshTask(wdDevice)).start();
             }
 
             int positionInNewList = checkIfOnNewList(wdDevice.getUuid());
@@ -674,35 +679,28 @@ public class HomeActivity extends AppCompatActivity {
             } else {
                 listOfNewDevices.set(positionInNewList, wdDevice);
             }
-            return null;
-        }
 
-        protected void onPostExecute(Void result) {
             runOnUiThread(HomeActivity.this::updateLists);
         }
     }
 
-    private class LoadFavouritesTask extends AsyncTask<Void, Integer, Void> {
+    private class LoadFavouritesTask implements Runnable {
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            ly_emptyfav.setVisibility(View.GONE);
-            ly_loadingfav.setVisibility(View.VISIBLE);
-        }
-
-        protected Void doInBackground(Void... filename) {
+        public void run() {
+            runOnUiThread(
+                    () -> {
+                        ly_emptyfav.setVisibility(View.GONE);
+                        ly_loadingfav.setVisibility(View.VISIBLE);
+                    }
+            );
             loadFavoritesDevicesList();
-            return null;
-        }
-
-        protected void onPostExecute(Void result) {
             runOnUiThread(HomeActivity.this::updateLists);
         }
     }
 
-    private class RunDevicesDiscoveryTask extends AsyncTask<Void, Void, Void> {
-
-        protected Void doInBackground(Void... filename) {
+    private class RunDevicesDiscoveryTask implements Runnable {
+        @Override
+        public void run() {
             int retries = 0;
             while (upnpService == null && retries++ < 3) {
                 try {
@@ -711,30 +709,29 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
             runDevicesDiscovery(false, false);
-            return null;
         }
     }
 
-    private class AddNewDeviceToFavoritesTask extends AsyncTask<WdDevice[], Void, WdDevice> {
+    private class AddNewDeviceToFavoritesTask implements Runnable {
+        private final WdDevice device;
 
-        protected WdDevice doInBackground(WdDevice[]... param) {
-            WdDevice wdDevice = param[0][0];
+        private AddNewDeviceToFavoritesTask(WdDevice device) {
+            this.device = device;
+        }
 
-            int positionInSavedList = checkIfOnSavedList(wdDevice.getUuid());
+        @Override
+        public void run() {
+            int positionInSavedList = checkIfOnSavedList(device.getUuid());
             if (positionInSavedList != -1) {
                 // Favorited, keep friendlyName given by user and deviceId to avoid ListView change of position
                 WdDevice savedDevice = listOfSavedDevices.get(positionInSavedList);
-                wdDevice.setDeviceId(savedDevice.getDeviceId());
-                wdDevice.setFriendlyName(savedDevice.getFriendlyName());
+                device.setDeviceId(savedDevice.getDeviceId());
+                device.setFriendlyName(savedDevice.getFriendlyName());
             }
 
-            wdDeviceRepository.add(wdDevice);
+            wdDeviceRepository.add(device);
             loadFavoritesDevicesList();
 
-            return wdDevice;
-        }
-
-        protected void onPostExecute(WdDevice device) {
             //TODO SCF esta movida se puede quitar si al cargar favoritos compruebo si está online o no
             int pos = listOfSavedDevices.indexOf(device);
             if (pos != -1) {
@@ -746,25 +743,30 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    private class UpdateFavoriteNoListRefreshTask extends AsyncTask<WdDevice[], Void, Void> {
+    private class UpdateFavoriteNoListRefreshTask implements Runnable {
+        private final WdDevice device;
 
-        protected Void doInBackground(WdDevice[]... param) {
-            WdDevice wdDevice = param[0][0];
-            wdDeviceRepository.update(wdDevice);
-            return null;
+        private UpdateFavoriteNoListRefreshTask(WdDevice device) {
+            this.device = device;
+        }
+
+        @Override
+        public void run() {
+            wdDeviceRepository.update(device);
         }
     }
 
-    private class RemoveDeviceFromFavoritesTask extends AsyncTask<WdDevice, Void, Void> {
+    private class RemoveDeviceFromFavoritesTask implements Runnable {
+        private final WdDevice device;
 
-        protected Void doInBackground(WdDevice... deviceId) {
-            wdDeviceRepository.delete(deviceId[0].getDeviceId());
-
-            loadFavoritesDevicesList();
-            return null;
+        private RemoveDeviceFromFavoritesTask(WdDevice device) {
+            this.device = device;
         }
 
-        protected void onPostExecute(Void result) {
+        @Override
+        public void run() {
+            wdDeviceRepository.delete(device.getDeviceId());
+            loadFavoritesDevicesList();
             runOnUiThread(HomeActivity.this::updateLists);
         }
     }
