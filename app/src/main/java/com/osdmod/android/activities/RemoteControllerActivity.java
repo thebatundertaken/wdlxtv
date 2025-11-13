@@ -730,6 +730,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
                 case 1:
                     errorCount = 0;
+                    wdMediaService.refresh();
                     break;
 
                 case -1:
@@ -1231,12 +1232,12 @@ public class RemoteControllerActivity extends AppCompatActivity {
             case WdMediaService.PLAYBACK_PLAYING:
             case WdMediaService.PLAYBACK_TRANSITIONING:
                 stopColorTogglerTask();
-                //startMediaPlaybackCheckerTask();
+                startMediaPlaybackCheckerTask();
                 break;
 
             case WdMediaService.PLAYBACK_STOPPED:
             case WdMediaService.PLAYBACK_NO_MEDIA_PRESENT:
-                //stopMediaPlaybackCheckerTask();
+                stopMediaPlaybackCheckerTask();
                 stopColorTogglerTask();
                 setTitleTxtUI(getString(newPlaybackState.equals(
                         WdMediaService.PLAYBACK_STOPPED) ? R.string.remote_stopped : R.string.no_media_present));
@@ -1247,7 +1248,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
             case WdMediaService.PLAYBACK_PREBUFFING:
             case WdMediaService.PLAYBACK_PAUSED_PLAYBACK:
-                //stopMediaPlaybackCheckerTask();
+                stopMediaPlaybackCheckerTask();
                 if (wdMediaService != null) {
                     wdMediaService.syncPlaybackPosition();
                 }
@@ -1451,13 +1452,20 @@ public class RemoteControllerActivity extends AppCompatActivity {
         if (mediaPlaybackStatusLastCheck == -1) {
             mediaPlaybackStatusLastCheck = System.currentTimeMillis();
             wdMediaService.syncPlaybackPosition();
+            wdMediaService.syncPlaybackStatus();
         } else {
-            if (mediaPlaybackStatusCheckerCount <= 5 || isMediaRewinding) {
+            mediaPlaybackStatusCheckerCount++;
+            if (isMediaRewinding || ((mediaPlaybackStatusCheckerCount % 5) != 0)) {
                 offlinePlaybackPositionUpdate();
-                mediaPlaybackStatusCheckerCount++;
-            } else {
-                wdMediaService.syncPlaybackPosition();
-                mediaPlaybackStatusCheckerCount = 0;
+            }
+            else {
+                if (mediaPlaybackStatusCheckerCount == 5) {
+                    wdMediaService.syncPlaybackPosition();
+                } else if (mediaPlaybackStatusCheckerCount == 10) {
+                    wdMediaService.syncPlaybackPosition();
+                    wdMediaService.syncPlaybackStatus();
+                    mediaPlaybackStatusCheckerCount = 0;
+                }
             }
         }
 

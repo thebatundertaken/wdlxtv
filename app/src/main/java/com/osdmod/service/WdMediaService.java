@@ -64,6 +64,8 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
     private String mediaPlaybackState = WdMediaService.PLAYBACK_STOPPED;
     private int retries = 0;
     private boolean subscribeToDevice = false;
+    private final Object refreshLock = new Object();
+    private boolean refreshing = false;
 
     public WdMediaService(RemoteDevice remoteDevice, ControlPoint controlPoint,
                           WdMediaServiceEventListener mediaEventListener) {
@@ -96,11 +98,24 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
         return mediaPlaybackState;
     }
 
-    public void initialSync() {
-        syncPlaybackStatus();
-        syncPlaybackPosition();
-        syncVolumen();
-        syncPlayMode();
+    public void refresh() {
+        if(refreshing) {
+            return;
+        }
+
+        synchronized (refreshLock) {
+            refreshing = true;
+            try {
+                syncPlaybackStatus();
+                syncPlaybackPosition();
+                syncVolumen();
+                syncPlayMode();
+            }
+            catch (Exception ignored) {}
+            finally {
+                refreshing = false;
+            }
+        }
     }
 
     public int getVolumen() {
@@ -473,7 +488,7 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
 
     @Override
     public void onServiceSubscribed() {
-        initialSync();
+        refresh();
     }
 
     @Override
