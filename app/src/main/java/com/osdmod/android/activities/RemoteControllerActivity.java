@@ -52,8 +52,9 @@ import com.osdmod.android.sensor.ShakeListener;
 import com.osdmod.formatter.PlaybackTimeFormatter;
 import com.osdmod.model.WdDevice;
 import com.osdmod.remote.R;
+import com.osdmod.remote.RemoteKeyboard;
 import com.osdmod.remote.ResultIntSetter;
-import com.osdmod.remote.SendTxtWDlxTV;
+import com.osdmod.remote.WDTVLiveHub;
 import com.osdmod.remote.WdRemoteController;
 import com.osdmod.service.UpnpDiscoveryService;
 import com.osdmod.service.WdMediaService;
@@ -201,7 +202,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
         String tag = (String) v.getTag();
         if (tag != null && tag.startsWith("service_")) {
             if (serviceList != null) {
-                sendCmdToDevice("s_" + serviceList[Integer.parseInt(tag.substring(8))][3]);
+                sendServiceToDevice(serviceList[Integer.parseInt(tag.substring(8))][3]);
             }
         }
 
@@ -719,25 +720,39 @@ public class RemoteControllerActivity extends AppCompatActivity {
         return true;
     }
 
-    private void sendCmdToDevice(String cmd) {
+    private void sendTextToDevice(String text) {
+        if (text == null || text.isEmpty()) {
+            return;
+        }
+
         ledflash();
-        if (wdDevice.getModelID() == WdDevice.MODELID_HUB || wdDevice.getModelID() == WdDevice.MODELID_STREAMING) {
+        if (wdRemoteController instanceof WDTVLiveHub) {
             new Thread(() -> {
-                int result = wdRemoteController.sendCommand(cmd);
-                setter.setResult(result);
+                wdRemoteController.sendText(text);
             }
             ).start();
             return;
         }
 
-        if (cmd.startsWith("t_")) {
-            new SendTextTask().execute(cmd.substring(2));
-            return;
-        }
+        //WDTVHDGen1, WDTVHDGen2, WDTVLivePlus
+        new SendTextTask().execute(text);
+        return;
+    }
 
+    private void sendCmdToDevice(String cmd) {
+        ledflash();
         new Thread(() -> {
             int result = wdRemoteController.sendCommand(cmd);
             setter.setResult(result);
+        }
+        ).start();
+        return;
+    }
+
+    private void sendServiceToDevice(String service) {
+        ledflash();
+        new Thread(() -> {
+            wdRemoteController.openService(service);
         }
         ).start();
         return;
@@ -932,9 +947,9 @@ public class RemoteControllerActivity extends AppCompatActivity {
         alertKeyboard = new AlertDialog.Builder(this).setTitle(
                         getString(R.string.rem_txt_keyboard)).setView(addView)
                 .setPositiveButton(getString(R.string.rem_txt_send),
-                        (dialog, whichButton) -> sendCmdToDevice(
-                                "t_" + ((EditText) addView.findViewById(
-                                        R.id.etx_text)).getText()))
+                        (dialog, whichButton) -> sendTextToDevice(
+                                ((EditText) addView.findViewById(R.id.etx_text)).getText()
+                                        .toString()))
                 .setNegativeButton(getString(R.string.rem_txt_cancel),
                         (dialog, whichButton) -> {
                         }).create();
@@ -954,7 +969,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
     private void startVoiceRecognitionActivity() {
         Intent intent = new Intent("android.speech.action.RECOGNIZE_SPEECH");
-        intent.putExtra("calling_package", Objects.requireNonNull(getClass().getPackage()).getName());
+        intent.putExtra("calling_package",
+                Objects.requireNonNull(getClass().getPackage()).getName());
         intent.putExtra("android.speech.extra.LANGUAGE_MODEL", "free_form");
         intent.putExtra("android.speech.extra.MAX_RESULTS", 5);
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
@@ -1302,7 +1318,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
     private class SendTextTask extends AsyncTask<String, Integer, Void> {
         private ProgressDialog mProgress;
-        private SendTxtWDlxTV sendTxtWDlxTV;
+        private Thread sendTextThread;
+        private RemoteKeyboard remoteKeyboard;
 
         protected void onPreExecute() {
             super.onPreExecute();
@@ -1312,14 +1329,17 @@ public class RemoteControllerActivity extends AppCompatActivity {
             mProgress.setIndeterminate(true);
             mProgress.setCancelable(true);
             mProgress.setButton(getString(R.string.rem_txt_cancel),
-                    (dialog, whichButton) -> sendTxtWDlxTV.stop());
+                    (dialog, whichButton) -> sendTextThread.stop());
             mProgress.show();
         }
 
         protected Void doInBackground(String... keyboardText) {
-            sendTxtWDlxTV = new SendTxtWDlxTV(wdDevice.getIp(), wdDevice.getModelID(),
-                    keyboardText[0], wdDevice.getUsername(), wdDevice.getPassword());
-            sendTxtWDlxTV.run();
+            sendTextThread = new Thread(
+                    () -> {
+                        remoteKeyboard = new RemoteKeyboard(wdRemoteController);
+                        remoteKeyboard.send(keyboardText[0]);
+                    }
+            );
             return null;
         }
 

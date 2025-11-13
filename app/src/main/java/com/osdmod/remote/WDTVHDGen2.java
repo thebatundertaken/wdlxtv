@@ -95,6 +95,11 @@ public class WDTVHDGen2 implements WdRemoteController {
     }
 
     @Override
+    public void openService(String service) {
+        sendCommand(SERVICE_PREFIX + service);
+    }
+
+    @Override
     public int sendCommand(String command) {
         httpclient.getCredentialsProvider()
                 .setCredentials(new org.apache.http.auth.AuthScope(ip, 80, null, AuthPolicy.DIGEST),
@@ -125,7 +130,7 @@ public class WDTVHDGen2 implements WdRemoteController {
 
     @Override
     public void sendText(String text) {
-        //TODO SCF implementar
+        sendCommand(text);
     }
 
     @Override

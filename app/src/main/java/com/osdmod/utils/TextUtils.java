@@ -27,4 +27,12 @@ public class TextUtils {
         return svMessage;
     }
 
+    public static String convertToASCII(String str) {
+        for (int i = 0; i < "ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËéèêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ".length(); i++) {
+            str = str.replace("ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËéèêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ".charAt(i),
+                    "AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn".charAt(i));
+        }
+        return str;
+    }
+
 }

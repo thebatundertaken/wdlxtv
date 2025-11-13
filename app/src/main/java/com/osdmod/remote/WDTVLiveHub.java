@@ -81,10 +81,9 @@ public class WDTVLiveHub implements WdRemoteController {
 
     @Override
     public Map<String, Object> getInfo() {
-        String[] respHub = new GetInfoFromLx().getHubConfig(ip);
         Map<String, Object> response = new HashMap<>();
-        response.put(INFO_REMOTECONTROL_AVAILABLE, Boolean.parseBoolean(respHub[0]));
-        response.put(INFO_KEYBOARD_AVAILABLE, Boolean.parseBoolean(respHub[1]));
+        response.put(INFO_REMOTECONTROL_AVAILABLE, sendCommand(""));
+        response.put(INFO_KEYBOARD_AVAILABLE, sendCommand(TEXT_PREFIX));
         response.put(INFO_WDLXTV_FIRMWARE, false);
         response.put(INFO_USERNAME, WdDevice.DEFAULT_USERNAME);
         response.put(INFO_PASSWORD, WdDevice.DEFAULT_PASSWORD);
@@ -96,7 +95,19 @@ public class WDTVLiveHub implements WdRemoteController {
 
     @Override
     public void sendText(String text) {
-        //TODO SCF implementar
+        if(text == null || text.isEmpty()) {
+            return;
+        }
+
+        if(!text.startsWith(TEXT_PREFIX)) {
+            text = TEXT_PREFIX + text;
+        }
+        sendCommand(text);
+    }
+
+    @Override
+    public void openService(String service) {
+        sendCommand(SERVICE_PREFIX + service);
     }
 
     private String convertCommand(String command) {
@@ -104,18 +115,18 @@ public class WDTVLiveHub implements WdRemoteController {
             return "";
         }
 
-        if (command.startsWith("s_")) {
+        if (command.startsWith(SERVICE_PREFIX)) {
             return "{\"service\":\"" + command.substring(2) + "\"}";
         }
 
-        if (command.startsWith("t_")) {
-            return "{\"keyboard\":\"" + command.substring(2) + "\"}";
+        if (command.startsWith(TEXT_PREFIX)) {
+            return "{\"keyboard\":\"" + (command.length() > 2 ? command.substring(2) : "") + "\"}";
         }
 
         return "{\"remote\":\"" + command + "\"}";
     }
 
-    public String[][] extractServicesFromXML(String xml) {
+    private String[][] extractServicesFromXML(String xml) {
         String xml2 = xml.replaceAll("\\{ \"success\": 1, \"services\": \\[ ", "<services>")
                 .replaceAll(" \\] \\}", "</services>").replaceAll("\\{ \"name\": ", "<serv><name>")
                 .replaceAll("\", \"image_url\": \\{ \"", "\"</name><image_url ")
