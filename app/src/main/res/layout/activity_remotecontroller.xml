@@ -57,8 +57,9 @@
 
                         <TextView
                             android:id="@+id/txt_time_current"
-                            android:layout_width="wrap_content"
+                            android:layout_width="65dp"
                             android:layout_height="wrap_content"
+                            android:gravity="start"
                             android:layout_gravity="center"
                             android:padding="2.0dip"
                             android:shadowColor="@color/black"
@@ -79,9 +80,11 @@
 
                         <TextView
                             android:id="@+id/txt_time_total"
-                            android:layout_width="wrap_content"
+                            android:layout_width="65dp"
                             android:layout_height="wrap_content"
+                            android:gravity="start"
                             android:layout_gravity="center"
+                            android:padding="2.0dip"
                             android:shadowColor="@color/black"
                             android:shadowDx="1.0"
                             android:shadowDy="1.0"
@@ -190,6 +193,7 @@
                         android:id="@+id/row_three_lyone_swone"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
                         android:orientation="horizontal">
 
                         <View
