@@ -364,6 +364,16 @@ public class HomeActivity extends AppCompatActivity {
         menuInflater.inflate(
                 (lv.getId() == R.id.newlist) ? R.menu.home_activity_new_contextmenu : R.menu.home_activity_saved_contextmenu,
                 menu);
+
+        //Disabled discovered devices context menu "add to favorites" option if device already favorited
+        if(lv.getId() == R.id.newlist) {
+            int position = lv.getPositionForView(info.targetView);
+            WdDevice device = (WdDevice) lv.getAdapter().getItem(position);
+            int positionInSavedList = checkIfOnSavedList(device.getUuid());
+            if (positionInSavedList != -1) {
+                menu.findItem(R.id.home_new_contextm_favorite).setEnabled(false);
+            }
+        }
     }
 
     @SuppressLint("NonConstantResourceId")
