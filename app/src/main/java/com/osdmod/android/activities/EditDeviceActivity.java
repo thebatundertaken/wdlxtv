@@ -378,7 +378,7 @@ public class EditDeviceActivity extends AppCompatActivity {
             TextView tv = new TextView(ll.getContext());
             tv.setTag(modelName);
             tv.setText(modelName);
-            tv.setTextColor(-1);
+            tv.setTextColor(getResources().getColor(R.color.blue2, getTheme()));
             tv.setGravity(1);
             ll.addView(tv);
             return ll;

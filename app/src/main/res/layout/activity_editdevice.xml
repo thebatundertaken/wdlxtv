@@ -3,6 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:fitsSystemWindows="true"
+    android:background="@android:color/background_dark"
     android:orientation="vertical">
 
     <View
@@ -35,7 +36,7 @@
                     android:shadowDy="1.0"
                     android:shadowRadius="0.8"
                     android:text="@string/edia_txt_model"
-                    android:textColor="@color/blue2"
+                    android:textColor="@color/white"
                     android:textSize="20sp" />
 
                 <ImageView
@@ -47,7 +48,9 @@
 
             <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@color/remotecontroller_background"
+                >
 
                 <Gallery
                     android:id="@+id/gl_devices"
@@ -56,7 +59,7 @@
                     android:layout_margin="5.0dip"
                     android:gravity="center_horizontal"
                     android:spacing="30.0dip"
-                    android:unselectedAlpha="0.2">
+                    android:unselectedAlpha="0.4">
 
                     <requestFocus />
                 </Gallery>
@@ -72,7 +75,7 @@
                 android:shadowDy="1.0"
                 android:shadowRadius="0.8"
                 android:text="@string/edia_txt_name"
-                android:textColor="@color/blue2"
+                android:textColor="@color/white"
                 android:textSize="20sp" />
 
             <LinearLayout
@@ -86,6 +89,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.0"
                     android:hint="@string/edia_txt_namehint"
+                    android:textColor="@color/blue2"
                     android:textColorHint="@color/gray2"
                     android:singleLine="true" />
 
@@ -107,8 +111,7 @@
                 android:shadowDy="1.0"
                 android:shadowRadius="0.8"
                 android:text="@string/edia_txt_ip"
-                android:textColor="@color/blue2"
-                android:textColorHint="@color/gray2"
+                android:textColor="@color/white"
                 android:textSize="20sp" />
 
             <LinearLayout
@@ -123,6 +126,8 @@
                     android:layout_weight="1.0"
                     android:inputType="text"
                     android:hint="@string/edia_txt_iphint"
+                    android:textColor="@color/blue2"
+                    android:textColorHint="@color/gray2"
                     android:autofillHints="none"
                     android:singleLine="true" />
 
@@ -144,7 +149,7 @@
                 android:shadowDy="1.0"
                 android:shadowRadius="0.8"
                 android:text="@string/edia_txt_uuid"
-                android:textColor="@color/blue2"
+                android:textColor="@color/white"
                 android:textSize="20sp" />
 
             <LinearLayout
@@ -162,6 +167,7 @@
                     android:autofillHints="none"
                     android:inputType="none"
                     android:ellipsize="end"
+                    android:textColor="@color/gray3"
                     android:maxLines="1"
                     android:singleLine="true" />
 
@@ -194,7 +200,7 @@
                         android:shadowDy="1.0"
                         android:shadowRadius="0.8"
                         android:text="@string/edia_txt_wdlxtv"
-                        android:textColor="@color/blue2"
+                        android:textColor="@color/white"
                         android:textSize="20sp" />
 
                     <ImageView
@@ -225,7 +231,7 @@
                             android:shadowDy="1.0"
                             android:shadowRadius="0.8"
                             android:text="@string/edia_txt_user"
-                            android:textColor="@color/blue2"
+                            android:textColor="@color/white"
                             android:textSize="20sp" />
 
                         <TextView
@@ -239,7 +245,7 @@
                             android:shadowDy="1.0"
                             android:shadowRadius="0.8"
                             android:text="@string/edia_txt_pass"
-                            android:textColor="@color/blue2"
+                            android:textColor="@color/white"
                             android:textSize="20sp" />
                     </LinearLayout>
 
@@ -253,6 +259,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="50.0"
                             android:autofillHints="username"
+                            android:textColor="@color/blue2"
                             android:inputType="none"
                             android:scrollHorizontally="true" />
 
@@ -261,6 +268,7 @@
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="50.0"
+                            android:textColor="@color/blue2"
                             android:autofillHints="password"
                             android:inputType="textPassword"
                             android:scrollHorizontally="true" />
