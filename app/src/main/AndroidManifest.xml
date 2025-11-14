@@ -8,6 +8,11 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
 
+    <queries>
+        <intent>
+            <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
+        </intent>
+    </queries>
     <supports-screens
         android:anyDensity="true"
         android:largeScreens="true"
@@ -38,8 +43,7 @@
         <activity
             android:name="com.osdmod.android.activities.RemoteControllerActivity"
             android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:name="com.osdmod.android.activities.SettingsActivity"/>
+        <activity android:name="com.osdmod.android.activities.SettingsActivity" />
 
         <activity
             android:name="com.osdmod.android.activities.DummyControllerActivity"

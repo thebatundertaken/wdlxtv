@@ -99,7 +99,7 @@ public class HomeActivity extends AppCompatActivity {
                         getString(R.string.err_tit_nowifi),
                         getString(R.string.err_txt_nowifi));
             } else {
-                showToastLong(getString(R.string.m_txt_nowifi));
+                showToastShort(getString(R.string.m_txt_nowifi));
             }
             return;
         }
@@ -486,9 +486,9 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    private void showToastLong(final String val) {
+    private void showToastShort(final String val) {
         if (System.currentTimeMillis() - lastost > 3500) {
-            runOnUiThread(() -> Toast.makeText(HomeActivity.this, val, Toast.LENGTH_LONG).show());
+            runOnUiThread(() -> Toast.makeText(HomeActivity.this, val, Toast.LENGTH_SHORT).show());
             lastost = System.currentTimeMillis();
         }
     }
@@ -622,7 +622,7 @@ public class HomeActivity extends AppCompatActivity {
                 return;
             }
 
-            showToastLong(getString(R.string.m_txt_wdtvfound));
+            showToastShort(getString(R.string.m_txt_wdtvfound));
 
             String friendlyName = device.getDetails().getFriendlyName();
             String ip = device.getIdentity().getDescriptorURL().toString()

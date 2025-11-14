@@ -24,4 +24,6 @@ public interface WdRemoteController {
     String[][] getDeviceServices();
 
     Map<String, Object> getInfo();
+
+    String getWebUIUrl();
 }

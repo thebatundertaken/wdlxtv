@@ -40,9 +40,10 @@ import androidx.core.view.accessibility.AccessibilityEventCompat;
 import com.osdmod.android.customviews.HorizontalPager;
 import com.osdmod.android.customviews.NumberPicker;
 import com.osdmod.android.customviews.NumberPickerChangeListener;
-import com.osdmod.remote.R;
+import com.osdmod.android.customviews.OnScreenSwitchListener;
 import com.osdmod.android.sensor.ShakeListener;
 import com.osdmod.formatter.PlaybackTimeFormatter;
+import com.osdmod.remote.R;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ import java.util.Objects;
 public class DummyControllerActivity extends AppCompatActivity {
     private static final int PREFERENCES_REQUEST_CODE = 1123;
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 83;
-    private final HorizontalPager.OnScreenSwitchListener onSwitch = screen -> {
+    private final OnScreenSwitchListener onSwitch = screen -> {
         ImageView img_pos = findViewById(R.id.img_pos);
         int tot = ((HorizontalPager) findViewById(R.id.horizontal_pager)).getChildCount();
         switch (screen) {

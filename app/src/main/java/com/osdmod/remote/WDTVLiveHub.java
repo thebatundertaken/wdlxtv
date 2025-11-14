@@ -82,8 +82,8 @@ public class WDTVLiveHub implements WdRemoteController {
     @Override
     public Map<String, Object> getInfo() {
         Map<String, Object> response = new HashMap<>();
-        response.put(INFO_REMOTECONTROL_AVAILABLE, sendCommand(""));
-        response.put(INFO_KEYBOARD_AVAILABLE, sendCommand(TEXT_PREFIX));
+        response.put(INFO_REMOTECONTROL_AVAILABLE, sendCommand("") == 1);
+        response.put(INFO_KEYBOARD_AVAILABLE, sendCommand(TEXT_PREFIX) == 1);
         response.put(INFO_WDLXTV_FIRMWARE, false);
         response.put(INFO_USERNAME, WdDevice.DEFAULT_USERNAME);
         response.put(INFO_PASSWORD, WdDevice.DEFAULT_PASSWORD);
@@ -108,6 +108,11 @@ public class WDTVLiveHub implements WdRemoteController {
     @Override
     public void openService(String service) {
         sendCommand(SERVICE_PREFIX + service);
+    }
+
+    @Override
+    public String getWebUIUrl() {
+        return  "http://" + ip;
     }
 
     private String convertCommand(String command) {

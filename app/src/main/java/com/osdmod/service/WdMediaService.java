@@ -427,11 +427,11 @@ public class WdMediaService implements WdUpnpSubscriptionEventListener {
                         return xpp.nextText();
                     }
                 } catch (Exception e) {
-                    Log.w(TAG, e);
+                    Log.d(TAG, Objects.requireNonNull(e.getMessage()));
                 }
             }
         } catch (Exception e) {
-            Log.d(TAG, e.getMessage(), e);
+            Log.d(TAG, Objects.requireNonNull(e.getMessage()));
         }
 
         return null;

@@ -115,6 +115,11 @@ public class WDTVHDGen1 implements WdRemoteController {
         return response;
     }
 
+    @Override
+    public String getWebUIUrl() {
+        return  "http://" + ip + "/addons";
+    }
+
     private String convertString(String command) {
         switch (command.charAt(0)) {
             case 'E':

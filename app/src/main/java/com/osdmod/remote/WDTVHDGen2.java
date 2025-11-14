@@ -142,4 +142,14 @@ public class WDTVHDGen2 implements WdRemoteController {
     public String[][] getDeviceServices() {
         return null;
     }
+
+    @Override
+    public String getWebUIUrl() {
+        if (user != null && !user.isEmpty() && pass != null && !pass.isEmpty()) {
+            return "http://" + user + ":" + pass + "@" + ip;
+        }
+
+        return  "http://" + ip;
+    }
+
 }

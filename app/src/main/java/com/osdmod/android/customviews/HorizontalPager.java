@@ -232,7 +232,4 @@ public final class HorizontalPager extends ViewGroup {
         invalidate();
     }
 
-    public interface OnScreenSwitchListener {
-        void onScreenSwitched(int i);
-    }
 }

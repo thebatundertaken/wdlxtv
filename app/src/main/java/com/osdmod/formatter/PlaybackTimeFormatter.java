@@ -1,6 +1,8 @@
 package com.osdmod.formatter;
 
 public class PlaybackTimeFormatter {
+    public static final String EMPTY = "00:00:00";
+
     public long stringToSec(String sTime) {
         String[] parsedTime = sTime.split(":");
         int h = 0;
@@ -12,31 +14,32 @@ public class PlaybackTimeFormatter {
             } else {
                 h = Integer.parseInt(parsedTime[0].replace(".", ""));
             }
-        } catch (ArrayIndexOutOfBoundsException | NumberFormatException |
-                 StringIndexOutOfBoundsException e) {
+        } catch (Exception ignored) {
         }
+
         try {
             if (parsedTime[1].length() > 2) {
                 m = Integer.parseInt(parsedTime[1].substring(0, 3).replace(".", ""));
             } else {
                 m = Integer.parseInt(parsedTime[1].replace(".", ""));
             }
-        } catch (NumberFormatException | StringIndexOutOfBoundsException e2) {
         } catch (ArrayIndexOutOfBoundsException e3) {
             m = h;
             h = 0;
+        } catch (Exception ignored) {
         }
+
         try {
             if (parsedTime[2].length() > 2) {
                 s = Integer.parseInt(parsedTime[2].substring(0, 2).replace(".", ""));
             } else {
                 s = Integer.parseInt(parsedTime[2].replace(".", ""));
             }
-        } catch (NumberFormatException | StringIndexOutOfBoundsException e4) {
         } catch (ArrayIndexOutOfBoundsException e5) {
             s = m;
             m = h;
             h = 0;
+        } catch (Exception ignored) {
         }
         return (h * 3600L) + (m * 60L) + ((long) s);
     }

@@ -141,6 +141,11 @@ public class WDTVLivePlus implements WdRemoteController {
         return null;
     }
 
+    @Override
+    public String getWebUIUrl() {
+        return  "http://" + ip;
+    }
+
     private String checkLxConnection() {
         HttpParams params = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(params, TFTP.DEFAULT_TIMEOUT);

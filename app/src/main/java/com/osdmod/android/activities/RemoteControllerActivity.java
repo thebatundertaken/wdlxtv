@@ -2,12 +2,14 @@ package com.osdmod.android.activities;
 
 import static java.util.Map.entry;
 
+import android.animation.AnimatorInflater;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.TransitionDrawable;
 import android.hardware.SensorManager;
@@ -18,6 +20,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.speech.RecognizerIntent;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -28,7 +31,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -43,6 +45,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.osdmod.android.activities.listener.RemoteControllerOnScreenSwitchListener;
 import com.osdmod.android.customviews.HorizontalPager;
 import com.osdmod.android.customviews.NumberPicker;
 import com.osdmod.android.customviews.NumberPickerChangeListener;
@@ -70,58 +73,21 @@ import java.util.Objects;
 
 public class RemoteControllerActivity extends AppCompatActivity {
     public static final String INTENT_DEVICE = "device";
-
     private static final String TAG = "RemoteControllerActivity";
     private static final int PREFERENCES_REQUEST_CODE = 1123;
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 83;
     private final PlaybackTimeFormatter formatter = new PlaybackTimeFormatter();
-    private final HorizontalPager.OnScreenSwitchListener onSwitch = screen -> {
-        ImageView img_pos = findViewById(R.id.img_pos);
-        int tot = ((HorizontalPager) findViewById(
-                R.id.horizontal_pager)).getChildCount();
-        switch (screen) {
-            case 0:
-                if (tot != 3) {
-                    img_pos.setImageResource(R.drawable.one);
-                    break;
-                } else {
-                    img_pos.setImageResource(R.drawable.tone);
-                    break;
-                }
-            case 1:
-                if (tot != 3) {
-                    img_pos.setImageResource(R.drawable.two);
-                    break;
-                } else {
-                    img_pos.setImageResource(R.drawable.ttwo);
-                    break;
-                }
-            case 2:
-                img_pos.setImageResource(R.drawable.three);
-                break;
-        }
-        if (tot == 1) {
-            img_pos.setVisibility(View.GONE);
-        }
-    };
-    private final Integer[] remoteButtons = {R.id.btn_whome, R.id.btn_weject, R.id.btn_wsearch, R.id.btn_wpower,
-            R.id.btn_rew, R.id.btn_pplay, R.id.btn_ff, R.id.btn_prev, R.id.btn_stop, R.id.btn_next,
-            R.id.btn_home, R.id.btn_eject, R.id.btn_search, R.id.btn_power, R.id.btn_pgb, R.id.btn_config,
-            R.id.btn_pgn, R.id.btn_audio, R.id.btn_subs, R.id.btn_mute, R.id.btn_a, R.id.btn_b, R.id.btn_c,
-            R.id.btn_d, R.id.btn_up, R.id.btn_left, R.id.btn_ok, R.id.btn_right, R.id.btn_down, R.id.btn_back, R.id.btn_option};
     private final Handler backgroundTaskHandler = new Handler();
+    private final RemoteControllerButtonClickListener btnClick = new RemoteControllerButtonClickListener();
     private long mediaPlaybackStatusLastCheck = -1;
     private int mediaPlaybackStatusCheckerCount = 0;
     private boolean ismediaPlaybackStatusCheckerRunning = false;
-    private Map<Integer, String> buttonsToCmd;
     private String[][] serviceList;
     private boolean dialogOpened = false;
     private long lastost = 0;
     private WdDevice wdDevice;
     private WdRemoteController wdRemoteController;
-    private boolean isColorTogglerRunning = false;
     private WdMediaService wdMediaService;
-    private boolean isToggleBlueColor = false;
     private int errorCount = 0;
     private TextView txt_vol;
     private TextView txt_time_total;
@@ -137,112 +103,19 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private GestureDetector gestureDetector;
     private boolean isTablet = false;
     private long lastshake = 0L;
-    private long mLCurTime;
-    private long mLTotTime;
-    private final SeekBar.OnSeekBarChangeListener onSeek = new SeekBar.OnSeekBarChangeListener() {
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            int seekBarId = seekBar.getId();
-            if (seekBarId == R.id.sk_play) {
-                if (mLTotTime == 0) {
-                    setTimesTxtsUI("00:00:00", "00:00:00");
-                    return;
-                }
-
-                if (fromUser) {
-                    String sTot = txt_time_total.getText().toString();
-                    mLCurTime = (((long) progress) * formatter.stringToSec(sTot)) / 255;
-                    setTimesTxtsUI(formatter.secToString(mLCurTime), sTot);
-                    return;
-                }
-                return;
-            } else if (seekBarId == R.id.sk_vol) {
-                if (fromUser) {
-                    setVolTxtIconIU(progress);
-                }
-            }
-        }
-
-        public void onStartTrackingTouch(SeekBar seekBar) {
-        }
-
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            if (seekBar.getId() == R.id.sk_play && mLTotTime != 0) {
-                String position = formatter.secToString(mLCurTime);
-                wdMediaService.setPlaybackPosition(position);
-            } else if (seekBar.getId() == R.id.sk_vol) {
-                wdMediaService.setVolumen(seekBar.getProgress());
-            }
-        }
-    };
+    private long mLCurTime = 0;
+    private long mLTotTime = 0;
     private ShakeListener shakeListener;
     private AlertDialog alertKeyboard;
     private boolean conf_buttons;
     private boolean conf_trackball;
     private boolean conf_vibrate;
-    @SuppressLint("NonConstantResourceId")
-    private final View.OnClickListener btnClick = v -> {
-        String tag = (String) v.getTag();
-        if (tag != null && tag.startsWith("service_")) {
-            if (serviceList != null) {
-                sendServiceToDevice(serviceList[Integer.parseInt(tag.substring(8))][3]);
-            }
-        }
-
-        int buttonId = v.getId();
-        if (buttonsToCmd.containsKey(buttonId)) {
-            sendCmdToDevice(buttonsToCmd.get(buttonId));
-            return;
-        }
-
-        switch (buttonId) {
-            case R.id.txt_time_current:
-                openJump2ToTimeDialog();
-                return;
-
-            case R.id.btn_cvol:
-                sk_vol.setVisibility(View.GONE);
-                txt_vol.setVisibility(View.GONE);
-                btn_cvol.setVisibility(View.GONE);
-                view_vol1.setVisibility(View.VISIBLE);
-                txt_media.setVisibility(View.VISIBLE);
-                btn_mode.setVisibility(View.VISIBLE);
-                return;
-
-            case R.id.btn_mode:
-                wdMediaService.circlePlayMode();
-                setPlayModeUI(wdMediaService.getPlayMode());
-                return;
-
-            case R.id.btn_vol:
-                if (sk_vol.getVisibility() == View.GONE) {
-                    sk_vol.setVisibility(View.VISIBLE);
-                    txt_vol.setVisibility(View.VISIBLE);
-                    btn_cvol.setVisibility(View.VISIBLE);
-                    view_vol1.setVisibility(View.GONE);
-                    txt_media.setVisibility(View.GONE);
-                    btn_mode.setVisibility(View.GONE);
-                    return;
-                }
-                return;
-
-            case R.id.btn_touch:
-                ImageView img_gespa = findViewById(R.id.img_gespa);
-                if (img_gespa.getVisibility() == View.INVISIBLE || img_gespa.getVisibility() == View.GONE) {
-                    setPanel(true);
-                    return;
-                }
-
-                setPanel(false);
-                return;
-
-            case R.id.btn_tinfo:
-                openGesHelpDialog();
-                return;
-        }
-    };
     private boolean conf_volumebuttons;
     private boolean isMediaRewinding = false;
     private WdUpnpService wdUpnpService;
+    private LinearLayout ly_finalr;
+    private ImageView img_led;
+    private ObjectAnimator pauseColorToggleAnimator;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -252,43 +125,23 @@ public class RemoteControllerActivity extends AppCompatActivity {
             throw new IllegalArgumentException("Missing extras for RemoteControllerActivity");
         }
 
-        buttonsToCmd = Map.ofEntries(
-                entry(R.id.btn_down, WdDevice.CMD_DOWN),
-                entry(R.id.btn_up, WdDevice.CMD_UP),
-                entry(R.id.btn_ok, WdDevice.CMD_OK),
-                entry(R.id.btn_left, WdDevice.CMD_LEFT),
-                entry(R.id.btn_right, WdDevice.CMD_RIGHT),
-                entry(R.id.btn_back, WdDevice.CMD_BACK),
-                entry(R.id.btn_whome, WdDevice.CMD_HOME),
-                entry(R.id.btn_home, WdDevice.CMD_HOME),
-                entry(R.id.btn_option, WdDevice.CMD_OPTION),
-                entry(R.id.btn_rew, WdDevice.CMD_REWIND),
-                entry(R.id.btn_pplay, WdDevice.CMD_PLAY),
-                entry(R.id.btn_ff, WdDevice.CMD_FASTFORWARD),
-                entry(R.id.btn_prev, WdDevice.CMD_PREV),
-                entry(R.id.btn_next, WdDevice.CMD_NEXT),
-                entry(R.id.btn_stop, WdDevice.CMD_STOP),
-                entry(R.id.btn_wpower, WdDevice.CMD_POWER),
-                entry(R.id.btn_power, WdDevice.CMD_POWER),
-                entry(R.id.btn_weject, WdDevice.CMD_EJECT),
-                entry(R.id.btn_eject, WdDevice.CMD_EJECT),
-                entry(R.id.btn_wsearch, WdDevice.CMD_SEARCH),
-                entry(R.id.btn_search, WdDevice.CMD_SEARCH),
-                entry(R.id.btn_pgb, WdDevice.CMD_PGB),
-                entry(R.id.btn_pgn, WdDevice.CMD_PGN),
-                entry(R.id.btn_config, WdDevice.CMD_CONFIG),
-                entry(R.id.btn_audio, WdDevice.CMD_AUDIO),
-                entry(R.id.btn_subs, WdDevice.CMD_SUBS),
-                entry(R.id.btn_mute, WdDevice.CMD_MUTE),
-                entry(R.id.btn_a, WdDevice.CMD_BTN_A),
-                entry(R.id.btn_b, WdDevice.CMD_BTN_B),
-                entry(R.id.btn_c, WdDevice.CMD_BTN_C),
-                entry(R.id.btn_d, WdDevice.CMD_BTN_D)
-        );
+        wdDevice = (WdDevice) extras.get(INTENT_DEVICE);
+        if (wdDevice == null) {
+            throw new IllegalArgumentException("Missing DEVICE in Activity intent");
+        }
 
         setContentView(R.layout.activity_remotecontroller);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle(
+                wdDevice.getFriendlyName() != null && !wdDevice.getFriendlyName()
+                        .isEmpty() ? wdDevice.getFriendlyName() : (!wdDevice.getIp()
+                        .isEmpty() ? wdDevice.getIp() : getString(
+                        R.string.rem_txt_nodev)));
+        if (wdDevice.getFriendlyName() != null && !wdDevice.getFriendlyName()
+                .isEmpty() && !wdDevice.getIp().isEmpty()) {
+            getSupportActionBar().setSubtitle(wdDevice.getIp());
+        }
 
         txt_vol = findViewById(R.id.txt_vol);
         btn_vol = findViewById(R.id.btn_vol);
@@ -301,19 +154,21 @@ public class RemoteControllerActivity extends AppCompatActivity {
         txt_media = findViewById(R.id.txt_media);
         btn_mode = findViewById(R.id.btn_mode);
         horizontal_pager = findViewById(R.id.horizontal_pager);
+        img_led = findViewById(R.id.img_led);
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         if (((float) metrics.widthPixels) / metrics.density >= 600.0f) {
             isTablet = true;
         }
-        horizontal_pager.setOnScreenSwitchListener(onSwitch);
+        horizontal_pager.setOnScreenSwitchListener(
+                new RemoteControllerOnScreenSwitchListener(this));
 
-        wdDevice = (WdDevice) extras.get(INTENT_DEVICE);
-        if (wdDevice == null) {
-            throw new IllegalArgumentException("Missing DEVICE in Activity intent");
-        }
-
+        final Integer[] remoteButtons = {R.id.btn_whome, R.id.btn_weject, R.id.btn_wsearch, R.id.btn_wpower,
+                R.id.btn_rew, R.id.btn_pplay, R.id.btn_ff, R.id.btn_prev, R.id.btn_stop, R.id.btn_next,
+                R.id.btn_home, R.id.btn_eject, R.id.btn_search, R.id.btn_power, R.id.btn_pgb, R.id.btn_config,
+                R.id.btn_pgn, R.id.btn_audio, R.id.btn_subs, R.id.btn_mute, R.id.btn_a, R.id.btn_b, R.id.btn_c,
+                R.id.btn_d, R.id.btn_up, R.id.btn_left, R.id.btn_ok, R.id.btn_right, R.id.btn_down, R.id.btn_back, R.id.btn_option};
         for (Integer remoteButton : remoteButtons) {
             ImageButton btnC = findViewById(remoteButton);
             if (btnC != null) {
@@ -329,91 +184,24 @@ public class RemoteControllerActivity extends AppCompatActivity {
         findViewById(R.id.btn_touch).setOnClickListener(btnClick);
         findViewById(R.id.btn_tinfo).setOnClickListener(btnClick);
         findViewById(R.id.img_gespa).setVisibility(View.GONE);
+        RemoteControllerSeekBarChangeListener onSeek = new RemoteControllerSeekBarChangeListener();
         sk_play.setOnSeekBarChangeListener(onSeek);
         sk_vol.setOnSeekBarChangeListener(onSeek);
         txt_time_current.setOnClickListener(btnClick);
-        mLCurTime = 0;
-        mLTotTime = 0;
-        setTimesTxtsUI("00:00:00", "00:00:00");
+        setTimesTxtsUI(PlaybackTimeFormatter.EMPTY, PlaybackTimeFormatter.EMPTY);
         setTimeSeekUI(mLCurTime, mLTotTime);
-        gestureDetector = new GestureDetector(new MyGestureDetector());
+        gestureDetector = new GestureDetector(getApplicationContext(), new MyGestureDetector());
         findViewById(R.id.img_gespa).setOnTouchListener(
                 (v, event) -> gestureDetector.onTouchEvent(event)
         );
+        pauseColorToggleAnimator = (ObjectAnimator) AnimatorInflater.loadAnimator(this,
+                R.animator.pause_color_toggle);
+        pauseColorToggleAnimator.setTarget(txt_time_current);
         setDeviceOptions(wdDevice.getModelID());
-        getSupportActionBar().setTitle(
-                wdDevice.getFriendlyName() != null && !wdDevice.getFriendlyName()
-                        .isEmpty() ? wdDevice.getFriendlyName() : (!wdDevice.getIp()
-                        .isEmpty() ? wdDevice.getIp() : getString(
-                        R.string.rem_txt_nodev)));
-        if (wdDevice.getFriendlyName() != null && !wdDevice.getFriendlyName()
-                .isEmpty() && !wdDevice.getIp().isEmpty()) {
-            getSupportActionBar().setSubtitle(wdDevice.getIp());
-        }
 
         if (wdDevice.isUpnp()) {
-            WdUpnpServiceEventListener wdUpnpServiceEventListener = new WdUpnpServiceEventListener() {
-                @Override
-                public void onServiceConnected(WdMediaService mediaService) {
-                    wdMediaService = mediaService;
-                    startMediaPlaybackCheckerTask();
-                }
-
-                @Override
-                public void onServiceDisconnected() {
-                    noUpnp(false);
-                }
-
-                @Override
-                public void onServiceConnectedError() {
-                    //TODO SCF connect on empty registry (home -> remote -> back -> remote again)
-                    noUpnp(false);
-                }
-            };
-
-            WdMediaServiceEventListener mediaServiceListener = new WdMediaServiceEventListener() {
-                @Override
-                public void onVolumenChanged(int volumen) {
-                    setVolTxtIconIU(volumen);
-                    setVolSeekUI(volumen);
-                }
-
-                @Override
-                public void onPlaybackPositionChanged(String trackDuration, String relTime) {
-                    mLTotTime = formatter.stringToSec(trackDuration);
-                    mLCurTime = Math.min(formatter.stringToSec(relTime), mLTotTime);
-                    setTimesTxtsUI(formatter.secToString(mLCurTime), trackDuration);
-                    setTimeSeekUI(mLCurTime, mLTotTime);
-                }
-
-                @Override
-                public void onPlaymodeChanged(String playMode) {
-                    setPlayModeUI(playMode);
-                }
-
-                @Override
-                public void onPlaybackSpeedChanged(int playSpeed) {
-                    isMediaRewinding = playSpeed < 0;
-                }
-
-                @Override
-                public void onPlaybackStatusChanged(String playbackStatus) {
-                    checkWdMediaServiceState(playbackStatus);
-                }
-
-                @Override
-                public void onMediaTitleReceived(String title) {
-                    setTitleTxtUI(title == null ? getString(R.string.no_media_present) : title);
-                }
-
-                @Override
-                public void onFail(Exception e) {
-                    noUpnp(false);
-                }
-            };
-
-            wdUpnpService = new WdUpnpService(wdDevice, wdUpnpServiceEventListener,
-                    mediaServiceListener);
+            wdUpnpService = new WdUpnpService(wdDevice, new MyWdUpnpServiceEventListener(),
+                    new MyWdMediaServiceEventListener());
             getApplicationContext().bindService(new Intent(this, UpnpDiscoveryService.class),
                     this.wdUpnpService, 1);
         } else {
@@ -424,107 +212,55 @@ public class RemoteControllerActivity extends AppCompatActivity {
     }
 
     private void positionAndResizeUI() {
-        HorizontalPager horizontalPager;
-        getWindowManager().getDefaultDisplay().getMetrics(new DisplayMetrics());
-        if (!isTablet && getResources().getConfiguration().orientation != 1) {
-            HorizontalPager horizontalPager2 = findViewById(R.id.horizontal_pager);
-            LinearLayout ly_final = findViewById(R.id.ly_final);
-            LinearLayout ly_finalr = findViewById(R.id.ly_finalr);
-            if (horizontalPager2 != null) {
-                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) horizontalPager2.getLayoutParams();
-                params.height = ly_final.getHeight();
-                horizontalPager2.setLayoutParams(params);
-                findViewById(R.id.rl_arrows).getLayoutParams().height = ly_finalr.getHeight();
-                LinearLayout ly_dots = findViewById(R.id.ly_dots);
-                RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams) ly_dots.getLayoutParams();
-                params2.width = ly_final.getWidth();
-                ly_dots.setLayoutParams(params2);
-                int size = ly_finalr.getHeight();
-                if (ly_finalr.getHeight() > ly_finalr.getWidth()) {
-                    size = ly_finalr.getWidth();
-                }
-                ImageView btn_ok = findViewById(R.id.btn_ok);
-                int h = (int) ((((double) size) * 31.195d) / 100.0d);
-                findViewById(R.id.btn_up).getLayoutParams().height = h;
-                findViewById(R.id.btn_down).getLayoutParams().height = h;
-                findViewById(R.id.btn_left).getLayoutParams().width = h;
-                findViewById(R.id.btn_right).getLayoutParams().width = h;
-                int h2 = (int) ((((double) size) * 37.6d) / 100.0d);
-                btn_ok.getLayoutParams().height = h2;
-                btn_ok.getLayoutParams().width = h2;
-            }
-        } else if (!isTablet) {
-            HorizontalPager horizontalPager3 = findViewById(R.id.horizontal_pager);
-            LinearLayout ly_final2 = findViewById(R.id.ly_final);
-            LinearLayout ly_finalr2 = findViewById(R.id.ly_finalr);
-            if (horizontalPager3 != null) {
-                LinearLayout.LayoutParams params3 = (LinearLayout.LayoutParams) horizontalPager3.getLayoutParams();
-                params3.height = ly_final2.getHeight();
-                horizontalPager3.setLayoutParams(params3);
-                int size2 = ly_finalr2.getHeight();
-                if (ly_finalr2.getHeight() > ly_finalr2.getWidth()) {
-                    size2 = ly_finalr2.getWidth();
-                }
-                ImageView btn_ok2 = findViewById(R.id.btn_ok);
-                int h3 = (int) ((((double) size2) * 31.195d) / 100.0d);
-                findViewById(R.id.btn_up).getLayoutParams().height = h3;
-                findViewById(R.id.btn_down).getLayoutParams().height = h3;
-                findViewById(R.id.btn_left).getLayoutParams().width = h3;
-                findViewById(R.id.btn_right).getLayoutParams().width = h3;
-                int h4 = (int) ((((double) size2) * 37.6d) / 100.0d);
-                btn_ok2.getLayoutParams().height = h4;
-                btn_ok2.getLayoutParams().width = h4;
-                LinearLayout ly_one_swone = findViewById(R.id.ly_one_swone);
-                LinearLayout ly_two_stwo = findViewById(R.id.ly_two_swtwo);
-                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(-1, -2);
-                if (params3.height < ly_one_swone.getHeight()) {
-                    ly_one_swone.setLayoutParams(layoutParams);
-                    if (ly_two_stwo != null) {
-                        ly_two_stwo.setLayoutParams(layoutParams);
-                    }
-                }
-            }
-        } else if ((horizontalPager = findViewById(R.id.horizontal_pager)) != null) {
-            LinearLayout ly_dots2 = findViewById(R.id.ly_dots);
-            RelativeLayout.LayoutParams params4 = (RelativeLayout.LayoutParams) ly_dots2.getLayoutParams();
-            params4.width = horizontalPager.getWidth();
-            ly_dots2.setLayoutParams(params4);
+        //getWindowManager().getDefaultDisplay().getMetrics(new DisplayMetrics());
+        if (isTablet) {
+            LinearLayout ly_dots = findViewById(R.id.ly_dots);
+            RelativeLayout.LayoutParams params4 = (RelativeLayout.LayoutParams) ly_dots.getLayoutParams();
+            params4.width = horizontal_pager.getWidth();
+            ly_dots.setLayoutParams(params4);
+            return;
         }
-    }
 
-    private void noUpnp(boolean silent) {
-        wdMediaService = null;
-        stopMediaPlaybackCheckerTask();
+        LinearLayout ly_final = findViewById(R.id.ly_final);
+        ly_finalr = findViewById(R.id.ly_finalr);
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) horizontal_pager.getLayoutParams();
+        params.height = ly_final.getHeight();
+        horizontal_pager.setLayoutParams(params);
 
-        runOnUiThread(() -> {
-            if (!silent) {
-                showToastLong(getString(R.string.rem_txt_upnpnot));
+        int size = ly_finalr.getHeight();
+        if (ly_finalr.getHeight() > ly_finalr.getWidth()) {
+            size = ly_finalr.getWidth();
+        }
+
+        int h = (int) ((((double) size) * 31.195d) / 100.0d);
+        findViewById(R.id.btn_up).getLayoutParams().height = h;
+        findViewById(R.id.btn_down).getLayoutParams().height = h;
+        findViewById(R.id.btn_left).getLayoutParams().width = h;
+        findViewById(R.id.btn_right).getLayoutParams().width = h;
+
+        int h2 = (int) ((((double) size) * 37.6d) / 100.0d);
+        ImageView btn_ok = findViewById(R.id.btn_ok);
+        btn_ok.getLayoutParams().height = h2;
+        btn_ok.getLayoutParams().width = h2;
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            findViewById(R.id.rl_arrows).getLayoutParams().height = ly_finalr.getHeight();
+            LinearLayout ly_dots = findViewById(R.id.ly_dots);
+            RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams) ly_dots.getLayoutParams();
+            params2.width = ly_final.getWidth();
+            ly_dots.setLayoutParams(params2);
+            return;
+        }
+
+        LinearLayout ly_one_swone = findViewById(R.id.ly_one_swone);
+        if (params.height < ly_one_swone.getHeight()) {
+            LinearLayout ly_two_stwo = findViewById(R.id.ly_two_swtwo);
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(-1, -2);
+            ly_one_swone.setLayoutParams(layoutParams);
+            if (ly_two_stwo != null) {
+                ly_two_stwo.setLayoutParams(layoutParams);
             }
-
-            LinearLayout row_one_lyone_swone = findViewById(R.id.row_one_lyone_swone);
-            AlphaAnimation alpha = new AlphaAnimation(0.2f, 0.2f);
-            alpha.setDuration(0);
-            alpha.setFillAfter(true);
-
-            ObjectAnimator anim = ObjectAnimator.ofFloat(row_one_lyone_swone, "alpha", 0.2f)
-                    .setDuration(0);
-            anim.start();
-            anim.setTarget(btn_mode);
-            if (btn_cvol != null) {
-                anim.setTarget(btn_cvol);
-            }
-            anim.start();
-            anim.setTarget(btn_mode);
-            anim.start();
-            anim.setTarget(btn_vol);
-            anim.start();
-            anim.setTarget(sk_vol);
-            anim.start();
-            anim.setTarget(txt_media);
-            anim.start();
-            anim.setTarget(txt_vol);
-            anim.start();
-        });
+        }
     }
 
     private void setDeviceOptions(int modelID) {
@@ -548,7 +284,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
                 if (result != 1) {
                     remoteNotAvailable();
-                    showToastLong(getString(R.string.rem_txt_nocon));
+                    showToastShort(getString(R.string.rem_txt_nocon));
                     return;
                 }
 
@@ -557,9 +293,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
                             serviceList = wdRemoteController.getDeviceServices();
                             runOnUiThread(() -> {
                                 if (serviceList == null) {
-                                    if (horizontal_pager != null) {
-                                        horizontal_pager.removeViewAt(isTablet ? 1 : 2);
-                                    }
+                                    horizontal_pager.removeViewAt(isTablet ? 1 : 2);
                                     return;
                                 }
                                 createHubServicesLayout(serviceList);
@@ -573,33 +307,41 @@ public class RemoteControllerActivity extends AppCompatActivity {
         }
     }
 
+    private void noUpnp(boolean silent) {
+        wdMediaService = null;
+        stopMediaPlaybackCheckerTask();
+
+        if (!silent) {
+            runOnUiThread(() -> {
+                showToastShort(getString(R.string.rem_txt_upnpnot));
+            });
+        }
+        remoteNotAvailable();
+    }
+
     private void remoteNotAvailable() {
-        final LinearLayout ly_finalr = findViewById(R.id.ly_finalr);
         final LinearLayout ly_one_swfour = findViewById(R.id.ly_one_swfour);
         final float vAlpha = 0.2f;
         runOnUiThread(() -> {
             if (ly_finalr != null) {
                 ObjectAnimator.ofFloat(ly_finalr, "alpha", vAlpha).setDuration(0).start();
+                ly_finalr.setAlpha(vAlpha);
             }
             if (ly_one_swfour != null) {
                 ObjectAnimator.ofFloat(ly_one_swfour, "alpha", vAlpha).setDuration(0)
                         .start();
+                ly_one_swfour.setAlpha(vAlpha);
+            }
+            if (horizontal_pager != null) {
+                horizontal_pager.setAlpha(vAlpha);
             }
         });
-        for (int findViewById : remoteButtons) {
-            final ImageButton btnC = findViewById(findViewById);
-            if (btnC != null) {
-                runOnUiThread(
-                        () -> ObjectAnimator.ofFloat(btnC, "alpha", vAlpha).setDuration(0)
-                                .start());
-            }
-        }
     }
 
-    private void showToastLong(final String val) {
+    private void showToastShort(final String val) {
         if (System.currentTimeMillis() - lastost > 3500) {
             runOnUiThread(
-                    () -> Toast.makeText(RemoteControllerActivity.this, val, Toast.LENGTH_LONG)
+                    () -> Toast.makeText(RemoteControllerActivity.this, val, Toast.LENGTH_SHORT)
                             .show());
             lastost = System.currentTimeMillis();
         }
@@ -653,15 +395,15 @@ public class RemoteControllerActivity extends AppCompatActivity {
                 return true;
 
             case R.id.remotecontroller_activity_menu_webin:
-                String url = "http://" + wdDevice.getIp();
-                if (wdDevice.iswDlxTVFirmware() && wdDevice.getUsername() != null && !wdDevice.getUsername()
-                        .isEmpty()) {
-                    url = "http://" + wdDevice.getUsername() + ":" + wdDevice.getPassword() + "@" + wdDevice.getIp();
-                } else if (wdDevice.getModelID() == WdDevice.MODELID_GEN1) {
-                    url = "http://" + wdDevice.getIp() + "/addons";
+                if (wdRemoteController == null) {
+                    return true;
                 }
-                startActivity(new Intent("android.intent.action.VIEW", Uri.parse(url)));
-                return false;
+
+                String url = wdRemoteController.getWebUIUrl();
+                if (url != null && !url.isEmpty()) {
+                    startActivity(new Intent("android.intent.action.VIEW", Uri.parse(url)));
+                }
+                return true;
 
             case R.id.remotecontroller_activity_menu_preferences:
                 startActivityForResult(
@@ -792,7 +534,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
         dialogOpened = true;
     }
 
-    private void setPanel(boolean gesturePanelAsDefault) {
+    private void setArrowsOrGesturePanel(boolean gesturePanelAsDefault) {
         ImageButton btn_touch = findViewById(R.id.btn_touch);
         ImageButton btn_up = findViewById(R.id.btn_up);
         ImageButton btn_left = findViewById(R.id.btn_left);
@@ -829,7 +571,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
             TransitionDrawable transition = (TransitionDrawable) ResourcesCompat.getDrawable(
                     getResources(), R.drawable.ledflash, null);
             Objects.requireNonNull(transition).startTransition(100);
-            ((ImageView) findViewById(R.id.img_led)).setImageDrawable(transition);
+            img_led.setImageDrawable(transition);
         });
 
         if (conf_vibrate) {
@@ -841,71 +583,57 @@ public class RemoteControllerActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void setVolTxtIconIU(int vol) {
         runOnUiThread(() -> {
-            if (txt_vol != null) {
-                txt_vol.setText("" + vol);
-                int d;
-                if (vol > 66) {
-                    d = R.drawable.volh;
-                } else if (vol > 33) {
-                    d = R.drawable.volm;
-                } else if (vol > 0) {
-                    d = R.drawable.voll;
-                } else if (vol == 0) {
-                    d = R.drawable.volz;
-                } else {
-                    d = R.drawable.volh;
-                }
-                btn_vol.setImageResource(d);
+            txt_vol.setText("" + vol);
+            int d;
+            if (vol > 66) {
+                d = R.drawable.volh;
+            } else if (vol > 33) {
+                d = R.drawable.volm;
+            } else if (vol > 0) {
+                d = R.drawable.voll;
+            } else if (vol == 0) {
+                d = R.drawable.volz;
+            } else {
+                d = R.drawable.volh;
             }
+            btn_vol.setImageResource(d);
         });
     }
 
     private void setVolSeekUI(int vol) {
         runOnUiThread(() -> {
-            if (sk_vol != null) {
-                sk_vol.setProgress(vol);
-            }
+            sk_vol.setProgress(vol);
         });
     }
 
     private void setTimesTxtsUI(String cur, String tot) {
         runOnUiThread(() -> {
-            if (txt_time_current != null) {
-                txt_time_current.setText(cur);
-                txt_time_total.setText(tot);
-            }
+            txt_time_current.setText(cur);
+            txt_time_total.setText(tot);
         });
     }
 
     private void setTimeSeekUI(long cur, long tot) {
-        final long j = tot;
-        final long j2 = cur;
+        final long totalTime = tot;
+        final long currentTime = cur;
         runOnUiThread(() -> {
             int progress = 0;
-            if (j != 0) {
-                progress = (int) ((j2 * 255) / j);
-                mLCurTime = j2;
+            if (totalTime != 0) {
+                progress = (int) ((currentTime * 255) / totalTime);
+                mLCurTime = currentTime;
             }
-            if (sk_play != null) {
-                sk_play.setProgress(progress);
-            }
+            sk_play.setProgress(progress);
         });
     }
 
-    private void setTitleTxtUI(String tit) {
+    private void setTitleTxtUI(String title) {
         runOnUiThread(() -> {
-            if (txt_media != null) {
-                txt_media.setText(tit);
-            }
+            txt_media.setText(title == null ? getString(R.string.no_media_present) : title);
         });
     }
 
     private void setPlayModeUI(String playmode) {
         runOnUiThread(() -> {
-            if (btn_mode == null) {
-                return;
-            }
-
             int rid;
             switch (playmode) {
                 case WdMediaService.PLAY_MODE_REPEAT_ONE:
@@ -924,7 +652,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
         });
     }
 
-    private void openGesHelpDialog() {
+    private void openGesturesDialog() {
         AlertDialog alertHelp = new AlertDialog.Builder(this).setTitle(
                         getString(R.string.rem_txt_gespan))
                 .setView(getLayoutInflater().inflate(R.layout.dialog_help_ges,
@@ -947,12 +675,13 @@ public class RemoteControllerActivity extends AppCompatActivity {
                         (dialog, whichButton) -> {
                         }).create();
         alertKeyboard.setIcon(R.drawable.ic_keyboard);
+
         ImageButton btn_mic = addView.findViewById(R.id.btn_mic);
-        if (wdDevice.getModelID() == WdDevice.MODELID_HUB || wdDevice.getModelID() == WdDevice.MODELID_STREAMING) {
+        if (wdDevice.getModelID() == WdDevice.MODELID_STREAMING || wdDevice.getModelID() == WdDevice.MODELID_HUB) {
             addView.findViewById(R.id.txt_help).setVisibility(View.GONE);
         }
         if (!getPackageManager().queryIntentActivities(
-                new Intent("android.speech.action.RECOGNIZE_SPEECH"), 0).isEmpty()) {
+                new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0).isEmpty()) {
             btn_mic.setOnClickListener(v -> startVoiceRecognitionActivity());
         } else {
             btn_mic.setVisibility(View.GONE);
@@ -961,26 +690,27 @@ public class RemoteControllerActivity extends AppCompatActivity {
     }
 
     private void startVoiceRecognitionActivity() {
-        Intent intent = new Intent("android.speech.action.RECOGNIZE_SPEECH");
-        intent.putExtra("calling_package",
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
                 Objects.requireNonNull(getClass().getPackage()).getName());
-        intent.putExtra("android.speech.extra.LANGUAGE_MODEL", "free_form");
-        intent.putExtra("android.speech.extra.MAX_RESULTS", 5);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "free_form");
+        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PREFERENCES_REQUEST_CODE) {
+            loadPreferences();
+            return;
+        }
+
         if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == -1) {
             ArrayList<String> matches = data.getStringArrayListExtra(
-                    "android.speech.extra.RESULTS");
+                    RecognizerIntent.EXTRA_RESULTS);
             EditText etx_text = alertKeyboard.findViewById(R.id.etx_text);
-            if (etx_text != null) {
-                etx_text.setText(Objects.requireNonNull(matches).get(0));
-            }
-        } else if (requestCode == PREFERENCES_REQUEST_CODE) {
-            loadPreferences();
+            etx_text.setText(Objects.requireNonNull(matches).get(0));
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void loadPreferences() {
@@ -1015,7 +745,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
             }
         }
 
-        setPanel(pref.isGesturePanelDefault());
+        setArrowsOrGesturePanel(pref.isGesturePanelDefault());
     }
 
     private void openJump2ToTimeDialog() {
@@ -1114,7 +844,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
         alert.show();
     }
 
-    private void flash(View v) {
+    private void flashView(View v) {
         final View view = v;
         new CountDownTimer(300, 100) {
             public void onTick(long millisUntilFinished) {
@@ -1193,37 +923,14 @@ public class RemoteControllerActivity extends AppCompatActivity {
     }
 
     private void startColorTogglerTask() {
-        synchronized (colorToggler) {
-            if (isColorTogglerRunning) {
-                return;
-            }
-            isColorTogglerRunning = true;
-            colorToggler.run();
-        }
+        runOnUiThread(() -> {
+            pauseColorToggleAnimator.start();
+        });
     }
 
     private void stopColorTogglerTask() {
-        synchronized (colorToggler) {
-            isColorTogglerRunning = false;
-            backgroundTaskHandler.removeCallbacks(colorToggler);
-            toggleTimeTextviewColor(true);
-        }
-    }
-
-    private void toggleTimeTextviewColor(final boolean forceBlueColor) {
-        if (txt_time_current == null) {
-            return;
-        }
-
         runOnUiThread(() -> {
-            if (forceBlueColor || isToggleBlueColor) {
-                txt_time_current.setTextColor(-1);
-                isToggleBlueColor = false;
-            } else {
-                txt_time_current.setTextColor(
-                        getResources().getColor(R.color.accent2, getTheme()));
-                isToggleBlueColor = true;
-            }
+            pauseColorToggleAnimator.end();
         });
     }
 
@@ -1239,11 +946,12 @@ public class RemoteControllerActivity extends AppCompatActivity {
             case WdMediaService.PLAYBACK_NO_MEDIA_PRESENT:
                 stopMediaPlaybackCheckerTask();
                 stopColorTogglerTask();
-                setTitleTxtUI(getString(newPlaybackState.equals(
-                        WdMediaService.PLAYBACK_STOPPED) ? R.string.remote_stopped : R.string.no_media_present));
+                setTitleTxtUI(newPlaybackState.equals(
+                        WdMediaService.PLAYBACK_STOPPED) ? getString(
+                        R.string.remote_stopped) : null);
                 mLTotTime = 0;
                 mLCurTime = 0;
-                setTimesTxtsUI("00:00:00", "00:00:00");
+                setTimesTxtsUI(PlaybackTimeFormatter.EMPTY, PlaybackTimeFormatter.EMPTY);
                 break;
 
             case WdMediaService.PLAYBACK_PREBUFFING:
@@ -1264,7 +972,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
             getApplicationContext().unbindService(wdUpnpService);
         }
 
-        stopColorTogglerTask();
         stopMediaPlaybackCheckerTask();
 
         if (shakeListener != null) {
@@ -1363,19 +1070,19 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
     private class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
         public boolean onDoubleTap(@NonNull MotionEvent ev) {
-            flash(findViewById(R.id.btn_back));
+            flashView(findViewById(R.id.btn_back));
             sendCmdToDevice(WdDevice.CMD_BACK);
             return false;
         }
 
         public boolean onSingleTapConfirmed(@NonNull MotionEvent ev) {
-            flash(findViewById(R.id.btn_ok));
+            flashView(findViewById(R.id.btn_ok));
             sendCmdToDevice(WdDevice.CMD_OK);
             return false;
         }
 
         public void onLongPress(@NonNull MotionEvent ev) {
-            flash(findViewById(R.id.btn_option));
+            flashView(findViewById(R.id.btn_option));
             sendCmdToDevice(WdDevice.CMD_OPTION);
         }
 
@@ -1383,7 +1090,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
             //noinspection DataFlowIssue
             if (Math.abs(e2.getRawY() - e1.getRawY()) > Math.abs(e2.getRawX() - e1.getRawX())) {
                 if (e2.getRawY() - e1.getRawY() > 0.0f) {
-                    flash(findViewById(R.id.btn_down));
+                    flashView(findViewById(R.id.btn_down));
                     sendCmdToDevice(WdDevice.CMD_DOWN);
                     if (Math.abs(velocityY) <= 1000.0f) {
                         return false;
@@ -1395,7 +1102,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
                     sendCmdToDevice(WdDevice.CMD_DOWN);
                     return false;
                 }
-                flash(findViewById(R.id.btn_up));
+                flashView(findViewById(R.id.btn_up));
                 sendCmdToDevice(WdDevice.CMD_UP);
                 if (Math.abs(velocityY) <= 1000.0f) {
                     return false;
@@ -1409,7 +1116,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
             }
 
             if (e2.getRawX() - e1.getRawX() > 0.0f) {
-                flash(findViewById(R.id.btn_right));
+                flashView(findViewById(R.id.btn_right));
                 sendCmdToDevice(WdDevice.CMD_RIGHT);
                 if (Math.abs(velocityX) <= 1000.0f) {
                     return false;
@@ -1422,7 +1129,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
                 return false;
             }
 
-            flash(findViewById(R.id.btn_left));
+            flashView(findViewById(R.id.btn_left));
             sendCmdToDevice(WdDevice.CMD_LEFT);
             if (Math.abs(velocityX) <= 1000.0f) {
                 return false;
@@ -1436,10 +1143,206 @@ public class RemoteControllerActivity extends AppCompatActivity {
         }
     }
 
-    private final Runnable colorToggler = () -> {
-        toggleTimeTextviewColor(false);
-        backgroundTaskHandler.postDelayed(this.colorToggler, 500);
-    };
+    private class RemoteControllerSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            int seekBarId = seekBar.getId();
+            if (seekBarId == R.id.sk_play) {
+                if (mLTotTime == 0) {
+                    setTimesTxtsUI(PlaybackTimeFormatter.EMPTY, PlaybackTimeFormatter.EMPTY);
+                    return;
+                }
+
+                if (fromUser) {
+                    String sTot = txt_time_total.getText().toString();
+                    mLCurTime = (((long) progress) * formatter.stringToSec(sTot)) / 255;
+                    setTimesTxtsUI(formatter.secToString(mLCurTime), sTot);
+                    return;
+                }
+                return;
+            } else if (seekBarId == R.id.sk_vol) {
+                if (fromUser) {
+                    setVolTxtIconIU(progress);
+                }
+            }
+        }
+
+        public void onStartTrackingTouch(SeekBar seekBar) {
+        }
+
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            if (seekBar.getId() == R.id.sk_play && mLTotTime != 0) {
+                String position = formatter.secToString(mLCurTime);
+                wdMediaService.setPlaybackPosition(position);
+            } else if (seekBar.getId() == R.id.sk_vol) {
+                wdMediaService.setVolumen(seekBar.getProgress());
+            }
+        }
+    }
+
+    private class RemoteControllerButtonClickListener implements View.OnClickListener {
+        private final Map<Integer, String> buttonsToCmd;
+
+        public RemoteControllerButtonClickListener() {
+            super();
+
+            buttonsToCmd = Map.ofEntries(
+                    entry(R.id.btn_down, WdDevice.CMD_DOWN),
+                    entry(R.id.btn_up, WdDevice.CMD_UP),
+                    entry(R.id.btn_ok, WdDevice.CMD_OK),
+                    entry(R.id.btn_left, WdDevice.CMD_LEFT),
+                    entry(R.id.btn_right, WdDevice.CMD_RIGHT),
+                    entry(R.id.btn_back, WdDevice.CMD_BACK),
+                    entry(R.id.btn_whome, WdDevice.CMD_HOME),
+                    entry(R.id.btn_home, WdDevice.CMD_HOME),
+                    entry(R.id.btn_option, WdDevice.CMD_OPTION),
+                    entry(R.id.btn_rew, WdDevice.CMD_REWIND),
+                    entry(R.id.btn_pplay, WdDevice.CMD_PLAY),
+                    entry(R.id.btn_ff, WdDevice.CMD_FASTFORWARD),
+                    entry(R.id.btn_prev, WdDevice.CMD_PREV),
+                    entry(R.id.btn_next, WdDevice.CMD_NEXT),
+                    entry(R.id.btn_stop, WdDevice.CMD_STOP),
+                    entry(R.id.btn_wpower, WdDevice.CMD_POWER),
+                    entry(R.id.btn_power, WdDevice.CMD_POWER),
+                    entry(R.id.btn_weject, WdDevice.CMD_EJECT),
+                    entry(R.id.btn_eject, WdDevice.CMD_EJECT),
+                    entry(R.id.btn_wsearch, WdDevice.CMD_SEARCH),
+                    entry(R.id.btn_search, WdDevice.CMD_SEARCH),
+                    entry(R.id.btn_pgb, WdDevice.CMD_PGB),
+                    entry(R.id.btn_pgn, WdDevice.CMD_PGN),
+                    entry(R.id.btn_config, WdDevice.CMD_CONFIG),
+                    entry(R.id.btn_audio, WdDevice.CMD_AUDIO),
+                    entry(R.id.btn_subs, WdDevice.CMD_SUBS),
+                    entry(R.id.btn_mute, WdDevice.CMD_MUTE),
+                    entry(R.id.btn_a, WdDevice.CMD_BTN_A),
+                    entry(R.id.btn_b, WdDevice.CMD_BTN_B),
+                    entry(R.id.btn_c, WdDevice.CMD_BTN_C),
+                    entry(R.id.btn_d, WdDevice.CMD_BTN_D)
+            );
+        }
+
+        @SuppressLint("NonConstantResourceId")
+        @Override
+        public void onClick(View v) {
+            String tag = (String) v.getTag();
+            if (tag != null && tag.startsWith("service_")) {
+                if (serviceList != null) {
+                    sendServiceToDevice(serviceList[Integer.parseInt(tag.substring(8))][3]);
+                }
+            }
+
+            int buttonId = v.getId();
+            if (buttonsToCmd.containsKey(buttonId)) {
+                sendCmdToDevice(buttonsToCmd.get(buttonId));
+                return;
+            }
+
+            switch (buttonId) {
+                case R.id.txt_time_current:
+                    openJump2ToTimeDialog();
+                    return;
+
+                case R.id.btn_cvol:
+                    sk_vol.setVisibility(View.GONE);
+                    txt_vol.setVisibility(View.GONE);
+                    btn_cvol.setVisibility(View.GONE);
+                    view_vol1.setVisibility(View.VISIBLE);
+                    txt_media.setVisibility(View.VISIBLE);
+                    btn_mode.setVisibility(View.VISIBLE);
+                    return;
+
+                case R.id.btn_mode:
+                    wdMediaService.circlePlayMode();
+                    setPlayModeUI(wdMediaService.getPlayMode());
+                    return;
+
+                case R.id.btn_vol:
+                    if (sk_vol.getVisibility() == View.GONE) {
+                        sk_vol.setVisibility(View.VISIBLE);
+                        txt_vol.setVisibility(View.VISIBLE);
+                        btn_cvol.setVisibility(View.VISIBLE);
+                        view_vol1.setVisibility(View.GONE);
+                        txt_media.setVisibility(View.GONE);
+                        btn_mode.setVisibility(View.GONE);
+                        return;
+                    }
+                    return;
+
+                case R.id.btn_touch:
+                    ImageView img_gespa = findViewById(R.id.img_gespa);
+                    if (img_gespa.getVisibility() == View.INVISIBLE || img_gespa.getVisibility() == View.GONE) {
+                        setArrowsOrGesturePanel(true);
+                        return;
+                    }
+
+                    setArrowsOrGesturePanel(false);
+                    return;
+
+                case R.id.btn_tinfo:
+                    openGesturesDialog();
+                    return;
+            }
+        }
+    }
+
+    private class MyWdUpnpServiceEventListener implements WdUpnpServiceEventListener {
+        @Override
+        public void onServiceConnected(WdMediaService mediaService) {
+            wdMediaService = mediaService;
+            startMediaPlaybackCheckerTask();
+        }
+
+        @Override
+        public void onServiceDisconnected() {
+            noUpnp(false);
+        }
+
+        @Override
+        public void onServiceConnectedError() {
+            //TODO SCF connect on empty registry (home -> remote -> back -> remote again)
+            noUpnp(false);
+        }
+    }
+
+    private class MyWdMediaServiceEventListener implements WdMediaServiceEventListener {
+        @Override
+        public void onVolumenChanged(int volumen) {
+            setVolTxtIconIU(volumen);
+            setVolSeekUI(volumen);
+        }
+
+        @Override
+        public void onPlaybackPositionChanged(String trackDuration, String relTime) {
+            mLTotTime = formatter.stringToSec(trackDuration);
+            mLCurTime = Math.min(formatter.stringToSec(relTime), mLTotTime);
+            setTimesTxtsUI(formatter.secToString(mLCurTime), trackDuration);
+            setTimeSeekUI(mLCurTime, mLTotTime);
+        }
+
+        @Override
+        public void onPlaymodeChanged(String playMode) {
+            setPlayModeUI(playMode);
+        }
+
+        @Override
+        public void onPlaybackSpeedChanged(int playSpeed) {
+            isMediaRewinding = playSpeed < 0;
+        }
+
+        @Override
+        public void onPlaybackStatusChanged(String playbackStatus) {
+            checkWdMediaServiceState(playbackStatus);
+        }
+
+        @Override
+        public void onMediaTitleReceived(String title) {
+            setTitleTxtUI(title);
+        }
+
+        @Override
+        public void onFail(Exception e) {
+            noUpnp(false);
+        }
+    }
 
     //TODO SCF se puede meter en WdMediaService??
     private final Runnable mediaPlaybackStatusChecker = () -> {
@@ -1457,8 +1360,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
             mediaPlaybackStatusCheckerCount++;
             if (isMediaRewinding || ((mediaPlaybackStatusCheckerCount % 5) != 0)) {
                 offlinePlaybackPositionUpdate();
-            }
-            else {
+            } else {
                 if (mediaPlaybackStatusCheckerCount == 5) {
                     wdMediaService.syncPlaybackPosition();
                 } else if (mediaPlaybackStatusCheckerCount == 10) {
