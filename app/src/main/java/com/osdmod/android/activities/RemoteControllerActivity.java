@@ -155,6 +155,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
         btn_mode = findViewById(R.id.btn_mode);
         horizontal_pager = findViewById(R.id.horizontal_pager);
         img_led = findViewById(R.id.img_led);
+        ly_finalr = findViewById(R.id.ly_finalr);
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -222,7 +223,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
         }
 
         LinearLayout ly_final = findViewById(R.id.ly_final);
-        ly_finalr = findViewById(R.id.ly_finalr);
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) horizontal_pager.getLayoutParams();
         params.height = ly_final.getHeight();
         horizontal_pager.setLayoutParams(params);
@@ -320,18 +320,12 @@ public class RemoteControllerActivity extends AppCompatActivity {
     }
 
     private void remoteNotAvailable() {
-        final LinearLayout ly_one_swfour = findViewById(R.id.ly_one_swfour);
         final float vAlpha = 0.2f;
         runOnUiThread(() -> {
             if (ly_finalr != null) {
-                ObjectAnimator.ofFloat(ly_finalr, "alpha", vAlpha).setDuration(0).start();
                 ly_finalr.setAlpha(vAlpha);
             }
-            if (ly_one_swfour != null) {
-                ObjectAnimator.ofFloat(ly_one_swfour, "alpha", vAlpha).setDuration(0)
-                        .start();
-                ly_one_swfour.setAlpha(vAlpha);
-            }
+
             if (horizontal_pager != null) {
                 horizontal_pager.setAlpha(vAlpha);
             }
@@ -790,8 +784,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
                             mLCurTime = formatter.stringToSec(jumpToPosition);
                             wdMediaService.setPlaybackPosition(jumpToPosition);
                             setTimeSeekUI(mLCurTime, mLTotTime);
-                            setTimesTxtsUI(jumpToPosition,
-                                    formatter.secToString(mLTotTime));
+                            setTimesTxtsUI(jumpToPosition, formatter.secToString(mLTotTime));
                         }).setNegativeButton(getString(R.string.rem_txt_cancel),
                         (dialog, whichButton) -> {
                         }).create();
@@ -907,8 +900,12 @@ public class RemoteControllerActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    //TODO SCF revisar y meter en WdMediaService
     private void offlinePlaybackPositionUpdate() {
+        if (mLTotTime == 0) {
+            mLCurTime = 0;
+            setTimesTxtsUI(PlaybackTimeFormatter.EMPTY, PlaybackTimeFormatter.EMPTY);
+        }
+
         if (isMediaRewinding) {
             if (mLCurTime > 0) {
                 mLCurTime--;
@@ -1148,6 +1145,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
             int seekBarId = seekBar.getId();
             if (seekBarId == R.id.sk_play) {
                 if (mLTotTime == 0) {
+                    mLCurTime = 0;
                     setTimesTxtsUI(PlaybackTimeFormatter.EMPTY, PlaybackTimeFormatter.EMPTY);
                     return;
                 }
@@ -1159,7 +1157,9 @@ public class RemoteControllerActivity extends AppCompatActivity {
                     return;
                 }
                 return;
-            } else if (seekBarId == R.id.sk_vol) {
+            }
+
+            if (seekBarId == R.id.sk_vol) {
                 if (fromUser) {
                     setVolTxtIconIU(progress);
                 }
