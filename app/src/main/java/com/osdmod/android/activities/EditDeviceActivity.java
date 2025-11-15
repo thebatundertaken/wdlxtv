@@ -53,23 +53,6 @@ public class EditDeviceActivity extends AppCompatActivity {
                 return;
         }
     };
-
-    private final CompoundButton.OnCheckedChangeListener chk_listener = (buttonView, isChecked) -> {
-        if (buttonView.getId() != R.id.chk_wdlxtv) {
-            return;
-        }
-
-        LinearLayout ly_lxusepass = findViewById(R.id.ly_lxusepass);
-        ly_lxusepass.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-        CheckBox chk_wdlxtv = findViewById(R.id.chk_wdlxtv);
-        Gallery gallery = findViewById(R.id.gl_devices);
-        if (gallery.getSelectedItemPosition() == 1) {
-            chk_wdlxtv.setChecked(true);
-        } else if (gallery.getSelectedItemPosition() == 0) {
-            chk_wdlxtv.setChecked(true);
-            ly_lxusepass.setVisibility(View.GONE);
-        }
-    };
     private WdDeviceRepository wdDeviceRepository;
     private String action;
     private boolean helping = false;
@@ -83,6 +66,19 @@ public class EditDeviceActivity extends AppCompatActivity {
     private Gallery gallery;
     private LinearLayout lay_wdlxtv;
     private LinearLayout ly_lxusepass;
+    private final CompoundButton.OnCheckedChangeListener chk_listener = (buttonView, isChecked) -> {
+        if (buttonView.getId() != R.id.chk_wdlxtv) {
+            return;
+        }
+
+        ly_lxusepass.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+        if (gallery.getSelectedItemPosition() == 1) {
+            chk_wdlxtv.setChecked(true);
+        } else if (gallery.getSelectedItemPosition() == 0) {
+            chk_wdlxtv.setChecked(true);
+            ly_lxusepass.setVisibility(View.GONE);
+        }
+    };
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -223,7 +219,7 @@ public class EditDeviceActivity extends AppCompatActivity {
                 return true;
 
             case R.id.edit_activity_menu_save:
-                if(etxt_name.getText().toString().isEmpty()) {
+                if (etxt_name.getText().toString().isEmpty()) {
                     Toast.makeText(this, getString(R.string.edia_txt_invname), Toast.LENGTH_LONG)
                             .show();
                     return true;
@@ -301,7 +297,8 @@ public class EditDeviceActivity extends AppCompatActivity {
                 break;
         }
         new AlertDialog.Builder(this).setIcon(R.drawable.ic_menu_help)
-                .setTitle(getString(R.string.edia_txt_help)).setView(TextUtils.linkifyText(message, this))
+                .setTitle(getString(R.string.edia_txt_help))
+                .setView(TextUtils.linkifyText(message, this))
                 .setPositiveButton(getString(R.string.edia_txt_ok),
                         (dialog, which) -> {
                         }).show();

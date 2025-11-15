@@ -9,7 +9,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.TransitionDrawable;
 import android.hardware.SensorManager;
@@ -32,17 +31,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.osdmod.android.activities.listener.RemoteControllerOnScreenSwitchListener;
@@ -113,9 +112,13 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private boolean conf_volumebuttons;
     private boolean isMediaRewinding = false;
     private WdUpnpService wdUpnpService;
+    private LinearLayout ly_final;
     private LinearLayout ly_finalr;
+    private LinearLayout ly_dots;
     private ImageView img_led;
     private ObjectAnimator pauseColorToggleAnimator;
+    private @ColorInt int accent2;
+    private @ColorInt int white3;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,6 +146,9 @@ public class RemoteControllerActivity extends AppCompatActivity {
             getSupportActionBar().setSubtitle(wdDevice.getIp());
         }
 
+        accent2 = ContextCompat.getColor(getApplicationContext(), R.color.accent2);
+        white3 = ContextCompat.getColor(getApplicationContext(), R.color.white3);
+
         txt_vol = findViewById(R.id.txt_vol);
         btn_vol = findViewById(R.id.btn_vol);
         btn_cvol = findViewById(R.id.btn_cvol);
@@ -156,6 +162,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
         horizontal_pager = findViewById(R.id.horizontal_pager);
         img_led = findViewById(R.id.img_led);
         ly_finalr = findViewById(R.id.ly_finalr);
+        ly_final = findViewById(R.id.ly_final);
+        ly_dots = findViewById(R.id.ly_dots);
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -177,8 +185,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
             }
         }
         btn_vol.setOnClickListener(btnClick);
-        ImageButton btn_cvol;
-        if (!isTablet && (btn_cvol = findViewById(R.id.btn_cvol)) != null) {
+        if (btn_cvol != null) {
             btn_cvol.setOnClickListener(btnClick);
         }
         btn_mode.setOnClickListener(btnClick);
@@ -212,63 +219,12 @@ public class RemoteControllerActivity extends AppCompatActivity {
         loadPreferences();
     }
 
-    private void positionAndResizeUI() {
-        //getWindowManager().getDefaultDisplay().getMetrics(new DisplayMetrics());
-        if (isTablet) {
-            LinearLayout ly_dots = findViewById(R.id.ly_dots);
-            RelativeLayout.LayoutParams params4 = (RelativeLayout.LayoutParams) ly_dots.getLayoutParams();
-            params4.width = horizontal_pager.getWidth();
-            ly_dots.setLayoutParams(params4);
-            return;
-        }
-
-        LinearLayout ly_final = findViewById(R.id.ly_final);
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) horizontal_pager.getLayoutParams();
-        params.height = ly_final.getHeight();
-        horizontal_pager.setLayoutParams(params);
-
-        int size = ly_finalr.getHeight();
-        if (ly_finalr.getHeight() > ly_finalr.getWidth()) {
-            size = ly_finalr.getWidth();
-        }
-
-        int h = (int) ((((double) size) * 31.195d) / 100.0d);
-        findViewById(R.id.btn_up).getLayoutParams().height = h;
-        findViewById(R.id.btn_down).getLayoutParams().height = h;
-        findViewById(R.id.btn_left).getLayoutParams().width = h;
-        findViewById(R.id.btn_right).getLayoutParams().width = h;
-
-        int h2 = (int) ((((double) size) * 37.6d) / 100.0d);
-        ImageView btn_ok = findViewById(R.id.btn_ok);
-        btn_ok.getLayoutParams().height = h2;
-        btn_ok.getLayoutParams().width = h2;
-
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            findViewById(R.id.rl_arrows).getLayoutParams().height = ly_finalr.getHeight();
-            LinearLayout ly_dots = findViewById(R.id.ly_dots);
-            RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams) ly_dots.getLayoutParams();
-            params2.width = ly_final.getWidth();
-            ly_dots.setLayoutParams(params2);
-            return;
-        }
-
-        LinearLayout ly_one_swone = findViewById(R.id.ly_one_swone);
-        if (params.height < ly_one_swone.getHeight()) {
-            LinearLayout ly_two_stwo = findViewById(R.id.ly_two_swtwo);
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(-1, -2);
-            ly_one_swone.setLayoutParams(layoutParams);
-            if (ly_two_stwo != null) {
-                ly_two_stwo.setLayoutParams(layoutParams);
-            }
-        }
-    }
-
     private void setDeviceOptions(int modelID) {
         if (modelID == WdDevice.MODELID_STREAMING || modelID == WdDevice.MODELID_HUB) {
-            horizontal_pager.removeViewAt(isTablet ? 0 : 1);
+            horizontal_pager.removeViewAt(1);
         } else {
             if (isTablet) {
-                findViewById(R.id.ly_dots).setVisibility(View.INVISIBLE);
+                ly_dots.setVisibility(View.INVISIBLE);
                 horizontal_pager.removeViewAt(1);
                 horizontal_pager.removeViewAt(1);
             } else {
@@ -278,33 +234,38 @@ public class RemoteControllerActivity extends AppCompatActivity {
         }
 
         wdRemoteController = wdDevice.createRemoteController();
-        if (wdRemoteController != null) {
-            new Thread(() -> {
-                int result = wdRemoteController.check();
-
-                if (result != 1) {
-                    remoteNotAvailable();
+        new Thread(() -> {
+            if (wdRemoteController != null) {
+                if (wdRemoteController.check() != 1) {
                     showToastShort(getString(R.string.rem_txt_nocon));
+                    remoteNotAvailable();
                     return;
                 }
 
-                new Thread(
-                        () -> {
-                            serviceList = wdRemoteController.getDeviceServices();
-                            runOnUiThread(() -> {
-                                if (serviceList == null) {
-                                    horizontal_pager.removeViewAt(isTablet ? 1 : 2);
-                                    return;
-                                }
-                                createHubServicesLayout(serviceList);
-                                ((ImageView) findViewById(R.id.img_pos)).setImageResource(
-                                        isTablet ? R.drawable.one : R.drawable.tone);
-                            });
-                        }
-                ).start();
+                drawServiceList();
             }
-            ).start();
         }
+        ).start();
+    }
+
+    private void drawServiceList() {
+        serviceList = wdRemoteController == null ? null : wdRemoteController.getDeviceServices();
+        runOnUiThread(() -> {
+            if (serviceList == null) {
+                removeServiceListview();
+                return;
+            }
+            createHubServicesLayout(serviceList);
+            ((ImageView) findViewById(R.id.img_pos)).setImageResource(
+                    isTablet ? R.drawable.one : R.drawable.tone);
+        });
+    }
+
+    private void removeServiceListview() {
+        try {
+            horizontal_pager.removeViewAt(2);
+        }
+        catch (Exception ignored){}
     }
 
     private void noUpnp(boolean silent) {
@@ -320,20 +281,21 @@ public class RemoteControllerActivity extends AppCompatActivity {
     }
 
     private void remoteNotAvailable() {
-        final float vAlpha = 0.2f;
         runOnUiThread(() -> {
-            if (ly_finalr != null) {
-                ly_finalr.setAlpha(vAlpha);
-            }
-
-            if (horizontal_pager != null) {
-                horizontal_pager.setAlpha(vAlpha);
+            @ColorInt int bgColor = ContextCompat.getColor(getApplicationContext(), R.color.white2);
+            View[] views = {ly_final, ly_finalr, ly_dots};
+            for (View view : views) {
+                if (view != null) {
+                    view.setAlpha(0.2f);
+                    view.setBackgroundColor(bgColor);
+                }
             }
         });
+        removeServiceListview();
     }
 
     private void showToastShort(final String val) {
-        if (System.currentTimeMillis() - lastost > 3500) {
+        if ((System.currentTimeMillis() - lastost) > 3000) {
             runOnUiThread(
                     () -> Toast.makeText(RemoteControllerActivity.this, val, Toast.LENGTH_SHORT)
                             .show());
@@ -622,7 +584,13 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
     private void setTitleTxtUI(String title) {
         runOnUiThread(() -> {
-            txt_media.setText(title == null ? getString(R.string.no_media_present) : title);
+            if (title == null) {
+                txt_media.setText(getString(R.string.no_media_present));
+                txt_media.setTextColor(accent2);
+            } else {
+                txt_media.setText(title);
+                txt_media.setTextColor(white3);
+            }
         });
     }
 
@@ -979,20 +947,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         getWindow().setFormat(PixelFormat.RGBA_8888);
-    }
-
-    protected void onStart() {
-        super.onStart();
-        new Thread(
-                () -> {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        Log.w(TAG, e);
-                    }
-                    runOnUiThread(RemoteControllerActivity.this::positionAndResizeUI);
-                }
-        ).start();
     }
 
     private void startMediaPlaybackCheckerTask() {

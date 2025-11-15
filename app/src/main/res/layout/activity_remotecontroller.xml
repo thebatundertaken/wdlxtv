@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:fitsSystemWindows="true"
-    android:background="@color/remotecontroller_background"
+    android:background="@android:color/background_dark"
     android:gravity="top|center"
     android:orientation="vertical">
 
@@ -17,8 +17,13 @@
         android:id="@+id/ly_final"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:background="@color/layout_background2"
         android:layout_gravity="center"
         android:layout_weight="55.0"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -67,7 +72,7 @@
                             android:shadowDy="1.0"
                             android:shadowRadius="0.8"
                             android:text="00:00:00"
-                            android:textColor="@color/white" />
+                            android:textColor="@color/white2" />
 
                         <SeekBar
                             android:id="@+id/sk_play"
@@ -90,7 +95,7 @@
                             android:shadowDy="1.0"
                             android:shadowRadius="0.8"
                             android:text="00:00:00"
-                            android:textColor="@color/white" />
+                            android:textColor="@color/white2" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -145,7 +150,7 @@
                             android:shadowRadius="0.8"
                             android:singleLine="true"
                             android:text="@string/no_media_present"
-                            android:textColor="@color/accent2" />
+                            android:textColor="@color/white3" />
 
                         <View
                             android:id="@+id/view_vol2"
@@ -751,7 +756,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:paddingEnd="6.0dip"
-            android:src="@drawable/ledoff" />
+            android:src="@android:color/background_dark" />
     </RelativeLayout>
 
     <View
@@ -764,8 +769,16 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="45.0"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="12dp"
+        android:background="@color/layout_background2"
         android:orientation="horizontal">
 
+        <!--
+        android:background="@color/remotecontroller_background"
+        -->
         <RelativeLayout
             android:id="@+id/rl_arrows"
             android:layout_width="fill_parent"

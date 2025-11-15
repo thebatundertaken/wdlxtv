@@ -20,7 +20,9 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16.0dip">
+            android:background="@color/remotecontroller_background"
+            android:layout_margin="12dp"
+            android:padding="15dip">
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -49,7 +51,7 @@
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/remotecontroller_background"
+                android:background="@color/layout_background"
                 >
 
                 <Gallery
@@ -58,8 +60,9 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5.0dip"
                     android:gravity="center_horizontal"
+                    android:animationDuration="2000"
                     android:spacing="30.0dip"
-                    android:unselectedAlpha="0.4">
+                    android:unselectedAlpha="0.3">
 
                     <requestFocus />
                 </Gallery>
@@ -167,7 +170,7 @@
                     android:autofillHints="none"
                     android:inputType="none"
                     android:ellipsize="end"
-                    android:textColor="@color/gray3"
+                    android:textColor="@color/gray4"
                     android:maxLines="1"
                     android:singleLine="true" />
 
