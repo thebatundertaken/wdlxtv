@@ -4,6 +4,6 @@
     android:propertyName="textColor"
     android:repeatCount="infinite"
     android:repeatMode="reverse"
-    android:valueFrom="@color/white2"
-    android:valueTo="@color/accent2"
+    android:valueFrom="@color/accent2"
+    android:valueTo="@color/white2"
     android:valueType="colorType" />

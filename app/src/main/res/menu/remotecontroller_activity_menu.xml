@@ -13,13 +13,13 @@
         android:id="@+id/remotecontroller_activity_menu_keyboard"
         android:icon="@drawable/ic_keyboard"
         android:title="@string/rem_txt_keyboard"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/remotecontroller_activity_menu_webin"
         android:icon="@drawable/ic_nav"
         android:title="@string/rem_txt_webin"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/remotecontroller_activity_menu_testapp"

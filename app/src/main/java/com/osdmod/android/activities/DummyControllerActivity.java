@@ -99,7 +99,6 @@ public class DummyControllerActivity extends AppCompatActivity {
             SeekBar sk_vol = findViewById(R.id.sk_vol);
             TextView txt_vol = findViewById(R.id.txt_vol);
             TextView txt_media = findViewById(R.id.txt_media);
-            View view_vol1 = findViewById(R.id.view_vol1);
             ImageButton btn_mode = findViewById(R.id.btn_mode);
             ImageButton btn_cvol = findViewById(R.id.btn_cvol);
             String tag = (String) v.getTag();
@@ -118,7 +117,6 @@ public class DummyControllerActivity extends AppCompatActivity {
                 sk_vol.setVisibility(View.GONE);
                 txt_vol.setVisibility(View.GONE);
                 btn_cvol.setVisibility(View.GONE);
-                view_vol1.setVisibility(View.VISIBLE);
                 txt_media.setVisibility(View.VISIBLE);
                 btn_mode.setVisibility(View.VISIBLE);
                 return;
@@ -153,7 +151,6 @@ public class DummyControllerActivity extends AppCompatActivity {
                     sk_vol.setVisibility(View.VISIBLE);
                     txt_vol.setVisibility(View.VISIBLE);
                     btn_cvol.setVisibility(View.VISIBLE);
-                    view_vol1.setVisibility(View.GONE);
                     txt_media.setVisibility(View.GONE);
                     btn_mode.setVisibility(View.GONE);
                     return;

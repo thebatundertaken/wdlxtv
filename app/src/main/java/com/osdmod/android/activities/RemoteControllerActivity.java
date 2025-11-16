@@ -98,7 +98,6 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private HorizontalPager horizontal_pager;
     private SeekBar sk_vol;
     private SeekBar sk_play;
-    private View view_vol1;
     private GestureDetector gestureDetector;
     private boolean isTablet = false;
     private long lastshake = 0L;
@@ -117,8 +116,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private LinearLayout ly_dots;
     private ImageView img_led;
     private ObjectAnimator pauseColorToggleAnimator;
-    private @ColorInt int accent2;
-    private @ColorInt int white3;
+    private @ColorInt int colorGray2;
+    private @ColorInt int colorAccent2;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,15 +145,14 @@ public class RemoteControllerActivity extends AppCompatActivity {
             getSupportActionBar().setSubtitle(wdDevice.getIp());
         }
 
-        accent2 = ContextCompat.getColor(getApplicationContext(), R.color.accent2);
-        white3 = ContextCompat.getColor(getApplicationContext(), R.color.white3);
+        colorGray2 = ContextCompat.getColor(getApplicationContext(), R.color.gray2);
+        colorAccent2 = ContextCompat.getColor(getApplicationContext(), R.color.accent2);
 
         txt_vol = findViewById(R.id.txt_vol);
         btn_vol = findViewById(R.id.btn_vol);
         btn_cvol = findViewById(R.id.btn_cvol);
         sk_vol = findViewById(R.id.sk_vol);
         sk_play = findViewById(R.id.sk_play);
-        view_vol1 = findViewById(R.id.view_vol1);
         txt_time_current = findViewById(R.id.txt_time_current);
         txt_time_total = findViewById(R.id.txt_time_total);
         txt_media = findViewById(R.id.txt_media);
@@ -264,8 +262,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private void removeServiceListview() {
         try {
             horizontal_pager.removeViewAt(2);
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored){}
     }
 
     private void noUpnp(boolean silent) {
@@ -584,12 +582,12 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
     private void setTitleTxtUI(String title) {
         runOnUiThread(() -> {
-            if (title == null) {
+            if (title == null || title.equals(getString(R.string.remote_stopped))) {
                 txt_media.setText(getString(R.string.no_media_present));
-                txt_media.setTextColor(accent2);
+                txt_media.setTextColor(colorGray2);
             } else {
                 txt_media.setText(title);
-                txt_media.setTextColor(white3);
+                txt_media.setTextColor(colorAccent2);
             }
         });
     }
@@ -1196,11 +1194,9 @@ public class RemoteControllerActivity extends AppCompatActivity {
                     return;
 
                 case R.id.btn_cvol:
-                    sk_vol.setVisibility(View.GONE);
+                    sk_vol.setVisibility(View.INVISIBLE);
                     txt_vol.setVisibility(View.GONE);
                     btn_cvol.setVisibility(View.GONE);
-                    view_vol1.setVisibility(View.VISIBLE);
-                    txt_media.setVisibility(View.VISIBLE);
                     btn_mode.setVisibility(View.VISIBLE);
                     return;
 
@@ -1210,12 +1206,10 @@ public class RemoteControllerActivity extends AppCompatActivity {
                     return;
 
                 case R.id.btn_vol:
-                    if (sk_vol.getVisibility() == View.GONE) {
+                    if (sk_vol.getVisibility() == View.INVISIBLE) {
                         sk_vol.setVisibility(View.VISIBLE);
                         txt_vol.setVisibility(View.VISIBLE);
                         btn_cvol.setVisibility(View.VISIBLE);
-                        view_vol1.setVisibility(View.GONE);
-                        txt_media.setVisibility(View.GONE);
                         btn_mode.setVisibility(View.GONE);
                         return;
                     }

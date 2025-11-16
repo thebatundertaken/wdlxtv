@@ -145,7 +145,7 @@
                                 android:src="@drawable/rall" />
 
                             <View
-                                android:id="@id/view_vol1"
+                                android:id="@+id/view_vol1"
                                 android:layout_width="3.0dp"
                                 android:layout_height="fill_parent"
                                 android:layout_marginLeft="5.0dip"
@@ -170,11 +170,11 @@
                                 android:shadowDy="1.0"
                                 android:shadowRadius="0.8"
                                 android:singleLine="true"
-                                android:text="NO MEDIA PRESENT"
+                                android:text="@string/no_media_present"
                                 android:textColor="@color/accent2" />
 
                             <View
-                                android:id="@id/view_vol2"
+                                android:id="@+id/view_vol2"
                                 android:layout_width="3.0dp"
                                 android:layout_height="fill_parent"
                                 android:layout_marginLeft="5.0dip"
@@ -212,13 +212,12 @@
                         </LinearLayout>
 
                         <RelativeLayout
-                            android:id="@id/row_three_lyone_swone"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
                             <View
-                                android:id="@id/view_one_one"
+                                android:id="@+id/view_one_one"
                                 android:layout_width="fill_parent"
                                 android:layout_height="3.0dp"
                                 android:background="@drawable/hor" />
