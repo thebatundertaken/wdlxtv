@@ -21,6 +21,7 @@
     <color name="layout_background2">#212224</color>
     <color name="layout_background3">#2d2c31</color>
     <color name="layout_background4">#39383c</color>
+    <color name="layout_background5">#343434</color>
     <color name="layout_shadow">#000000</color>
     <color name="layout_list_text">#6899ff</color>
     <color name="layout_divider">#414048</color>

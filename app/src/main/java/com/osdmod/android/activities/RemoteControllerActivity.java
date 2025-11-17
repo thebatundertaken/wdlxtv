@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.graphics.Typeface;
 import android.graphics.drawable.TransitionDrawable;
 import android.hardware.SensorManager;
 import android.net.Uri;
@@ -116,8 +117,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private LinearLayout ly_dots;
     private ImageView img_led;
     private ObjectAnimator pauseColorToggleAnimator;
-    private @ColorInt int colorGray2;
-    private @ColorInt int colorAccent2;
+    private @ColorInt int colorGray3;
+    private @ColorInt int colorWhite;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,8 +146,8 @@ public class RemoteControllerActivity extends AppCompatActivity {
             getSupportActionBar().setSubtitle(wdDevice.getIp());
         }
 
-        colorGray2 = ContextCompat.getColor(getApplicationContext(), R.color.gray2);
-        colorAccent2 = ContextCompat.getColor(getApplicationContext(), R.color.accent2);
+        colorGray3 = ContextCompat.getColor(getApplicationContext(), R.color.gray3);
+        colorWhite = ContextCompat.getColor(getApplicationContext(), R.color.white);
 
         txt_vol = findViewById(R.id.txt_vol);
         btn_vol = findViewById(R.id.btn_vol);
@@ -581,13 +582,19 @@ public class RemoteControllerActivity extends AppCompatActivity {
     }
 
     private void setTitleTxtUI(String title) {
+        if (title == null || title.equals(txt_media.getText().toString())){
+            return;
+        }
+
         runOnUiThread(() -> {
-            if (title == null || title.equals(getString(R.string.remote_stopped))) {
+            if (title.isEmpty() || title.equals(getString(R.string.remote_stopped))) {
+                txt_media.setTypeface(null, Typeface.NORMAL);
+                txt_media.setTextColor(colorGray3);
                 txt_media.setText(getString(R.string.no_media_present));
-                txt_media.setTextColor(colorGray2);
             } else {
+                txt_media.setTypeface(null, Typeface.BOLD);
+                txt_media.setTextColor(colorWhite);
                 txt_media.setText(title);
-                txt_media.setTextColor(colorAccent2);
             }
         });
     }
@@ -870,6 +877,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
         if (mLTotTime == 0) {
             mLCurTime = 0;
             setTimesTxtsUI(PlaybackTimeFormatter.EMPTY, PlaybackTimeFormatter.EMPTY);
+            return;
         }
 
         if (isMediaRewinding) {
