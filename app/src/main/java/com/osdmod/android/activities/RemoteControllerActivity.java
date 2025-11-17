@@ -118,7 +118,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private ImageView img_led;
     private ObjectAnimator pauseColorToggleAnimator;
     private @ColorInt int colorGray3;
-    private @ColorInt int colorWhite;
+    private @ColorInt int colorAccent;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,7 +147,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
         }
 
         colorGray3 = ContextCompat.getColor(getApplicationContext(), R.color.gray3);
-        colorWhite = ContextCompat.getColor(getApplicationContext(), R.color.white);
+        colorAccent = ContextCompat.getColor(getApplicationContext(), R.color.accent);
 
         txt_vol = findViewById(R.id.txt_vol);
         btn_vol = findViewById(R.id.btn_vol);
@@ -594,7 +594,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
                 txt_media.setText(getString(R.string.no_media_present));
             } else {
                 //txt_media.setTypeface(null, Typeface.BOLD);
-                txt_media.setTextColor(colorWhite);
+                txt_media.setTextColor(colorAccent);
                 txt_media.setText(title);
             }
         });

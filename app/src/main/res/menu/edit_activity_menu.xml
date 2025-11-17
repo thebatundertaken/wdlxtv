@@ -6,18 +6,6 @@
         android:id="@+id/edit_activity_menu_help"
         android:icon="@drawable/ic_menu_help"
         android:title="@string/edia_txt_help"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/edit_activity_menu_cancel"
-        android:icon="@drawable/ic_cancel"
-        android:title="@string/edia_txt_cancel"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/edit_activity_menu_save"
-        android:icon="@drawable/ic_ok"
-        android:title="@string/edia_txt_save"
         app:showAsAction="always" />
 
 </menu>

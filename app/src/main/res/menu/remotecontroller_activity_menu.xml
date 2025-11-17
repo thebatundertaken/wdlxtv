@@ -11,30 +11,25 @@
 
     <item
         android:id="@+id/remotecontroller_activity_menu_keyboard"
-        android:icon="@drawable/ic_keyboard"
         android:title="@string/rem_txt_keyboard"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/remotecontroller_activity_menu_webin"
-        android:icon="@drawable/ic_nav"
         android:title="@string/rem_txt_webin"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/remotecontroller_activity_menu_testapp"
-        android:icon="@drawable/test"
         android:title="@string/m_txt_testapp"
         app:showAsAction="never" />
     <item
         android:id="@+id/remotecontroller_activity_menu_preferences"
-        android:icon="@drawable/ic_menu_preferences"
         android:title="@string/m_txt_prefs"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/remotecontroller_activity_menu_help"
-        android:icon="@drawable/ic_menu_help"
         android:title="@string/edia_txt_help"
         app:showAsAction="never" />
 

@@ -97,7 +97,6 @@
                                 android:shadowDx="1.0"
                                 android:shadowDy="1.0"
                                 android:shadowRadius="0.8"
-                                android:text="00:00:00"
                                 android:textColor="@color/white3" />
 
                             <SeekBar
@@ -120,7 +119,6 @@
                                 android:shadowDx="1.0"
                                 android:shadowDy="1.0"
                                 android:shadowRadius="0.8"
-                                android:text="00:00:00"
                                 android:textColor="@color/white3" />
                         </LinearLayout>
 
@@ -143,12 +141,14 @@
                                 android:layout_height="wrap_content"
                                 android:padding="5dp"
                                 android:src="@drawable/cvol"
+                                android:backgroundTint="@color/layout_background3"
                                 android:visibility="gone" />
 
                             <ImageButton
                                 android:id="@+id/btn_mode"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:backgroundTint="@color/layout_background4"
                                 android:padding="5dp"
                                 android:src="@drawable/rall" />
 
@@ -166,6 +166,7 @@
                                 android:id="@+id/btn_vol"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:backgroundTint="@color/layout_background4"
                                 android:padding="5dp"
                                 android:minHeight="32.0dip"
                                 android:src="@drawable/volh" />
@@ -209,6 +210,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
                                     android:clickable="true"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/rew" />
 
                                 <ImageButton
@@ -217,6 +219,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
                                     android:clickable="true"
+                                    android:backgroundTint="@color/layout_background4"
                                     android:src="@drawable/pplay" />
 
                                 <ImageButton
@@ -225,6 +228,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
                                     android:clickable="true"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/ff" />
                             </LinearLayout>
 
@@ -245,6 +249,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
                                     android:clickable="true"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/prev" />
 
                                 <ImageButton
@@ -253,6 +258,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
                                     android:clickable="true"
+                                    android:backgroundTint="@color/layout_background4"
                                     android:src="@drawable/stop" />
 
                                 <ImageButton
@@ -261,6 +267,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
                                     android:clickable="true"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/next" />
                             </LinearLayout>
 
@@ -302,6 +309,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="50.0"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/power" />
 
                             <ImageButton
@@ -309,6 +317,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="50.0"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/eject" />
                         </LinearLayout>
 
@@ -325,6 +334,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="50.0"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/search" />
 
                             <ImageButton
@@ -332,6 +342,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="50.0"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/home" />
                         </LinearLayout>
                     </LinearLayout>
@@ -370,6 +381,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1.0"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/power" />
 
                             <ImageButton
@@ -377,6 +389,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1.0"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/eject" />
 
                             <ImageButton
@@ -384,6 +397,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1.0"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/search" />
 
                             <ImageButton
@@ -391,6 +405,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1.0"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/home" />
                         </LinearLayout>
 
@@ -414,6 +429,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/pgb" />
 
                                 <ImageButton
@@ -421,6 +437,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/config" />
 
                                 <ImageButton
@@ -428,6 +445,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/pgn" />
                             </LinearLayout>
 
@@ -444,6 +462,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
                                     android:clickable="true"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/audio" />
 
                                 <ImageButton
@@ -452,6 +471,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
                                     android:clickable="true"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/subs" />
 
                                 <ImageButton
@@ -460,6 +480,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
                                     android:clickable="true"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/mute" />
                             </LinearLayout>
 
@@ -479,6 +500,7 @@
                                     android:layout_weight="1.0"
                                     android:minWidth="30.0dip"
                                     android:minHeight="30.0dip"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/aa" />
 
                                 <ImageButton
@@ -486,6 +508,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/b" />
 
                                 <ImageButton
@@ -493,6 +516,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/c" />
 
                                 <ImageButton
@@ -500,6 +524,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/d" />
                             </LinearLayout>
                         </LinearLayout>
@@ -655,6 +680,7 @@
                 android:layout_alignBottom="@id/btn_down"
                 android:layout_alignParentStart="true"
                 android:layout_marginStart="5dp"
+                android:backgroundTint="@color/layout_background3"
                 android:src="@drawable/back" />
 
             <ImageButton
@@ -664,6 +690,7 @@
                 android:layout_alignBottom="@id/btn_down"
                 android:layout_marginEnd="5dp"
                 android:layout_alignParentEnd="true"
+                android:backgroundTint="@color/layout_background3"
                 android:src="@drawable/option" />
 
             <ImageButton

@@ -100,12 +100,16 @@ This keyboard is still on beta mode, requires a good WiFi signal."</string>
     <string name="infd_txt_name">Name:</string>
     <string name="infd_txt_ip">IP/host:</string>
     <string name="infd_txt_uuid">UUID:</string>
-    <string name="infd_txt_wdlxtv">WDlxTV:</string>
+    <string name="infd_txt_wdlxtv">Firmware:</string>
+    <string name="infd_txt_wdlxtv_yes">WDlxTV custom</string>
+    <string name="infd_txt_wdlxtv_no">factory default</string>
     <string name="infd_txt_logged">Logged:</string>
     <string name="infd_txt_remote">Remote control:</string>
     <string name="infd_txt_keyboard">Keyboard:</string>
     <string name="infd_txt_upnp">uPnP:</string>
     <string name="infd_txt_ok">Ok</string>
+    <string name="infd_btn_accept">Save</string>
+    <string name="infd_btn_cancel">Cancel</string>
     <string name="b_pref_ok">Ok</string>
     <string name="b_pref_conf_tit">Configuration</string>
     <string name="b_pref_scron_t">Screen ON</string>

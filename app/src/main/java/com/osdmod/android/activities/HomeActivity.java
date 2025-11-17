@@ -52,6 +52,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "HomeActivity";
@@ -117,9 +118,9 @@ public class HomeActivity extends AppCompatActivity {
 
     private void startEditActivityHelper(boolean edit, int deviceId) {
         Intent i = new Intent(HomeActivity.this, EditDeviceActivity.class);
-        i.putExtra("action", edit ? "edit" : "newCreate");
+        i.putExtra(EditDeviceActivity.INTENT_EXTRA_ACTION, edit ? EditDeviceActivity.INTENT_ACTION_EDIT : EditDeviceActivity.INTENT_ACTION_NEW_CREATE);
         if (edit) {
-            i.putExtra("id", deviceId);
+            i.putExtra(EditDeviceActivity.INTENT_EXTRA_ID, deviceId);
         }
         startActivityForResult(i, HomeActivity.EDIT_REQUEST_CODE);
 
@@ -304,41 +305,33 @@ public class HomeActivity extends AppCompatActivity {
         ((TextView) addView.findViewById(R.id.txt_ip)).setText(device.getIp());
         ((TextView) addView.findViewById(R.id.txt_uuid)).setText(device.getUuid());
         TableRow row = addView.findViewById(R.id.row_wdlxtv);
-        TableRow row2 = addView.findViewById(R.id.row_login);
-        if (device.getModelID() < 4) {
-            ImageView img = addView.findViewById(R.id.img_wdlxtv);
-            if (device.iswDlxTVFirmware()) {
-                img.setImageResource(R.drawable.ic_bok);
-            } else {
-                img.setImageResource(R.drawable.ic_cancel);
-            }
-            ((ImageView) addView.findViewById(R.id.img_login)).setImageResource(
-                    device.isConnected() ? R.drawable.ic_bok : R.drawable.ic_cancel);
-            row.setVisibility(View.VISIBLE);
-            row2.setVisibility(View.VISIBLE);
-        } else {
+        if (device.getModelID() == WdDevice.MODELID_HUB || device.getModelID() == WdDevice.MODELID_STREAMING) {
             row.setVisibility(View.GONE);
-            row2.setVisibility(View.GONE);
+        } else {
+            TextView txtView = addView.findViewById(R.id.txt_wdlxtv);
+            txtView.setText(device.iswDlxTVFirmware() ? R.string.infd_txt_wdlxtv_yes : R.string.infd_txt_wdlxtv_no);
+            row.setVisibility(View.VISIBLE);
         }
         ImageView img3 = addView.findViewById(R.id.img_remote);
         if (device.isRemoteControlAvailable()) {
-            img3.setImageResource(R.drawable.ic_bok);
+            img3.setImageResource(R.drawable.iconb_remote);
         } else {
             img3.setImageResource(R.drawable.ic_cancel);
         }
         ImageView img4 = addView.findViewById(R.id.img_keyboard);
         if (device.isKeyboardAvailable()) {
-            img4.setImageResource(R.drawable.ic_bok);
+            img4.setImageResource(R.drawable.iconb_keyboard);
         } else {
             img4.setImageResource(R.drawable.ic_cancel);
         }
         ImageView img5 = addView.findViewById(R.id.img_upnp);
         if (device.isUpnp()) {
-            img5.setImageResource(R.drawable.ic_bok);
+            img5.setImageResource(R.drawable.iconb_upnp);
         } else {
             img5.setImageResource(R.drawable.ic_cancel);
         }
         alertInfo.show();
+        Objects.requireNonNull(alertInfo.getWindow()).setBackgroundDrawableResource(android.R.color.background_dark);
     }
 
     private void openHelpDialog() {
@@ -352,7 +345,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private boolean checkNetworkStatus() {
         return ((ConnectivityManager) getSystemService(
-                Context.CONNECTIVITY_SERVICE)).getNetworkInfo(1).isConnected();
+                Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo().isConnected();
     }
 
     public void onCreateContextMenu(ContextMenu menu, View v,
@@ -381,14 +374,6 @@ public class HomeActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
-                return true;
-
-            case R.id.home_activity_menu_refresh:
-                runDevicesDiscovery(false, true);
-                return true;
-
-            case R.id.home_activity_menu_add:
-                startCreateNewDeviceActivity();
                 return true;
 
             case R.id.home_activity_menu_prefs:

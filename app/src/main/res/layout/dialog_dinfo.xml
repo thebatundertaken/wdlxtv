@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
+    android:background="@color/layout_background2"
+    android:layout_margin="8dp"
     android:layout_height="wrap_content"
     android:layout_alignParentTop="true">
 
@@ -29,15 +31,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
-                    android:text="@string/infd_txt_name"
-                    android:textColor="@color/white"
+                    android:text="@string/infd_txt_model"
+                    android:textColor="@color/white3"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/txt_name"
+                    android:id="@+id/txt_model"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white2" />
+                    android:textColor="@color/white" />
             </TableRow>
 
             <TableRow
@@ -48,15 +50,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
-                    android:text="@string/infd_txt_model"
-                    android:textColor="@color/white"
+                    android:text="@string/infd_txt_name"
+                    android:textColor="@color/white3"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/txt_model"
+                    android:id="@+id/txt_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white2" />
+                    android:textColor="@color/white" />
             </TableRow>
 
             <TableRow
@@ -68,14 +70,14 @@
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
                     android:text="@string/infd_txt_ip"
-                    android:textColor="@color/white"
+                    android:textColor="@color/white3"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/txt_ip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white2" />
+                    android:textColor="@color/white" />
             </TableRow>
 
             <TableRow
@@ -87,110 +89,92 @@
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
                     android:text="@string/infd_txt_uuid"
-                    android:textColor="@color/white"
+                    android:textColor="@color/white3"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/txt_uuid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white2" />
+                    android:textColor="@color/white" />
             </TableRow>
 
             <TableRow
                 android:id="@+id/row_wdlxtv"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:minHeight="32.0dip">
 
                 <TextView
-                    android:id="@+id/TextView10"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
                     android:text="@string/infd_txt_wdlxtv"
-                    android:textColor="@color/white"
+                    android:textColor="@color/white3"
                     android:textStyle="bold" />
 
-                <ImageView
-                    android:id="@+id/img_wdlxtv"
+                <TextView
+                    android:id="@+id/txt_wdlxtv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:src="@drawable/ic_cancel" />
+                    android:textColor="@color/white" />
             </TableRow>
 
-            <TableRow
-                android:id="@+id/row_login"
-                android:gravity="center_vertical">
 
-                <TextView
-                    android:id="@id/TextView03"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:autoSizeTextType="uniform"
-                    android:text="@string/infd_txt_logged"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
+            <TableRow android:gravity="center_vertical"
+                android:minHeight="32.0dip">
 
-                <ImageView
-                    android:id="@+id/img_login"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:src="@drawable/ic_cancel" />
-            </TableRow>
-
-            <TableRow android:gravity="center_vertical">
-
-                <TextView
+            <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
                     android:text="@string/infd_txt_remote"
-                    android:textColor="@color/white"
+                    android:textColor="@color/white3"
                     android:textStyle="bold" />
 
                 <ImageView
                     android:id="@+id/img_remote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:src="@drawable/ic_cancel" />
+                    android:layout_gravity="center"
+                    android:src="@drawable/iconb_remote" />
             </TableRow>
 
-            <TableRow android:gravity="center_vertical">
+            <TableRow android:gravity="center_vertical"
+                android:minHeight="32.0dip">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
                     android:text="@string/infd_txt_keyboard"
-                    android:textColor="@color/white"
+                    android:textColor="@color/white3"
                     android:textStyle="bold" />
 
                 <ImageView
                     android:id="@+id/img_keyboard"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:src="@drawable/ic_bok" />
+                    android:layout_gravity="center"
+                    android:src="@drawable/iconb_keyboard" />
             </TableRow>
 
-            <TableRow android:gravity="center_vertical">
+            <TableRow android:gravity="center_vertical"
+                android:minHeight="32.0dip">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
                     android:text="@string/infd_txt_upnp"
-                    android:textColor="@color/white"
+                    android:textColor="@color/white3"
                     android:textStyle="bold" />
 
                 <ImageView
                     android:id="@+id/img_upnp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:src="@drawable/ic_cancel" />
+                    android:layout_gravity="center"
+                    android:src="@drawable/iconb_upnp" />
             </TableRow>
         </TableLayout>
     </LinearLayout>

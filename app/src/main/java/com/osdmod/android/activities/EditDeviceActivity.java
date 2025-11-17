@@ -31,28 +31,11 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class EditDeviceActivity extends AppCompatActivity {
+    public static final String INTENT_EXTRA_ACTION = "action";
+    public static final String INTENT_EXTRA_ID = "id";
+    public static final String INTENT_ACTION_EDIT = "edit";
+    public static final String INTENT_ACTION_NEW_CREATE = "newCreate";
     private final Integer[] helpImgList = {R.id.img_hmodel, R.id.img_hname, R.id.img_hip, R.id.img_huuid, R.id.img_hwdlxtv};
-
-    @SuppressLint("NonConstantResourceId")
-    private final View.OnClickListener mOnClickListener = v -> {
-        switch (v.getId()) {
-            case R.id.img_hmodel:
-                openHelpDialog("model");
-                return;
-            case R.id.img_hname:
-                openHelpDialog("name");
-                return;
-            case R.id.img_hip:
-                openHelpDialog("ip");
-                return;
-            case R.id.img_huuid:
-                openHelpDialog("uuid");
-                return;
-            case R.id.img_hwdlxtv:
-                openHelpDialog("wdlxtv");
-                return;
-        }
-    };
     private WdDeviceRepository wdDeviceRepository;
     private String action;
     private boolean helping = false;
@@ -93,6 +76,9 @@ public class EditDeviceActivity extends AppCompatActivity {
         gallery = findViewById(R.id.gl_devices);
         lay_wdlxtv = findViewById(R.id.lay_wdlxtv);
         ly_lxusepass = findViewById(R.id.ly_lxusepass);
+        ButtonClickListener btnClickListener = new ButtonClickListener();
+        findViewById(R.id.edit_activity_btn_save).setOnClickListener(btnClickListener);
+        findViewById(R.id.edit_activity_btn_cancel).setOnClickListener(btnClickListener);
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowHomeEnabled(true);
@@ -101,14 +87,15 @@ public class EditDeviceActivity extends AppCompatActivity {
         if (extras == null) {
             throw new IllegalArgumentException("EditActivity requires intent extras");
         }
-        action = extras.getString("action");
+        action = extras.getString(INTENT_EXTRA_ACTION);
         if (action == null) {
-            throw new IllegalArgumentException("EditActivity requires intent extra \"action\"");
+            throw new IllegalArgumentException(
+                    "EditActivity requires intent extra \"" + INTENT_EXTRA_ACTION + "\"");
         }
-        if (action.equals("edit")) {
+        if (INTENT_ACTION_EDIT.equals(action)) {
             getSupportActionBar().setTitle(getString(R.string.edia_txt_editdev));
-            deviceId = extras.getInt("id");
-        } else /*if (action.equals("newCreate")) */ {
+            deviceId = extras.getInt(INTENT_EXTRA_ID);
+        } else /*if (action.equals(INTENT_ACTION_NEW_CREATE)) */ {
             getSupportActionBar().setTitle(getString(R.string.edia_txt_createnew));
             deviceId = -1;
         }
@@ -150,6 +137,7 @@ public class EditDeviceActivity extends AppCompatActivity {
             }
         });
         runOnUiThread(() -> {
+            ImgButtonClickListener mOnClickListener = new ImgButtonClickListener();
             for (int intValue : helpImgList) {
                 ImageView btnC = findViewById(intValue);
                 btnC.setOnClickListener(mOnClickListener);
@@ -157,7 +145,7 @@ public class EditDeviceActivity extends AppCompatActivity {
             }
         });
 
-        if (action.equals("edit")) {
+        if (INTENT_ACTION_EDIT.equals(action)) {
             WdDevice wdDevice = wdDeviceRepository.findById(deviceId);
             etxt_name.setText(wdDevice.getFriendlyName());
             etxt_ip.setText(wdDevice.getIp());
@@ -209,36 +197,6 @@ public class EditDeviceActivity extends AppCompatActivity {
                 showHelpIcons();
                 return true;
 
-            case R.id.edit_activity_menu_cancel:
-                if (getParent() == null) {
-                    setResult(0, new Intent());
-                } else {
-                    getParent().setResult(0, new Intent());
-                }
-                finish();
-                return true;
-
-            case R.id.edit_activity_menu_save:
-                if (etxt_name.getText().toString().isEmpty()) {
-                    Toast.makeText(this, getString(R.string.edia_txt_invname), Toast.LENGTH_LONG)
-                            .show();
-                    return true;
-                }
-                if (!validateHostAddress(etxt_ip.getText().toString())) {
-                    Toast.makeText(this, getString(R.string.edia_txt_invip), Toast.LENGTH_LONG)
-                            .show();
-                    return true;
-                }
-
-                persistChanges();
-                if (getParent() == null) {
-                    setResult(-1, new Intent());
-                } else {
-                    getParent().setResult(-1, new Intent());
-                }
-                finish();
-                return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -278,23 +236,30 @@ public class EditDeviceActivity extends AppCompatActivity {
     }
 
     private void openHelpDialog(String mode) {
-        String message = "";
+        String message;
         switch (mode) {
             case "model":
                 message = getString(R.string.edia_txt_modelhelp);
                 break;
+
             case "name":
                 message = getString(R.string.edia_txt_namehelp);
                 break;
+
             case "ip":
                 message = getString(R.string.edia_txt_iphelp);
                 break;
+
             case "uuid":
                 message = getString(R.string.edia_txt_uuidhelp);
                 break;
+
             case "wdlxtv":
                 message = getString(R.string.edia_txt_wdlxtvhelp);
                 break;
+
+            default:
+                message = "";
         }
         new AlertDialog.Builder(this).setIcon(R.drawable.ic_menu_help)
                 .setTitle(getString(R.string.edia_txt_help))
@@ -310,11 +275,12 @@ public class EditDeviceActivity extends AppCompatActivity {
                 .matcher(address).matches()) {
             return true;
         }
+
         if (!address.startsWith("http://") && !address.startsWith("https://")) {
             address = "http://" + address;
         }
         return address.matches(
-                "^http(s{0,1})://[a-zA-Z0-9_/\\-\\.]+\\.([A-Za-z/]{2,5})[a-zA-Z0-9_/\\&\\?\\=\\-\\.\\~\\%]*");
+                "^http(s{0,1})://[a-zA-Z0-9_/\\-.]+\\.([A-Za-z/]{2,5})[a-zA-Z0-9_/&?=\\-.~%]*");
     }
 
     private void persistChanges() {
@@ -335,7 +301,7 @@ public class EditDeviceActivity extends AppCompatActivity {
             wdDevice.setPassword(etxt_pass.getText().toString());
         }
 
-        if (action.equals("newCreate")) {
+        if (action.equals(INTENT_ACTION_NEW_CREATE)) {
             wdDeviceRepository.add(wdDevice);
         } else {
             wdDevice.setDeviceId(deviceId);
@@ -381,4 +347,69 @@ public class EditDeviceActivity extends AppCompatActivity {
             return ll;
         }
     }
+
+    private class ImgButtonClickListener implements View.OnClickListener {
+        @Override
+        @SuppressLint("NonConstantResourceId")
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.img_hmodel:
+                    openHelpDialog("model");
+                    return;
+                case R.id.img_hname:
+                    openHelpDialog("name");
+                    return;
+                case R.id.img_hip:
+                    openHelpDialog("ip");
+                    return;
+                case R.id.img_huuid:
+                    openHelpDialog("uuid");
+                    return;
+                case R.id.img_hwdlxtv:
+                    openHelpDialog("wdlxtv");
+                    return;
+            }
+        }
+    }
+
+    private class ButtonClickListener implements View.OnClickListener {
+        @SuppressLint("NonConstantResourceId")
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.edit_activity_btn_save:
+                    if (etxt_name.getText().toString().isEmpty()) {
+                        Toast.makeText(EditDeviceActivity.this,
+                                        getString(R.string.edia_txt_invname), Toast.LENGTH_LONG)
+                                .show();
+                        return;
+                    }
+                    if (!validateHostAddress(etxt_ip.getText().toString())) {
+                        Toast.makeText(EditDeviceActivity.this, getString(R.string.edia_txt_invip),
+                                        Toast.LENGTH_LONG)
+                                .show();
+                        return;
+                    }
+
+                    persistChanges();
+                    if (getParent() == null) {
+                        setResult(-1, new Intent());
+                    } else {
+                        getParent().setResult(-1, new Intent());
+                    }
+                    finish();
+                    return;
+
+                case R.id.edit_activity_btn_cancel:
+                    if (getParent() == null) {
+                        setResult(0, new Intent());
+                    } else {
+                        getParent().setResult(0, new Intent());
+                    }
+                    finish();
+                    return;
+            }
+        }
+    }
+
 }

@@ -31,6 +31,6 @@
     <color name="actionbar_background_end">#ff3c3c3c</color>
     <color name="actionbar_background_item_pressed_start">#ffff7f00</color>
     <color name="actionbar_background_item_pressed_end">#ffee7600</color>
-    <color name="progress_bar_overlay_background">#90757575</color>
+    <color name="progress_bar_overlay_background">#902C2C2C</color>
     <color name="progress_bar_text">#80cbc4</color>
 </resources>

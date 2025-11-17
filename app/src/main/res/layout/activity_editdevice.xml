@@ -2,279 +2,310 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:fitsSystemWindows="true"
     android:background="@android:color/background_dark"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
+
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="0dp"
         android:background="@drawable/round_corners_bg2"
+        android:layout_weight="1"
         android:layout_margin="10dp"
         android:layout_gravity="top">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/round_corners_bg2"
+        android:orientation="vertical"
+        android:padding="10dip"
+        android:layout_margin="8dip"
+        android:scrollbars="vertical">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dip">
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="2.0dip"
+                android:shadowColor="@color/layout_shadow"
+                android:shadowDx="1.0"
+                android:shadowDy="1.0"
+                android:shadowRadius="0.8"
+                android:text="@string/edia_txt_model"
+                android:textColor="@color/white3"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/img_hmodel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_menu_help" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <Gallery
+                android:id="@+id/gl_devices"
+                style="android:galleryItemBackground"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:animationDuration="2000"
+                android:gravity="center_horizontal"
+                android:spacing="25dip">
+
+                <requestFocus />
+            </Gallery>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5.0dip"
+            android:padding="2.0dip"
+            android:shadowColor="@color/layout_shadow"
+            android:shadowDx="1.0"
+            android:shadowDy="1.0"
+            android:shadowRadius="0.8"
+            android:text="@string/edia_txt_name"
+            android:textColor="@color/white3"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/etxt_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:hint="@string/edia_txt_namehint"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textColorHint="@color/gray4"
+                android:autofillHints="name"
+                android:inputType="text"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/img_hname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_menu_help" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_ip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5.0dip"
+            android:padding="2.0dip"
+            android:shadowColor="@color/layout_shadow"
+            android:shadowDx="1.0"
+            android:shadowDy="1.0"
+            android:shadowRadius="0.8"
+            android:text="@string/edia_txt_ip"
+            android:textColor="@color/white3"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/etxt_ip"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:autofillHints="none"
+                android:hint="@string/edia_txt_iphint"
+                android:inputType="text"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textColorHint="@color/gray4"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/img_hip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_menu_help" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_uuid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5.0dip"
+            android:padding="2.0dip"
+            android:shadowColor="@color/layout_shadow"
+            android:shadowDx="1.0"
+            android:shadowDy="1.0"
+            android:shadowRadius="0.8"
+            android:text="@string/edia_txt_uuid"
+            android:textColor="@color/white3"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:id="@+id/ly_uuid"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/etxt_uuid"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:autofillHints="none"
+                android:ellipsize="end"
+                android:inputType="none"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/gray3"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/img_huuid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_menu_help" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lay_wdlxtv"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginTop="5.0dip"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <TextView
+                <CheckBox
+                    android:id="@+id/chk_wdlxtv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="2.0dip"
                     android:shadowColor="@color/layout_shadow"
                     android:shadowDx="1.0"
                     android:shadowDy="1.0"
                     android:shadowRadius="0.8"
-                    android:text="@string/edia_txt_model"
-                    android:textColor="@color/white3"
+                    android:text="@string/edia_txt_wdlxtv"
+                    android:textColor="@color/white2"
                     android:textSize="18sp" />
 
                 <ImageView
-                    android:id="@+id/img_hmodel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_menu_help" />
-            </LinearLayout>
-
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                >
-
-                <Gallery style="android:galleryItemBackground"
-                    android:id="@+id/gl_devices"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:animationDuration="2000"
-                    android:spacing="25dip">
-
-                    <requestFocus />
-                </Gallery>
-            </RelativeLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5.0dip"
-                android:padding="2.0dip"
-                android:shadowColor="@color/layout_shadow"
-                android:shadowDx="1.0"
-                android:shadowDy="1.0"
-                android:shadowRadius="0.8"
-                android:text="@string/edia_txt_name"
-                android:textColor="@color/white3"
-                android:textSize="18sp" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical">
-
-                <EditText
-                    android:id="@+id/etxt_name"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.0"
-                    android:hint="@string/edia_txt_namehint"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/gray4"
-                    android:textSize="18sp"
-                    android:singleLine="true" />
-
-                <ImageView
-                    android:id="@+id/img_hname"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_menu_help" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txt_ip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5.0dip"
-                android:padding="2.0dip"
-                android:shadowColor="@color/layout_shadow"
-                android:shadowDx="1.0"
-                android:shadowDy="1.0"
-                android:shadowRadius="0.8"
-                android:text="@string/edia_txt_ip"
-                android:textColor="@color/white3"
-                android:textSize="18sp" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical">
-
-                <EditText
-                    android:id="@+id/etxt_ip"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.0"
-                    android:inputType="text"
-                    android:hint="@string/edia_txt_iphint"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/gray4"
-                    android:autofillHints="none"
-                    android:textSize="18sp"
-                    android:singleLine="true" />
-
-                <ImageView
-                    android:id="@+id/img_hip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_menu_help" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txt_uuid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5.0dip"
-                android:padding="2.0dip"
-                android:shadowColor="@color/layout_shadow"
-                android:shadowDx="1.0"
-                android:shadowDy="1.0"
-                android:shadowRadius="0.8"
-                android:text="@string/edia_txt_uuid"
-                android:textColor="@color/white3"
-                android:textSize="18sp" />
-
-            <LinearLayout
-                android:id="@+id/ly_uuid"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:gravity="center_vertical">
-
-                <EditText
-                    android:id="@+id/etxt_uuid"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.0"
-                    android:autofillHints="none"
-                    android:inputType="none"
-                    android:ellipsize="end"
-                    android:textColor="@color/gray3"
-                    android:maxLines="1"
-                    android:textSize="16sp"
-                    android:singleLine="true" />
-
-                <ImageView
-                    android:id="@+id/img_huuid"
+                    android:id="@+id/img_hwdlxtv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_menu_help" />
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/lay_wdlxtv"
+                android:id="@+id/ly_lxusepass"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginTop="5.0dip"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content">
 
-                    <CheckBox
-                        android:id="@+id/chk_wdlxtv"
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/txt_user"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="50.0"
+                        android:padding="2.0dip"
                         android:shadowColor="@color/layout_shadow"
                         android:shadowDx="1.0"
                         android:shadowDy="1.0"
                         android:shadowRadius="0.8"
-                        android:text="@string/edia_txt_wdlxtv"
+                        android:text="@string/edia_txt_user"
                         android:textColor="@color/white2"
                         android:textSize="18sp" />
 
-                    <ImageView
-                        android:id="@+id/img_hwdlxtv"
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/txt_pass"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_menu_help" />
+                        android:layout_weight="50.0"
+                        android:padding="2.0dip"
+                        android:shadowColor="@color/layout_shadow"
+                        android:shadowDx="1.0"
+                        android:shadowDy="1.0"
+                        android:shadowRadius="0.8"
+                        android:text="@string/edia_txt_pass"
+                        android:textColor="@color/white2"
+                        android:textSize="18sp" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/ly_lxusepass"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content">
 
-                    <LinearLayout
+                    <EditText
+                        android:id="@+id/etxt_user"
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_weight="50.0"
+                        android:autofillHints="username"
+                        android:inputType="text"
+                        android:scrollHorizontally="true"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
 
-                        <TextView
-                            android:id="@+id/txt_user"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="50.0"
-                            android:padding="2.0dip"
-                            android:shadowColor="@color/layout_shadow"
-                            android:shadowDx="1.0"
-                            android:shadowDy="1.0"
-                            android:shadowRadius="0.8"
-                            android:text="@string/edia_txt_user"
-                            android:textColor="@color/white2"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/txt_pass"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="50.0"
-                            android:padding="2.0dip"
-                            android:shadowColor="@color/layout_shadow"
-                            android:shadowDx="1.0"
-                            android:shadowDy="1.0"
-                            android:shadowRadius="0.8"
-                            android:text="@string/edia_txt_pass"
-                            android:textColor="@color/white2"
-                            android:textSize="18sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
+                    <EditText
+                        android:id="@+id/etxt_pass"
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content">
-
-                        <EditText
-                            android:id="@+id/etxt_user"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="50.0"
-                            android:autofillHints="username"
-                            android:textColor="@color/white"
-                            android:inputType="none"
-                            android:textSize="18sp"
-                            android:scrollHorizontally="true" />
-
-                        <EditText
-                            android:id="@+id/etxt_pass"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="50.0"
-                            android:textColor="@color/white"
-                            android:autofillHints="password"
-                            android:textSize="18sp"
-                            android:inputType="textPassword"
-                            android:scrollHorizontally="true" />
-                    </LinearLayout>
+                        android:layout_height="wrap_content"
+                        android:layout_weight="50.0"
+                        android:autofillHints="password"
+                        android:inputType="textPassword"
+                        android:scrollHorizontally="true"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+    </LinearLayout>
     </ScrollView>
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="8dp"
+        >
+
+        <Button
+            android:id="@+id/edit_activity_btn_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/infd_btn_accept"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/edit_activity_btn_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/infd_btn_cancel"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
 </LinearLayout>

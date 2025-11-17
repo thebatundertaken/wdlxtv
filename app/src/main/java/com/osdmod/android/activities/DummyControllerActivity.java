@@ -24,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -828,13 +827,6 @@ public class DummyControllerActivity extends AppCompatActivity {
                         getString(R.string.m_txt_help)).setView(addView)
                 .setPositiveButton(getString(R.string.rem_txt_ok),
                         (dialog, whichButton) -> {
-                            CheckBox chk_notagain = addView.findViewById(R.id.chk_notagain);
-                            if (chk_notagain != null && chk_notagain.isChecked()) {
-                                SharedPreferences.Editor editor = getSharedPreferences(
-                                        "defaultUser", 0).edit();
-                                editor.putBoolean("uihelp_norepeat", true);
-                                editor.apply();
-                            }
                         }).create();
         alertHelp.setIcon(R.drawable.ic_menu_info_details);
         alertHelp.show();

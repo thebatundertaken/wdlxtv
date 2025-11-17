@@ -3,38 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/home_activity_menu_refresh"
-        android:icon="@drawable/ic_menu_refresh"
-        android:title="@string/m_txt_search"
-        app:showAsAction="collapseActionView" />
-
-    <item
-        android:id="@+id/home_activity_menu_add"
-        android:icon="@drawable/ic_add"
-        android:title="@string/m_txt_crenew"
-        app:showAsAction="collapseActionView" />
-
-    <item
         android:id="@+id/home_activity_menu_prefs"
-        android:icon="@drawable/ic_menu_preferences"
         android:title="@string/m_txt_prefs"
         app:showAsAction="collapseActionView" />
 
     <item
         android:id="@+id/home_activity_menu_testapp"
-        android:icon="@drawable/test"
         android:title="@string/m_txt_testapp"
         app:showAsAction="collapseActionView" />
 
     <item
         android:id="@+id/home_activity_menu_help"
-        android:icon="@drawable/ic_menu_help"
         android:title="@string/edia_txt_help"
         app:showAsAction="collapseActionView" />
 
     <item
         android:id="@+id/home_activity_menu_about"
-        android:icon="@drawable/ic_menu_info_details"
         android:title="@string/m_about_tit"
         app:showAsAction="collapseActionView" />
 
