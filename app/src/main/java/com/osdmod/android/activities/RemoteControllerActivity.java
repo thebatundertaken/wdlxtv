@@ -10,7 +10,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
-import android.graphics.Typeface;
 import android.graphics.drawable.TransitionDrawable;
 import android.hardware.SensorManager;
 import android.net.Uri;
@@ -115,6 +114,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
     private LinearLayout ly_final;
     private LinearLayout ly_finalr;
     private LinearLayout ly_dots;
+    private LinearLayout ly_seekbar;
     private ImageView img_led;
     private ObjectAnimator pauseColorToggleAnimator;
     private @ColorInt int colorGray3;
@@ -163,6 +163,7 @@ public class RemoteControllerActivity extends AppCompatActivity {
         ly_finalr = findViewById(R.id.ly_finalr);
         ly_final = findViewById(R.id.ly_final);
         ly_dots = findViewById(R.id.ly_dots);
+        ly_seekbar = findViewById(R.id.ly_seekbar);
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -588,11 +589,11 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
         runOnUiThread(() -> {
             if (title.isEmpty() || title.equals(getString(R.string.remote_stopped))) {
-                txt_media.setTypeface(null, Typeface.NORMAL);
+                //txt_media.setTypeface(null, Typeface.NORMAL);
                 txt_media.setTextColor(colorGray3);
                 txt_media.setText(getString(R.string.no_media_present));
             } else {
-                txt_media.setTypeface(null, Typeface.BOLD);
+                //txt_media.setTypeface(null, Typeface.BOLD);
                 txt_media.setTextColor(colorWhite);
                 txt_media.setText(title);
             }
@@ -909,12 +910,18 @@ public class RemoteControllerActivity extends AppCompatActivity {
         switch (newPlaybackState) {
             case WdMediaService.PLAYBACK_PLAYING:
             case WdMediaService.PLAYBACK_TRANSITIONING:
+                if(ly_seekbar != null) {
+                    ly_seekbar.setAlpha(1f);
+                }
                 stopColorTogglerTask();
                 startMediaPlaybackCheckerTask();
                 break;
 
             case WdMediaService.PLAYBACK_STOPPED:
             case WdMediaService.PLAYBACK_NO_MEDIA_PRESENT:
+                if(ly_seekbar != null) {
+                    ly_seekbar.setAlpha(0.4f);
+                }
                 stopMediaPlaybackCheckerTask();
                 stopColorTogglerTask();
                 setTitleTxtUI(newPlaybackState.equals(
@@ -927,6 +934,9 @@ public class RemoteControllerActivity extends AppCompatActivity {
 
             case WdMediaService.PLAYBACK_PREBUFFING:
             case WdMediaService.PLAYBACK_PAUSED_PLAYBACK:
+                if(ly_seekbar != null) {
+                    ly_seekbar.setAlpha(0.4f);
+                }
                 stopMediaPlaybackCheckerTask();
                 if (wdMediaService != null) {
                     wdMediaService.syncPlaybackPosition();

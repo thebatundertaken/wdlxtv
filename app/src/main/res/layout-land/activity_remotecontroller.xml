@@ -86,7 +86,7 @@
                         android:orientation="vertical">
 
                         <LinearLayout
-                            android:id="@id/row_one_lyone_swone"
+                            android:id="@+id/row_one_lyone_swone"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
@@ -280,7 +280,7 @@
                             </LinearLayout>
 
                             <View
-                                android:id="@id/view_one_two"
+                                android:id="@+id/view_one_two"
                                 android:layout_width="fill_parent"
                                 android:layout_height="3.0dp"
                                 android:layout_below="@id/lay_one_row_three"
