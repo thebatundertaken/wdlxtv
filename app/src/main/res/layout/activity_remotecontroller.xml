@@ -9,11 +9,6 @@
     android:gravity="top|center"
     android:orientation="vertical">
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="2.0dip"
-        android:background="@color/layout_divider" />
-
     <LinearLayout
         android:id="@+id/ly_final"
         android:layout_width="fill_parent"
