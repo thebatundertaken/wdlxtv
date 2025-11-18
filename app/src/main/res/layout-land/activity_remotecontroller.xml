@@ -7,11 +7,6 @@
     android:gravity="top|center"
     android:orientation="vertical">
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="2.0dip"
-        android:background="@color/layout_divider" />
-
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -27,7 +22,6 @@
                 android:id="@id/img_pos"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
                 android:layout_weight="1.0"
                 android:background="@android:color/transparent"
                 android:src="@drawable/one" />
@@ -44,6 +38,10 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="8dp"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -53,8 +51,8 @@
             android:layout_gravity="center"
             android:layout_weight="55.0"
             android:gravity="center"
-            android:background="@color/remotecontroller_background"
-            android:layout_margin="12dp"
+            android:background="@drawable/round_corners_bg2"
+
             android:orientation="horizontal">
 
             <com.osdmod.android.customviews.HorizontalPager
@@ -85,11 +83,31 @@
                         android:gravity="center"
                         android:orientation="vertical">
 
+                        <TextView
+                            android:id="@id/txt_media"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.0"
+                            android:ellipsize="marquee"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:gravity="center_horizontal"
+                            android:marqueeRepeatLimit="marquee_forever"
+                            android:scrollHorizontally="true"
+                            android:shadowColor="@color/black"
+                            android:shadowDx="1.0"
+                            android:shadowDy="1.0"
+                            android:shadowRadius="0.8"
+                            android:singleLine="true"
+                            android:text="@string/no_media_present"
+                            android:textColor="@color/accent" />
+
                         <LinearLayout
                             android:id="@+id/row_one_lyone_swone"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
+                            android:background="@color/layout_background3"
                             android:paddingTop="3.0dip"
                             android:paddingBottom="3.0dip">
 
@@ -99,7 +117,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:text="00:00:00"
-                                android:textColor="@color/white" />
+                                android:textColor="@color/white3" />
 
                             <SeekBar
                                 android:id="@id/sk_play"
@@ -116,7 +134,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:text="00:00:00"
-                                android:textColor="@color/white" />
+                                android:textColor="@color/white3" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -133,7 +151,8 @@
                                 android:id="@id/btn_cvol"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:background="@android:color/transparent"
+                                android:backgroundTint="@color/layout_background3"
+                                android:padding="5dp"
                                 android:src="@drawable/cvol"
                                 android:visibility="gone" />
 
@@ -142,54 +161,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@android:color/transparent"
+                                android:padding="5dp"
                                 android:src="@drawable/rall" />
-
-                            <View
-                                android:id="@+id/view_vol1"
-                                android:layout_width="3.0dp"
-                                android:layout_height="fill_parent"
-                                android:layout_marginLeft="5.0dip"
-                                android:layout_marginRight="5.0dip"
-                                android:background="@drawable/ver"
-                                android:paddingLeft="5.0dip"
-                                android:paddingRight="5.0dip" />
-
-                            <TextView
-                                android:id="@id/txt_media"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1.0"
-                                android:ellipsize="marquee"
-                                android:focusable="true"
-                                android:focusableInTouchMode="true"
-                                android:gravity="center_horizontal"
-                                android:marqueeRepeatLimit="marquee_forever"
-                                android:scrollHorizontally="true"
-                                android:shadowColor="@color/black"
-                                android:shadowDx="1.0"
-                                android:shadowDy="1.0"
-                                android:shadowRadius="0.8"
-                                android:singleLine="true"
-                                android:text="@string/no_media_present"
-                                android:textColor="@color/accent2" />
-
-                            <View
-                                android:id="@+id/view_vol2"
-                                android:layout_width="3.0dp"
-                                android:layout_height="fill_parent"
-                                android:layout_marginLeft="5.0dip"
-                                android:layout_marginRight="5.0dip"
-                                android:background="@drawable/ver"
-                                android:paddingLeft="5.0dip"
-                                android:paddingRight="5.0dip" />
-
-                            <ImageButton
-                                android:id="@id/btn_vol"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@android:color/transparent"
-                                android:minHeight="32.0dip"
-                                android:src="@drawable/volh" />
 
                             <SeekBar
                                 android:id="@id/sk_vol"
@@ -199,7 +172,17 @@
                                 android:layout_gravity="center"
                                 android:layout_weight="1.0"
                                 android:progress="100"
-                                android:visibility="gone" />
+                                android:visibility="invisible" />
+
+                            <ImageButton
+                                android:id="@id/btn_vol"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:backgroundTint="@color/layout_background3"
+                                android:padding="5dp"
+                                android:minHeight="32.0dip"
+                                android:src="@drawable/volh" />
+
 
                             <TextView
                                 android:id="@id/txt_vol"
@@ -216,17 +199,10 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
-                            <View
-                                android:id="@+id/view_one_one"
-                                android:layout_width="fill_parent"
-                                android:layout_height="3.0dp"
-                                android:background="@drawable/hor" />
-
                             <LinearLayout
                                 android:id="@id/lay_one_row_three"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@id/view_one_one"
                                 android:layout_gravity="center"
                                 android:gravity="center"
                                 android:orientation="horizontal"
@@ -238,59 +214,34 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:clickable="true"
                                     android:src="@drawable/rew" />
-
-                                <View
-                                    android:layout_width="3.0dp"
-                                    android:layout_height="fill_parent"
-                                    android:layout_marginLeft="3.0dip"
-                                    android:layout_marginRight="3.0dip"
-                                    android:background="@drawable/ver"
-                                    android:paddingLeft="3.0dip"
-                                    android:paddingRight="3.0dip" />
 
                                 <ImageButton
                                     android:id="@id/btn_pplay"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background4"
                                     android:clickable="true"
                                     android:src="@drawable/pplay" />
-
-                                <View
-                                    android:layout_width="3.0dp"
-                                    android:layout_height="fill_parent"
-                                    android:layout_marginLeft="3.0dip"
-                                    android:layout_marginRight="3.0dip"
-                                    android:background="@drawable/ver"
-                                    android:paddingLeft="3.0dip"
-                                    android:paddingRight="3.0dip" />
 
                                 <ImageButton
                                     android:id="@id/btn_ff"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:clickable="true"
                                     android:src="@drawable/ff" />
                             </LinearLayout>
-
-                            <View
-                                android:id="@+id/view_one_two"
-                                android:layout_width="fill_parent"
-                                android:layout_height="3.0dp"
-                                android:layout_below="@id/lay_one_row_three"
-                                android:background="@drawable/hor" />
 
                             <LinearLayout
                                 android:id="@id/lay_one_row_four"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@id/view_one_two"
+                                android:layout_below="@id/lay_one_row_three"
                                 android:orientation="horizontal"
                                 android:paddingTop="3.0dip"
                                 android:paddingBottom="3.0dip">
@@ -300,43 +251,25 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:clickable="true"
                                     android:src="@drawable/prev" />
-
-                                <View
-                                    android:layout_width="3.0dp"
-                                    android:layout_height="fill_parent"
-                                    android:layout_marginLeft="3.0dip"
-                                    android:layout_marginRight="3.0dip"
-                                    android:background="@drawable/ver"
-                                    android:paddingLeft="3.0dip"
-                                    android:paddingRight="3.0dip" />
 
                                 <ImageButton
                                     android:id="@id/btn_stop"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background4"
                                     android:clickable="true"
                                     android:src="@drawable/stop" />
-
-                                <View
-                                    android:layout_width="3.0dp"
-                                    android:layout_height="fill_parent"
-                                    android:layout_marginLeft="3.0dip"
-                                    android:layout_marginRight="3.0dip"
-                                    android:background="@drawable/ver"
-                                    android:paddingLeft="3.0dip"
-                                    android:paddingRight="3.0dip" />
 
                                 <ImageButton
                                     android:id="@id/btn_next"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:clickable="true"
                                     android:src="@drawable/next" />
                             </LinearLayout>
@@ -377,31 +310,17 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="50.0"
-                                android:background="@android:color/transparent"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/power" />
-
-                            <View
-                                android:layout_width="3.0dp"
-                                android:layout_height="fill_parent"
-                                android:layout_marginLeft="3.0dip"
-                                android:layout_marginRight="3.0dip"
-                                android:background="@drawable/ver"
-                                android:paddingLeft="3.0dip"
-                                android:paddingRight="3.0dip" />
 
                             <ImageButton
                                 android:id="@id/btn_weject"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="50.0"
-                                android:background="@android:color/transparent"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/eject" />
                         </LinearLayout>
-
-                        <View
-                            android:layout_width="fill_parent"
-                            android:layout_height="3.0dp"
-                            android:background="@drawable/hor" />
 
                         <LinearLayout
                             android:layout_width="fill_parent"
@@ -416,24 +335,15 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="50.0"
-                                android:background="@android:color/transparent"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/search" />
-
-                            <View
-                                android:layout_width="3.0dp"
-                                android:layout_height="fill_parent"
-                                android:layout_marginLeft="3.0dip"
-                                android:layout_marginRight="3.0dip"
-                                android:background="@drawable/ver"
-                                android:paddingLeft="3.0dip"
-                                android:paddingRight="3.0dip" />
 
                             <ImageButton
                                 android:id="@id/btn_whome"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="50.0"
-                                android:background="@android:color/transparent"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/home" />
                         </LinearLayout>
                     </LinearLayout>
@@ -472,65 +382,33 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1.0"
-                                android:background="@android:color/transparent"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/power" />
-
-                            <View
-                                android:layout_width="3.0dp"
-                                android:layout_height="fill_parent"
-                                android:layout_marginLeft="3.0dip"
-                                android:layout_marginRight="3.0dip"
-                                android:background="@drawable/ver"
-                                android:paddingLeft="3.0dip"
-                                android:paddingRight="3.0dip" />
 
                             <ImageButton
                                 android:id="@id/btn_eject"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1.0"
-                                android:background="@android:color/transparent"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/eject" />
-
-                            <View
-                                android:layout_width="3.0dp"
-                                android:layout_height="fill_parent"
-                                android:layout_marginLeft="3.0dip"
-                                android:layout_marginRight="3.0dip"
-                                android:background="@drawable/ver"
-                                android:paddingLeft="3.0dip"
-                                android:paddingRight="3.0dip" />
 
                             <ImageButton
                                 android:id="@id/btn_search"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1.0"
-                                android:background="@android:color/transparent"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/search" />
-
-                            <View
-                                android:layout_width="3.0dp"
-                                android:layout_height="fill_parent"
-                                android:layout_marginLeft="3.0dip"
-                                android:layout_marginRight="3.0dip"
-                                android:background="@drawable/ver"
-                                android:paddingLeft="3.0dip"
-                                android:paddingRight="3.0dip" />
 
                             <ImageButton
                                 android:id="@id/btn_home"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1.0"
-                                android:background="@android:color/transparent"
+                                android:backgroundTint="@color/layout_background3"
                                 android:src="@drawable/home" />
                         </LinearLayout>
-
-                        <View
-                            android:layout_width="fill_parent"
-                            android:layout_height="3.0dp"
-                            android:background="@drawable/hor" />
 
                         <LinearLayout
                             android:id="@id/row_two_lytwo_swtwo"
@@ -552,48 +430,25 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/pgb" />
-
-                                <View
-                                    android:layout_width="3.0dp"
-                                    android:layout_height="fill_parent"
-                                    android:layout_marginLeft="3.0dip"
-                                    android:layout_marginRight="3.0dip"
-                                    android:background="@drawable/ver"
-                                    android:paddingLeft="3.0dip"
-                                    android:paddingRight="3.0dip" />
 
                                 <ImageButton
                                     android:id="@id/btn_config"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/config" />
-
-                                <View
-                                    android:layout_width="3.0dp"
-                                    android:layout_height="fill_parent"
-                                    android:layout_marginLeft="3.0dip"
-                                    android:layout_marginRight="3.0dip"
-                                    android:background="@drawable/ver"
-                                    android:paddingLeft="3.0dip"
-                                    android:paddingRight="3.0dip" />
 
                                 <ImageButton
                                     android:id="@id/btn_pgn"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/pgn" />
                             </LinearLayout>
-
-                            <View
-                                android:layout_width="fill_parent"
-                                android:layout_height="3.0dp"
-                                android:background="@drawable/hor" />
 
                             <LinearLayout
                                 android:layout_width="fill_parent"
@@ -607,51 +462,28 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:clickable="true"
                                     android:src="@drawable/audio" />
-
-                                <View
-                                    android:layout_width="3.0dp"
-                                    android:layout_height="fill_parent"
-                                    android:layout_marginLeft="3.0dip"
-                                    android:layout_marginRight="3.0dip"
-                                    android:background="@drawable/ver"
-                                    android:paddingLeft="3.0dip"
-                                    android:paddingRight="3.0dip" />
 
                                 <ImageButton
                                     android:id="@id/btn_subs"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:clickable="true"
                                     android:src="@drawable/subs" />
-
-                                <View
-                                    android:layout_width="3.0dp"
-                                    android:layout_height="fill_parent"
-                                    android:layout_marginLeft="3.0dip"
-                                    android:layout_marginRight="3.0dip"
-                                    android:background="@drawable/ver"
-                                    android:paddingLeft="3.0dip"
-                                    android:paddingRight="3.0dip" />
 
                                 <ImageButton
                                     android:id="@id/btn_mute"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:clickable="true"
                                     android:src="@drawable/mute" />
                             </LinearLayout>
-
-                            <View
-                                android:layout_width="fill_parent"
-                                android:layout_height="3.0dp"
-                                android:background="@drawable/hor" />
 
                             <LinearLayout
                                 android:layout_width="fill_parent"
@@ -667,58 +499,31 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/aa" />
-
-                                <View
-                                    android:layout_width="3.0dp"
-                                    android:layout_height="fill_parent"
-                                    android:layout_marginLeft="3.0dip"
-                                    android:layout_marginRight="3.0dip"
-                                    android:background="@drawable/ver"
-                                    android:paddingLeft="3.0dip"
-                                    android:paddingRight="3.0dip" />
 
                                 <ImageButton
                                     android:id="@id/btn_b"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/b" />
-
-                                <View
-                                    android:layout_width="3.0dp"
-                                    android:layout_height="fill_parent"
-                                    android:layout_marginLeft="3.0dip"
-                                    android:layout_marginRight="3.0dip"
-                                    android:background="@drawable/ver"
-                                    android:paddingLeft="3.0dip"
-                                    android:paddingRight="3.0dip" />
 
                                 <ImageButton
                                     android:id="@id/btn_c"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/c" />
-
-                                <View
-                                    android:layout_width="3.0dp"
-                                    android:layout_height="fill_parent"
-                                    android:layout_marginLeft="3.0dip"
-                                    android:layout_marginRight="3.0dip"
-                                    android:background="@drawable/ver"
-                                    android:paddingLeft="3.0dip"
-                                    android:paddingRight="3.0dip" />
 
                                 <ImageButton
                                     android:id="@id/btn_d"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1.0"
-                                    android:background="@android:color/transparent"
+                                    android:backgroundTint="@color/layout_background3"
                                     android:src="@drawable/d" />
                             </LinearLayout>
                         </LinearLayout>
@@ -743,21 +548,12 @@
             </com.osdmod.android.customviews.HorizontalPager>
         </LinearLayout>
 
-        <View
-            android:layout_width="3.0dp"
-            android:layout_height="fill_parent"
-            android:layout_marginLeft="3.0dip"
-            android:layout_marginRight="3.0dip"
-            android:background="@drawable/ver"
-            android:paddingLeft="3.0dip"
-            android:paddingRight="3.0dip" />
-
         <LinearLayout
             android:id="@id/ly_finalr"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:background="@color/remotecontroller_background"
-            android:layout_margin="12dp"
+            android:background="@drawable/round_corners_bg2"
+            android:layout_marginStart="12dp"
             android:layout_weight="50.0"
             android:orientation="vertical">
 
@@ -844,7 +640,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@id/btn_down"
                     android:layout_alignParentStart="true"
-                    android:background="@android:color/transparent"
+                    android:backgroundTint="@color/layout_background3"
                     android:src="@drawable/back" />
 
                 <ImageButton
@@ -853,7 +649,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@id/btn_down"
                     android:layout_alignParentEnd="true"
-                    android:background="@android:color/transparent"
+                    android:backgroundTint="@color/layout_background3"
                     android:src="@drawable/option" />
 
                 <ImageButton
